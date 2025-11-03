@@ -21,6 +21,17 @@ describe('Express Server', () => {
     });
   });
 
+  describe('GET /bills/', () => {
+    it('should serve the bills app HTML', async () => {
+      const res = await request(app).get('/bills/');
+      expect(res.statusCode).toBe(200);
+      expect(res.type).toBe('text/html');
+      // index.html includes a <title> Bills App and a root div
+      expect(res.text).toContain('Bills App');
+      expect(res.text).toContain('<div id="root">');
+    });
+  });
+
   describe('Static files', () => {
     it('should serve static files from public directory', async () => {
       const res = await request(app).get('/todos/index.html');

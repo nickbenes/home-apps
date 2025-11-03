@@ -15,6 +15,15 @@ module.exports = {
     '**/*.test.ts',
     '**/*.test.tsx'
   ],
+  transform: {
+    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', {
+      presets: [
+        '@babel/preset-env',
+        ['@babel/preset-react', { runtime: 'automatic' }],
+        '@babel/preset-typescript'
+      ]
+    }]
+  },
   projects: [
     {
       displayName: 'node',
@@ -48,3 +57,4 @@ module.exports = {
     }
   ]
 };
+
