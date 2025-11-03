@@ -22,6 +22,11 @@ app.get('/todos/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'todos', 'index.html'));
 });
 
+// Serve Bills app at /bills/
+app.get('/bills/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'bills', 'index.html'));
+});
+
 // Mount todos API routes
 app.use('/api/todos', todosRouter);
 
