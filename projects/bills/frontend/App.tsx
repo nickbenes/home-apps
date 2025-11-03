@@ -1,9 +1,17 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
+interface Bill {
+  id: number;
+  name: string;
+  amount: number;
+  dueDate: string;
+  paid: boolean;
+}
+
 // Sample Bills App component
 function App() {
-  const [bills, setBills] = React.useState([]);
+  const [bills, setBills] = React.useState<Bill[]>([]);
   const [newBill, setNewBill] = React.useState({ name: '', amount: '', dueDate: '' });
 
   React.useEffect(() => {
@@ -60,7 +68,7 @@ function App() {
   };
 
   const getTotalAmount = () => {
-    return bills.reduce((sum: number, bill: any) => sum + (bill.paid ? 0 : bill.amount), 0).toFixed(2);
+    return bills.reduce((sum: number, bill: Bill) => sum + (bill.paid ? 0 : bill.amount), 0).toFixed(2);
   };
 
   return (
@@ -95,7 +103,7 @@ function App() {
         </button>
       </div>
       <ul style={{ listStyle: 'none', padding: 0 }}>
-        {bills.map((bill: any) => (
+        {bills.map((bill: Bill) => (
           <li key={bill.id} style={{
             padding: '15px',
             marginBottom: '10px',
