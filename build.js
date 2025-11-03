@@ -25,7 +25,7 @@ function findFrontendEntries(root = path.join(__dirname, 'projects')) {
 async function buildAll({ watch = false } = {}) {
   const entries = findFrontendEntries();
   if (!entries.length) {
-    console.log('No frontend entries found under projects/*/frontend — nothing to build.');
+    console.info('No frontend entries found under projects/*/frontend — nothing to build.');
     return;
   }
 
@@ -34,7 +34,7 @@ async function buildAll({ watch = false } = {}) {
     const outDir = path.join('public', e.name);
     const outFile = path.join(outDir, 'bundle.js');
     fs.mkdirSync(outDir, { recursive: true });
-    console.log(`Building ${e.name} -> ${outFile}`);
+  console.info(`Building ${e.name} -> ${outFile}`);
 
     const commonOpts = {
       entryPoints: [e.entry],
@@ -58,7 +58,7 @@ async function buildAll({ watch = false } = {}) {
       await esbuild.build(commonOpts);
 
       if (watch) {
-        console.log(`Watching ${e.name} for changes...`);
+        console.info(`Watching ${e.name} for changes...`);
         // Simple file watcher that triggers a rebuild on changes.
         // We avoid using esbuild's watch option for compatibility with older esbuild versions.
         const watchedDir = path.dirname(e.entry);
@@ -68,10 +68,10 @@ async function buildAll({ watch = false } = {}) {
             // debounced rebuild
             if (timer) clearTimeout(timer);
             timer = setTimeout(async () => {
-              console.log(`Detected change in ${e.name}: ${filename || '<unknown>'}, rebuilding...`);
+              console.info(`Detected change in ${e.name}: ${filename || '<unknown>'}, rebuilding...`);
               try {
                 await esbuild.build(commonOpts);
-                console.log(`Rebuilt ${e.name} -> ${outFile}`);
+                console.info(`Rebuilt ${e.name} -> ${outFile}`);
               } catch (reErr) {
                 console.error(`Rebuild failed for ${e.name}:`, reErr);
               }

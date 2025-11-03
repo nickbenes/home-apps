@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GripVertical, Plus, Trash2, DollarSign, Edit2, Check, X, Filter, RefreshCw, Tag, Calendar, ChevronDown, ChevronRight, List, Download, Upload } from 'lucide-react';
+import { GripVertical, Plus, Trash2, DollarSign, Edit2, Check, X, Filter, RefreshCw, Calendar, ChevronDown, ChevronRight, List, Download, Upload } from 'lucide-react';
 
 const STORAGE_KEY = 'bill-payment-planner-bills';
 const TEMPLATES_KEY = 'bill-payment-planner-templates';
@@ -322,10 +322,7 @@ export default function BillPaymentPlanner() {
     return billId !== null && billId !== undefined;
   };
 
-  const getTemplateName = (billId: number | null | undefined) => {
-    const template = templates.find(t => t.id === billId);
-    return template ? template.name : null;
-  };
+  // helper removed: getTemplateName was unused
 
   const exportPaymentsToCSV = () => {
     const headers = ['id', 'name', 'amount', 'date', 'category', 'notes', 'billId'];
