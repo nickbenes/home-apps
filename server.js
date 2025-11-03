@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Import routes
-const todosRouter = require('./backend/todos/routes');
+const todosRouter = require('./projects/todos/backend/routes');
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
 
 // Serve React Todo app at /todos/
 app.get('/todos/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'todos', 'index.html'));
 });
 
 // Mount todos API routes

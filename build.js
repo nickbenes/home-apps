@@ -2,11 +2,11 @@ const esbuild = require('esbuild');
 const path = require('path');
 
 esbuild.build({
-  entryPoints: ['client/App.tsx'],
+  entryPoints: ['projects/todos/frontend/App.tsx'],
   bundle: true,
   minify: process.env.NODE_ENV === 'production',
   sourcemap: process.env.NODE_ENV !== 'production',
-  outfile: 'public/bundle.js',
+  outfile: 'public/todos/bundle.js',
   loader: {
     '.tsx': 'tsx',
     '.ts': 'ts',

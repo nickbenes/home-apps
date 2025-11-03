@@ -11,6 +11,6 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["client/**/*"],
+  "include": ["projects/*/frontend/**/*"],
   "exclude": ["node_modules"]
 }
