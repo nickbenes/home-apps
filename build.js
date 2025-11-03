@@ -1,26 +1,98 @@
 const esbuild = require('esbuild');
 const path = require('path');
+const fs = require('fs');
 
-// Helper to build a single app
-function buildApp(entry, outFile) {
-  return esbuild.build({
-    entryPoints: [entry],
-    bundle: true,
-    minify: process.env.NODE_ENV === 'production',
-    sourcemap: process.env.NODE_ENV !== 'production',
-    outfile: outFile,
-    loader: {
-      '.tsx': 'tsx',
-      '.ts': 'ts',
-    },
-    define: {
-      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
-    },
-  });
+// Find frontend entry points under projects/*/frontend
+function findFrontendEntries(root = path.join(__dirname, 'projects')) {
+  if (!fs.existsSync(root)) return [];
+  return fs.readdirSync(root, { withFileTypes: true })
+    .filter(d => d.isDirectory())
+    .map(d => d.name)
+    .map(name => {
+      const frontendDir = path.join(root, name, 'frontend');
+      const candidates = [
+        path.join(frontendDir, 'App.tsx'),
+        path.join(frontendDir, 'index.tsx'),
+        path.join(frontendDir, 'App.jsx'),
+        path.join(frontendDir, 'index.jsx'),
+      ];
+      const entry = candidates.find(p => fs.existsSync(p));
+      return entry ? { name, entry } : null;
+    })
+    .filter(Boolean);
 }
 
-// Build todos (existing)
-buildApp('projects/todos/frontend/App.tsx', 'public/todos/bundle.js')
-  // Also build bills frontend so it's available under public/bills/
-  .then(() => buildApp('projects/bills/frontend/App.tsx', 'public/bills/bundle.js'))
-  .catch(() => process.exit(1));
+async function buildAll({ watch = false } = {}) {
+  const entries = findFrontendEntries();
+  if (!entries.length) {
+    console.log('No frontend entries found under projects/*/frontend — nothing to build.');
+    return;
+  }
+
+  // In watch mode we keep esbuild instances running; otherwise do one-off builds.
+  for (const e of entries) {
+    const outDir = path.join('public', e.name);
+    const outFile = path.join(outDir, 'bundle.js');
+    fs.mkdirSync(outDir, { recursive: true });
+    console.log(`Building ${e.name} -> ${outFile}`);
+
+    const commonOpts = {
+      entryPoints: [e.entry],
+      bundle: true,
+      minify: process.env.NODE_ENV === 'production',
+      sourcemap: process.env.NODE_ENV !== 'production',
+      outfile: outFile,
+      loader: {
+        '.tsx': 'tsx',
+        '.ts': 'ts',
+        '.js': 'js',
+        '.jsx': 'jsx',
+      },
+      define: {
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development'),
+      },
+    };
+
+    try {
+      // Do initial build
+      await esbuild.build(commonOpts);
+
+      if (watch) {
+        console.log(`Watching ${e.name} for changes...`);
+        // Simple file watcher that triggers a rebuild on changes.
+        // We avoid using esbuild's watch option for compatibility with older esbuild versions.
+        const watchedDir = path.dirname(e.entry);
+        let timer = null;
+        try {
+          fs.watch(watchedDir, { recursive: false }, (evt, filename) => {
+            // debounced rebuild
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(async () => {
+              console.log(`Detected change in ${e.name}: ${filename || '<unknown>'}, rebuilding...`);
+              try {
+                await esbuild.build(commonOpts);
+                console.log(`Rebuilt ${e.name} -> ${outFile}`);
+              } catch (reErr) {
+                console.error(`Rebuild failed for ${e.name}:`, reErr);
+              }
+            }, 100);
+          });
+        } catch (watchErr) {
+          console.warn(`File watching not available for ${e.name}:`, watchErr);
+        }
+      }
+    } catch (err) {
+      console.error(`Build failed for ${e.name}:`, err);
+      process.exit(1);
+    }
+  }
+}
+
+// CLI args: --watch or --dev enables watch mode
+const args = process.argv.slice(2);
+const watch = args.includes('--watch') || args.includes('--dev');
+
+buildAll({ watch }).catch(err => {
+  console.error('Build failed:', err);
+  process.exit(1);
+});
