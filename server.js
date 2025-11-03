@@ -19,12 +19,12 @@ app.get('/', (req, res) => {
 });
 
 // GET all todos
-app.get('/todos', (req, res) => {
+app.get('/api/todos', (req, res) => {
   res.json(todos);
 });
 
 // GET a specific todo by id
-app.get('/todos/:id', (req, res) => {
+app.get('/api/todos/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const todo = todos.find(t => t.id === id);
 
@@ -36,7 +36,7 @@ app.get('/todos/:id', (req, res) => {
 });
 
 // POST - Create a new todo
-app.post('/todos', (req, res) => {
+app.post('/api/todos', (req, res) => {
   const { title, completed } = req.body;
 
   if (!title) {
@@ -54,7 +54,7 @@ app.post('/todos', (req, res) => {
 });
 
 // PUT - Update a todo
-app.put('/todos/:id', (req, res) => {
+app.put('/api/todos/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const todoIndex = todos.findIndex(t => t.id === id);
 
@@ -76,7 +76,7 @@ app.put('/todos/:id', (req, res) => {
 });
 
 // DELETE a todo
-app.delete('/todos/:id', (req, res) => {
+app.delete('/api/todos/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const todoIndex = todos.findIndex(t => t.id === id);
 

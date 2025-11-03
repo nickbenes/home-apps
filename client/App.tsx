@@ -8,7 +8,7 @@ function App() {
 
   React.useEffect(() => {
     // Fetch todos from the API
-    fetch('/todos')
+    fetch('/api/todos')
       .then(res => res.json())
       .then(data => setTodos(data))
       .catch(err => console.error('Error fetching todos:', err));
@@ -18,7 +18,7 @@ function App() {
     if (!newTodo.trim()) return;
 
     try {
-      const response = await fetch('/todos', {
+      const response = await fetch('/api/todos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: newTodo, completed: false }),
@@ -33,7 +33,7 @@ function App() {
 
   const toggleTodo = async (id: number, completed: boolean) => {
     try {
-      const response = await fetch(`/todos/${id}`, {
+      const response = await fetch(`/api/todos/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ completed: !completed }),
@@ -47,7 +47,7 @@ function App() {
 
   const deleteTodo = async (id: number) => {
     try {
-      await fetch(`/todos/${id}`, { method: 'DELETE' });
+      await fetch(`/api/todos/${id}`, { method: 'DELETE' });
       setTodos(todos.filter(t => t.id !== id));
     } catch (err) {
       console.error('Error deleting todo:', err);
