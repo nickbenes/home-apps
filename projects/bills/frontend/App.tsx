@@ -6,6 +6,43 @@ const TEMPLATES_KEY = 'bill-payment-planner-templates';
 
 const CATEGORIES = ['Income', 'Housing', 'Utilities', 'Subscriptions', 'Insurance', 'Transportation', 'Food', 'Entertainment', 'Healthcare', 'Other'];
 
+type Bill = {
+  id: number;
+  name: string;
+  amount: number;
+  date: string;
+  category: string;
+  notes?: string;
+  billId?: number | null;
+};
+
+type Template = {
+  id: number;
+  name: string;
+  amount: number;
+  category: string;
+  frequencyNumber?: number;
+  frequencyPeriod?: string;
+  notes?: string;
+};
+
+type NewBillForm = {
+  name: string;
+  amount: string;
+  date: string;
+  category: string;
+  notes: string;
+};
+
+type TemplateForm = {
+  name: string;
+  amount: string;
+  category: string;
+  frequencyNumber: number | string;
+  frequencyPeriod: string;
+  notes: string;
+};
+
 const getInitialBills = () => {
   try {
     const savedBills = localStorage.getItem(STORAGE_KEY);
@@ -37,21 +74,21 @@ const getInitialTemplates = () => {
 const TIME_PERIODS = ['days', 'weeks', 'months', 'years'];
 
 export default function BillPaymentPlanner() {
-  const [bills, setBills] = useState(getInitialBills());
-  const [templates, setTemplates] = useState(getInitialTemplates());
-  const [draggedItem, setDraggedItem] = useState(null);
-  const [newBill, setNewBill] = useState({ name: '', amount: '', date: '', category: 'Other', notes: '' });
-  const [editingId, setEditingId] = useState(null);
-  const [editForm, setEditForm] = useState({ name: '', amount: '', date: '', category: 'Other', notes: '' });
+  const [bills, setBills] = useState<Bill[]>(getInitialBills() as Bill[]);
+  const [templates, setTemplates] = useState<Template[]>(getInitialTemplates() as Template[]);
+  const [draggedItem, setDraggedItem] = useState<number | null>(null);
+  const [newBill, setNewBill] = useState<NewBillForm>({ name: '', amount: '', date: '', category: 'Other', notes: '' });
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<NewBillForm>({ name: '', amount: '', date: '', category: 'Other', notes: '' });
   const [sortBy, setSortBy] = useState('order');
   const [filterCategory, setFilterCategory] = useState('all');
   const [showTemplates, setShowTemplates] = useState(false);
-  const [templateDates, setTemplateDates] = useState({});
+  const [templateDates, setTemplateDates] = useState<Record<number, string>>({});
   const [currentPage, setCurrentPage] = useState('planner'); // 'planner' or 'templates'
-  const [expandedTemplates, setExpandedTemplates] = useState({});
-  const [editingTemplateId, setEditingTemplateId] = useState(null);
-  const [templateEditForm, setTemplateEditForm] = useState({ name: '', amount: '', category: 'Other', frequencyNumber: 1, frequencyPeriod: 'months', notes: '' });
-  const [newTemplate, setNewTemplate] = useState({ name: '', amount: '', category: 'Other', frequencyNumber: 1, frequencyPeriod: 'months', notes: '' });
+  const [expandedTemplates, setExpandedTemplates] = useState<Record<number, boolean>>({});
+  const [editingTemplateId, setEditingTemplateId] = useState<number | null>(null);
+  const [templateEditForm, setTemplateEditForm] = useState<TemplateForm>({ name: '', amount: '', category: 'Other', frequencyNumber: 1, frequencyPeriod: 'months', notes: '' });
+  const [newTemplate, setNewTemplate] = useState<TemplateForm>({ name: '', amount: '', category: 'Other', frequencyNumber: 1, frequencyPeriod: 'months', notes: '' });
 
   useEffect(() => {
     try {
@@ -69,13 +106,13 @@ export default function BillPaymentPlanner() {
     }
   }, [templates]);
 
-  const handleDragStart = (e, index) => {
+  const handleDragStart = (e: any, index: number) => {
     if (sortBy !== 'order') return;
     setDraggedItem(index);
     e.dataTransfer.effectAllowed = 'move';
   };
 
-  const handleDragOver = (e, index) => {
+  const handleDragOver = (e: any, index: number) => {
     e.preventDefault();
     if (sortBy !== 'order' || draggedItem === null || draggedItem === index) return;
 
@@ -109,11 +146,11 @@ export default function BillPaymentPlanner() {
     setNewBill({ name: '', amount: '', date: '', category: 'Other', notes: '' });
   };
 
-  const deleteBill = (id) => {
+  const deleteBill = (id: number) => {
     setBills(bills.filter(bill => bill.id !== id));
   };
 
-  const startEdit = (bill) => {
+  const startEdit = (bill: Bill) => {
     setEditingId(bill.id);
     setEditForm({ name: bill.name, amount: bill.amount.toString(), date: bill.date, category: bill.category, notes: bill.notes || '' });
   };
@@ -135,7 +172,7 @@ export default function BillPaymentPlanner() {
     setEditForm({ name: '', amount: '', date: '', category: 'Other', notes: '' });
   };
 
-  const saveAsTemplate = (bill) => {
+  const saveAsTemplate = (bill: Bill) => {
     const template = {
       id: Date.now(),
       name: bill.name,
@@ -156,7 +193,7 @@ export default function BillPaymentPlanner() {
       name: newTemplate.name,
       amount: parseFloat(newTemplate.amount),
       category: newTemplate.category,
-      frequencyNumber: parseInt(newTemplate.frequencyNumber),
+      frequencyNumber: parseInt(String(newTemplate.frequencyNumber)),
       frequencyPeriod: newTemplate.frequencyPeriod,
       notes: newTemplate.notes,
     };
@@ -165,15 +202,15 @@ export default function BillPaymentPlanner() {
     setNewTemplate({ name: '', amount: '', category: 'Other', frequencyNumber: 1, frequencyPeriod: 'months', notes: '' });
   };
 
-  const viewRecurringBill = (billId) => {
+  const viewRecurringBill = (billId: number | null | undefined) => {
     if (billId) {
       setCurrentPage('templates');
       setExpandedTemplates({ [billId]: true });
     }
   };
 
-  const calculateNextPaymentDate = (templateName, frequencyNumber, frequencyPeriod) => {
-    const payments = getTemplatePayments(templateName);
+  const calculateNextPaymentDate = (templateId: number, frequencyNumber: number, frequencyPeriod: string) => {
+    const payments = getTemplatePayments(templateId);
     
     if (payments.length === 0) {
       return new Date().toISOString().split('T')[0];
@@ -202,8 +239,12 @@ export default function BillPaymentPlanner() {
     return nextDate.toISOString().split('T')[0];
   };
 
-  const addFromTemplate = (template) => {
-    const defaultDate = calculateNextPaymentDate(template.name, template.frequencyNumber, template.frequencyPeriod);
+  const addFromTemplate = (template: Template) => {
+    const defaultDate = calculateNextPaymentDate(
+      template.id,
+      Number(template.frequencyNumber || 1),
+      template.frequencyPeriod || 'months'
+    );
     const selectedDate = templateDates[template.id] || defaultDate;
     
     const bill = {
@@ -219,7 +260,7 @@ export default function BillPaymentPlanner() {
     setBills([...bills, bill]);
   };
 
-  const deleteTemplate = (id) => {
+  const deleteTemplate = (id: number) => {
     setTemplates(templates.filter(t => t.id !== id));
     const newTemplateDates = { ...templateDates };
     delete newTemplateDates[id];
@@ -229,7 +270,7 @@ export default function BillPaymentPlanner() {
     setExpandedTemplates(newExpanded);
   };
 
-  const startTemplateEdit = (template) => {
+  const startTemplateEdit = (template: Template) => {
     setEditingTemplateId(template.id);
     setTemplateEditForm({ 
       name: template.name, 
@@ -256,7 +297,7 @@ export default function BillPaymentPlanner() {
             name: templateEditForm.name, 
             amount: parseFloat(templateEditForm.amount), 
             category: templateEditForm.category,
-            frequencyNumber: parseInt(templateEditForm.frequencyNumber),
+            frequencyNumber: parseInt(String(templateEditForm.frequencyNumber)),
             frequencyPeriod: templateEditForm.frequencyPeriod,
             notes: templateEditForm.notes
           }
@@ -266,22 +307,22 @@ export default function BillPaymentPlanner() {
     setTemplateEditForm({ name: '', amount: '', category: 'Other', frequencyNumber: 1, frequencyPeriod: 'months', notes: '' });
   };
 
-  const toggleTemplateExpand = (templateId) => {
+  const toggleTemplateExpand = (templateId: number) => {
     setExpandedTemplates(prev => ({
       ...prev,
       [templateId]: !prev[templateId]
     }));
   };
 
-  const getTemplatePayments = (templateId) => {
-    return bills.filter(bill => bill.billId === templateId).sort((a, b) => new Date(a.date) - new Date(b.date));
+  const getTemplatePayments = (templateId: number) => {
+    return bills.filter(bill => bill.billId === templateId).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   };
 
-  const isRecurringBill = (billId) => {
+  const isRecurringBill = (billId: number | null | undefined) => {
     return billId !== null && billId !== undefined;
   };
 
-  const getTemplateName = (billId) => {
+  const getTemplateName = (billId: number | null | undefined) => {
     const template = templates.find(t => t.id === billId);
     return template ? template.name : null;
   };
@@ -338,22 +379,24 @@ export default function BillPaymentPlanner() {
     URL.revokeObjectURL(url);
   };
 
-  const importPaymentsFromCSV = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    
+  const importPaymentsFromCSV = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = (e: ProgressEvent<FileReader>) => {
       try {
-        const text = e.target.result;
-        const lines = text.split('\n').filter(line => line.trim());
-        const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
-        
-        const newBills = [];
+        const text = e.target?.result;
+        if (typeof text !== 'string') return;
+        const lines = text.split('\n').filter((line: string) => line.trim());
+
+        const newBills: Bill[] = [];
         for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g).map(v => v.replace(/^"|"$/g, '').trim());
-          
-          const bill = {
+          const match = lines[i].match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
+          const values = match.map((v: string) => v.replace(/^"|"$/g, '').trim());
+
+          const bill: Bill = {
             id: parseInt(values[0]) || Date.now() + i,
             name: values[1] || '',
             amount: parseFloat(values[2]) || 0,
@@ -362,12 +405,12 @@ export default function BillPaymentPlanner() {
             notes: values[5] || '',
             billId: values[6] && values[6] !== '' ? parseInt(values[6]) : null
           };
-          
+
           if (bill.name && bill.amount !== 0) {
             newBills.push(bill);
           }
         }
-        
+
         setBills([...bills, ...newBills]);
         alert(`Successfully imported ${newBills.length} payment(s)`);
       } catch (error) {
@@ -376,25 +419,27 @@ export default function BillPaymentPlanner() {
       }
     };
     reader.readAsText(file);
-    event.target.value = '';
+    if (event.target) event.target.value = '';
   };
 
-  const importTemplatesFromCSV = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-    
+  const importTemplatesFromCSV = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = (e: ProgressEvent<FileReader>) => {
       try {
-        const text = e.target.result;
-        const lines = text.split('\n').filter(line => line.trim());
-        const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
-        
-        const newTemplates = [];
+        const text = e.target?.result;
+        if (typeof text !== 'string') return;
+        const lines = text.split('\n').filter((line: string) => line.trim());
+
+        const newTemplates: Template[] = [];
         for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g).map(v => v.replace(/^"|"$/g, '').trim());
-          
-          const template = {
+          const match = lines[i].match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
+          const values = match.map((v: string) => v.replace(/^"|"$/g, '').trim());
+
+          const template: Template = {
             id: parseInt(values[0]) || Date.now() + i,
             name: values[1] || '',
             amount: parseFloat(values[2]) || 0,
@@ -403,12 +448,12 @@ export default function BillPaymentPlanner() {
             frequencyPeriod: values[5] || 'months',
             notes: values[6] || ''
           };
-          
+
           if (template.name && template.amount !== 0) {
             newTemplates.push(template);
           }
         }
-        
+
         setTemplates([...templates, ...newTemplates]);
         alert(`Successfully imported ${newTemplates.length} recurring bill(s)`);
       } catch (error) {
@@ -417,7 +462,7 @@ export default function BillPaymentPlanner() {
       }
     };
     reader.readAsText(file);
-    event.target.value = '';
+    if (event.target) event.target.value = '';
   };
 
   const getFilteredAndSortedBills = () => {
@@ -431,7 +476,7 @@ export default function BillPaymentPlanner() {
     
     switch (sortBy) {
       case 'date':
-        sorted.sort((a, b) => new Date(a.date) - new Date(b.date));
+        sorted.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         break;
       case 'amount':
         sorted.sort((a, b) => a.amount - b.amount);
@@ -451,14 +496,14 @@ export default function BillPaymentPlanner() {
 
   const displayBills = getFilteredAndSortedBills();
 
-  const getRunningBalance = (index) => {
+  const getRunningBalance = (index: number) => {
     return displayBills.slice(0, index + 1).reduce((acc, bill) => acc + bill.amount, 0);
   };
 
   const runningTotal = displayBills.reduce((acc, bill) => acc + bill.amount, 0);
 
-  const getCategoryColor = (category) => {
-    const colors = {
+  const getCategoryColor = (category: string) => {
+    const colors: Record<string, string> = {
       'Income': 'bg-green-100 text-green-800',
       'Housing': 'bg-blue-100 text-blue-800',
       'Utilities': 'bg-yellow-100 text-yellow-800',
@@ -633,8 +678,12 @@ export default function BillPaymentPlanner() {
                   <p className="text-gray-500 text-center py-4">No templates saved. Click the refresh icon on any bill to save it as a template.</p>
                 ) : (
                   <div className="space-y-2">
-                    {templates.map(template => {
-                      const defaultDate = calculateNextPaymentDate(template.name, template.frequencyNumber, template.frequencyPeriod);
+            {templates.map(template => {
+                      const defaultDate = calculateNextPaymentDate(
+                        template.id,
+                        Number(template.frequencyNumber || 1),
+                        template.frequencyPeriod || 'months'
+                      );
                       const templateDate = templateDates[template.id] || defaultDate;
                       
                       return (
@@ -961,7 +1010,7 @@ export default function BillPaymentPlanner() {
                 {templates.map(template => {
                   const isExpanded = expandedTemplates[template.id];
                   const isEditing = editingTemplateId === template.id;
-                  const payments = getTemplatePayments(template.name);
+                  const payments = getTemplatePayments(template.id);
                   
                   return (
                     <div key={template.id} className="bg-white rounded-lg shadow">
@@ -1099,7 +1148,11 @@ export default function BillPaymentPlanner() {
                             <h3 className="text-sm font-semibold text-gray-700">Payment History</h3>
                             <button
                               onClick={() => {
-                                const defaultDate = calculateNextPaymentDate(template.name, template.frequencyNumber, template.frequencyPeriod);
+                                const defaultDate = calculateNextPaymentDate(
+                                  template.id,
+                                  Number(template.frequencyNumber || 1),
+                                  template.frequencyPeriod || 'months'
+                                );
                                 setTemplateDates({ ...templateDates, [template.id]: defaultDate });
                                 addFromTemplate(template);
                               }}
@@ -1158,7 +1211,11 @@ export default function BillPaymentPlanner() {
                             <p className="text-gray-500 text-sm mb-3">No payments yet for this recurring bill</p>
                             <button
                               onClick={() => {
-                                const defaultDate = calculateNextPaymentDate(template.name, template.frequencyNumber, template.frequencyPeriod);
+                                const defaultDate = calculateNextPaymentDate(
+                                  template.id,
+                                  Number(template.frequencyNumber || 1),
+                                  template.frequencyPeriod || 'months'
+                                );
                                 setTemplateDates({ ...templateDates, [template.id]: defaultDate });
                                 addFromTemplate(template);
                               }}
