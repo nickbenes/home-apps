@@ -1011,7 +1011,7 @@
   });
 
   // projects/bills/frontend/App.tsx
-  var import_react3 = __toESM(require_react());
+  var import_react6 = __toESM(require_react());
 
   // node_modules/lucide-react/dist/esm/createLucideIcon.js
   var import_react2 = __toESM(require_react());
@@ -1225,10 +1225,365 @@
   ];
   var X = createLucideIcon("x", __iconNode15);
 
-  // projects/bills/frontend/App.tsx
+  // projects/bills/frontend/components/QuickTemplates.tsx
+  var import_react3 = __toESM(require_react());
+  function QuickTemplates({ templates, templateDates, setTemplateDates, addFromTemplate, calculateNextPaymentDate, getCategoryColor }) {
+    return /* @__PURE__ */ import_react3.default.createElement("div", { className: "bg-white rounded-lg shadow-lg p-6 mb-6" }, /* @__PURE__ */ import_react3.default.createElement("h2", { className: "text-xl font-bold text-gray-800 mb-4" }, "Quick Add from Templates"), templates.length === 0 ? /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-gray-500 text-center py-4" }, "No templates saved. Click the refresh icon on any bill to save it as a template.") : /* @__PURE__ */ import_react3.default.createElement("div", { className: "space-y-2" }, templates.map((template) => {
+      const defaultDate = calculateNextPaymentDate(template.id, Number(template.frequencyNumber || 1), template.frequencyPeriod || "months");
+      const templateDate = templateDates[template.id] || defaultDate;
+      return /* @__PURE__ */ import_react3.default.createElement("div", { key: template.id, className: "flex items-center justify-between p-3 bg-gray-50 rounded-lg" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-4" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "font-medium text-gray-800" }, template.name), /* @__PURE__ */ import_react3.default.createElement("div", { className: `flex items-center gap-1 font-semibold ${template.amount >= 0 ? "text-green-600" : "text-red-600"}` }, /* @__PURE__ */ import_react3.default.createElement(DollarSign, { size: 16 }), template.amount >= 0 ? "+" : "", template.amount.toFixed(2)), /* @__PURE__ */ import_react3.default.createElement("span", { className: `px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(template.category)}` }, template.category)), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ import_react3.default.createElement("input", { type: "date", value: templateDate, onChange: (e) => setTemplateDates({ ...templateDates, [template.id]: e.target.value }), className: "px-3 py-1.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" }), /* @__PURE__ */ import_react3.default.createElement("button", { onClick: () => addFromTemplate(template), className: "px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm" }, "Add to Bills")));
+    })));
+  }
+
+  // projects/bills/frontend/components/BillItem.tsx
+  var import_react4 = __toESM(require_react());
+  function BillItem({ bill, index, isEditing, balance, editForm, setEditForm, saveEdit, cancelEdit, startEdit, deleteBill, saveAsTemplate, viewRecurringBill, getCategoryColor, isRecurringBill, handleDragStart, handleDragOver, handleDragEnd, draggedItem, sortBy }) {
+    return /* @__PURE__ */ import_react4.default.createElement(
+      "div",
+      {
+        key: bill.id,
+        draggable: !isEditing && sortBy === "order",
+        onDragStart: (e) => handleDragStart(e, index),
+        onDragOver: (e) => handleDragOver(e, index),
+        onDragEnd: handleDragEnd,
+        className: `bg-white rounded-lg shadow p-4 transition ${isEditing ? "" : sortBy === "order" ? "cursor-move hover:shadow-md" : "hover:shadow-md"} ${draggedItem === index ? "opacity-50" : ""}`
+      },
+      /* @__PURE__ */ import_react4.default.createElement("div", { className: "flex items-center gap-4" }, /* @__PURE__ */ import_react4.default.createElement(
+        GripVertical,
+        {
+          className: `flex-shrink-0 ${sortBy === "order" && !isEditing ? "text-gray-400" : "text-gray-300"}`,
+          size: 24
+        }
+      ), isEditing ? /* @__PURE__ */ import_react4.default.createElement("div", { className: "flex-1 grid grid-cols-1 md:grid-cols-5 gap-3 items-center" }, /* @__PURE__ */ import_react4.default.createElement(
+        "input",
+        {
+          type: "text",
+          value: editForm.name,
+          onChange: (e) => setEditForm({ ...editForm, name: e.target.value }),
+          className: "px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        }
+      ), /* @__PURE__ */ import_react4.default.createElement(
+        "input",
+        {
+          type: "number",
+          step: "0.01",
+          value: editForm.amount,
+          onChange: (e) => setEditForm({ ...editForm, amount: e.target.value }),
+          className: "px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        }
+      ), /* @__PURE__ */ import_react4.default.createElement(
+        "input",
+        {
+          type: "date",
+          value: editForm.date,
+          onChange: (e) => setEditForm({ ...editForm, date: e.target.value }),
+          className: "px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        }
+      ), /* @__PURE__ */ import_react4.default.createElement(
+        "select",
+        {
+          value: editForm.category,
+          onChange: (e) => setEditForm({ ...editForm, category: e.target.value }),
+          className: "px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        },
+        /* @__PURE__ */ import_react4.default.createElement("option", { value: editForm.category }, editForm.category)
+      ), /* @__PURE__ */ import_react4.default.createElement("div", { className: "flex items-center gap-2 justify-end" }, /* @__PURE__ */ import_react4.default.createElement(
+        "button",
+        {
+          onClick: saveEdit,
+          className: "text-green-600 hover:text-green-700 transition p-2 bg-green-50 rounded"
+        },
+        /* @__PURE__ */ import_react4.default.createElement(Check, { size: 20 })
+      ), /* @__PURE__ */ import_react4.default.createElement(
+        "button",
+        {
+          onClick: cancelEdit,
+          className: "text-gray-600 hover:text-gray-700 transition p-2 bg-gray-50 rounded"
+        },
+        /* @__PURE__ */ import_react4.default.createElement(X, { size: 20 })
+      )), /* @__PURE__ */ import_react4.default.createElement("div", { className: "col-span-full" }, /* @__PURE__ */ import_react4.default.createElement(
+        "input",
+        {
+          type: "text",
+          placeholder: "Notes (optional)",
+          value: editForm.notes,
+          onChange: (e) => setEditForm({ ...editForm, notes: e.target.value }),
+          className: "w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+        }
+      ))) : /* @__PURE__ */ import_react4.default.createElement("div", { className: "flex-1" }, /* @__PURE__ */ import_react4.default.createElement("div", { className: "grid grid-cols-1 md:grid-cols-5 gap-3 items-center" }, /* @__PURE__ */ import_react4.default.createElement("div", { className: "font-medium text-gray-800" }, bill.name), /* @__PURE__ */ import_react4.default.createElement("div", { className: `flex items-center gap-1 font-semibold ${bill.amount >= 0 ? "text-green-600" : "text-red-600"}` }, /* @__PURE__ */ import_react4.default.createElement(DollarSign, { size: 18 }), bill.amount >= 0 ? "+" : "", bill.amount.toFixed(2)), /* @__PURE__ */ import_react4.default.createElement("div", { className: "text-gray-600" }, new Date(bill.date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      })), /* @__PURE__ */ import_react4.default.createElement("span", { className: `px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(bill.category)} w-fit` }, bill.category), /* @__PURE__ */ import_react4.default.createElement("div", { className: "flex items-center justify-between md:justify-end gap-2" }, /* @__PURE__ */ import_react4.default.createElement("div", { className: `font-medium text-sm ${balance >= 0 ? "text-green-700" : "text-red-700"}` }, "Balance: $", balance.toFixed(2)), /* @__PURE__ */ import_react4.default.createElement("div", { className: "flex items-center gap-1" }, isRecurringBill(bill.billId) ? /* @__PURE__ */ import_react4.default.createElement(
+        "button",
+        {
+          onClick: () => viewRecurringBill(bill.billId),
+          className: "text-purple-500 hover:text-purple-700 transition p-1",
+          title: "View recurring bill"
+        },
+        /* @__PURE__ */ import_react4.default.createElement(List, { size: 18 })
+      ) : /* @__PURE__ */ import_react4.default.createElement(
+        "button",
+        {
+          onClick: () => saveAsTemplate(bill),
+          className: "text-purple-500 hover:text-purple-700 transition p-1",
+          title: "Save as template"
+        },
+        /* @__PURE__ */ import_react4.default.createElement(RefreshCw, { size: 18 })
+      ), /* @__PURE__ */ import_react4.default.createElement(
+        "button",
+        {
+          onClick: () => startEdit(bill),
+          className: "text-blue-500 hover:text-blue-700 transition p-1"
+        },
+        /* @__PURE__ */ import_react4.default.createElement(Pen, { size: 18 })
+      ), /* @__PURE__ */ import_react4.default.createElement(
+        "button",
+        {
+          onClick: () => deleteBill(bill.id),
+          className: "text-red-500 hover:text-red-700 transition p-1"
+        },
+        /* @__PURE__ */ import_react4.default.createElement(Trash2, { size: 18 })
+      )))), bill.notes && /* @__PURE__ */ import_react4.default.createElement("div", { className: "mt-2 text-sm text-gray-600 italic" }, bill.notes)))
+    );
+  }
+
+  // projects/bills/frontend/components/TemplatesPanel.tsx
+  var import_react5 = __toESM(require_react());
+  function TemplatesPanel({ templates, expandedTemplates, editingTemplateId, templateEditForm, setTemplateEditForm, startTemplateEdit, cancelTemplateEdit, saveTemplateEdit, deleteTemplate, getTemplatePayments, calculateNextPaymentDate, setTemplateDates, templateDates, addFromTemplate, addNewTemplate, exportTemplatesToCSV, importTemplatesFromCSV, newTemplate, setNewTemplate, TIME_PERIODS: TIME_PERIODS2, CATEGORIES: CATEGORIES2, getCategoryColor, setCurrentPage, startEdit, deleteBill }) {
+    return /* @__PURE__ */ import_react5.default.createElement(import_react5.default.Fragment, null, /* @__PURE__ */ import_react5.default.createElement("div", { className: "bg-white rounded-lg shadow-lg p-6 mb-6" }, /* @__PURE__ */ import_react5.default.createElement("h1", { className: "text-3xl font-bold text-gray-800 mb-2" }, "Recurring Bills"), /* @__PURE__ */ import_react5.default.createElement("div", { className: "flex items-center justify-between mb-4" }, /* @__PURE__ */ import_react5.default.createElement("p", { className: "text-gray-600" }, "Manage your recurring bill templates and view payment history"), /* @__PURE__ */ import_react5.default.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ import_react5.default.createElement(
+      "button",
+      {
+        onClick: exportTemplatesToCSV,
+        className: "px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition flex items-center gap-2 text-sm"
+      },
+      /* @__PURE__ */ import_react5.default.createElement(Download, { size: 16 }),
+      "Export"
+    ), /* @__PURE__ */ import_react5.default.createElement("label", { className: "px-3 py-1.5 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition flex items-center gap-2 text-sm cursor-pointer" }, /* @__PURE__ */ import_react5.default.createElement(Upload, { size: 16 }), "Import", /* @__PURE__ */ import_react5.default.createElement(
+      "input",
+      {
+        type: "file",
+        accept: ".csv",
+        onChange: importTemplatesFromCSV,
+        className: "hidden"
+      }
+    )))), /* @__PURE__ */ import_react5.default.createElement("div", { className: "grid grid-cols-1 md:grid-cols-7 gap-3 mb-3" }, /* @__PURE__ */ import_react5.default.createElement(
+      "input",
+      {
+        type: "text",
+        placeholder: "Bill name",
+        value: newTemplate.name,
+        onChange: (e) => setNewTemplate({ ...newTemplate, name: e.target.value }),
+        className: "px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      }
+    ), /* @__PURE__ */ import_react5.default.createElement(
+      "input",
+      {
+        type: "number",
+        placeholder: "Amount",
+        step: "0.01",
+        value: newTemplate.amount,
+        onChange: (e) => setNewTemplate({ ...newTemplate, amount: e.target.value }),
+        className: "px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      }
+    ), /* @__PURE__ */ import_react5.default.createElement(
+      "select",
+      {
+        value: newTemplate.category,
+        onChange: (e) => setNewTemplate({ ...newTemplate, category: e.target.value }),
+        className: "px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      },
+      CATEGORIES2.map((cat) => /* @__PURE__ */ import_react5.default.createElement("option", { key: cat, value: cat }, cat))
+    ), /* @__PURE__ */ import_react5.default.createElement("div", { className: "col-span-2 flex gap-2" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "flex items-center gap-2 flex-1" }, /* @__PURE__ */ import_react5.default.createElement("span", { className: "text-sm text-gray-600 whitespace-nowrap" }, "Every"), /* @__PURE__ */ import_react5.default.createElement(
+      "input",
+      {
+        type: "number",
+        min: "1",
+        value: newTemplate.frequencyNumber,
+        onChange: (e) => setNewTemplate({ ...newTemplate, frequencyNumber: e.target.value }),
+        className: "w-16 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      }
+    ), /* @__PURE__ */ import_react5.default.createElement(
+      "select",
+      {
+        value: newTemplate.frequencyPeriod,
+        onChange: (e) => setNewTemplate({ ...newTemplate, frequencyPeriod: e.target.value }),
+        className: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      },
+      TIME_PERIODS2.map((period) => /* @__PURE__ */ import_react5.default.createElement("option", { key: period, value: period }, period))
+    ))), /* @__PURE__ */ import_react5.default.createElement(
+      "button",
+      {
+        onClick: addNewTemplate,
+        className: "col-span-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2"
+      },
+      /* @__PURE__ */ import_react5.default.createElement(Plus, { size: 20 }),
+      "Add"
+    )), /* @__PURE__ */ import_react5.default.createElement(
+      "input",
+      {
+        type: "text",
+        placeholder: "Notes (optional)",
+        value: newTemplate.notes,
+        onChange: (e) => setNewTemplate({ ...newTemplate, notes: e.target.value }),
+        className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      }
+    )), templates.length === 0 ? /* @__PURE__ */ import_react5.default.createElement("div", { className: "bg-white rounded-lg shadow p-8 text-center text-gray-500" }, /* @__PURE__ */ import_react5.default.createElement(RefreshCw, { size: 48, className: "mx-auto mb-4 text-gray-400" }), /* @__PURE__ */ import_react5.default.createElement("p", { className: "text-lg mb-2" }, "No recurring bills yet"), /* @__PURE__ */ import_react5.default.createElement("p", null, "Go to the Payment Planner and click the refresh icon on any bill to save it as a recurring template.")) : /* @__PURE__ */ import_react5.default.createElement("div", { className: "space-y-3" }, templates.map((template) => {
+      const isExpanded = expandedTemplates[template.id];
+      const isEditing = editingTemplateId === template.id;
+      const payments = getTemplatePayments(template.id);
+      return /* @__PURE__ */ import_react5.default.createElement("div", { key: template.id, className: "bg-white rounded-lg shadow" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "p-4" }, isEditing ? /* @__PURE__ */ import_react5.default.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "flex items-center gap-3" }, /* @__PURE__ */ import_react5.default.createElement(
+        "input",
+        {
+          type: "text",
+          value: templateEditForm.name,
+          onChange: (e) => setTemplateEditForm({ ...templateEditForm, name: e.target.value }),
+          className: "flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        }
+      ), /* @__PURE__ */ import_react5.default.createElement(
+        "input",
+        {
+          type: "number",
+          step: "0.01",
+          value: templateEditForm.amount,
+          onChange: (e) => setTemplateEditForm({ ...templateEditForm, amount: e.target.value }),
+          className: "w-32 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        }
+      ), /* @__PURE__ */ import_react5.default.createElement(
+        "select",
+        {
+          value: templateEditForm.category,
+          onChange: (e) => setTemplateEditForm({ ...templateEditForm, category: e.target.value }),
+          className: "w-40 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        },
+        CATEGORIES2.map((cat) => /* @__PURE__ */ import_react5.default.createElement("option", { key: cat, value: cat }, cat))
+      ), /* @__PURE__ */ import_react5.default.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ import_react5.default.createElement("span", { className: "text-sm text-gray-600" }, "Every"), /* @__PURE__ */ import_react5.default.createElement(
+        "input",
+        {
+          type: "number",
+          min: "1",
+          value: templateEditForm.frequencyNumber,
+          onChange: (e) => setTemplateEditForm({ ...templateEditForm, frequencyNumber: e.target.value }),
+          className: "w-16 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        }
+      ), /* @__PURE__ */ import_react5.default.createElement(
+        "select",
+        {
+          value: templateEditForm.frequencyPeriod,
+          onChange: (e) => setTemplateEditForm({ ...templateEditForm, frequencyPeriod: e.target.value }),
+          className: "w-28 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        },
+        TIME_PERIODS2.map((period) => /* @__PURE__ */ import_react5.default.createElement("option", { key: period, value: period }, period))
+      )), /* @__PURE__ */ import_react5.default.createElement(
+        "button",
+        {
+          onClick: saveTemplateEdit,
+          className: "text-green-600 hover:text-green-700 transition p-2 bg-green-50 rounded"
+        },
+        /* @__PURE__ */ import_react5.default.createElement(Check, { size: 20 })
+      ), /* @__PURE__ */ import_react5.default.createElement(
+        "button",
+        {
+          onClick: cancelTemplateEdit,
+          className: "text-gray-600 hover:text-gray-700 transition p-2 bg-gray-50 rounded"
+        },
+        /* @__PURE__ */ import_react5.default.createElement(X, { size: 20 })
+      )), /* @__PURE__ */ import_react5.default.createElement(
+        "input",
+        {
+          type: "text",
+          placeholder: "Notes (optional)",
+          value: templateEditForm.notes,
+          onChange: (e) => setTemplateEditForm({ ...templateEditForm, notes: e.target.value }),
+          className: "w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+        }
+      )) : /* @__PURE__ */ import_react5.default.createElement("div", { className: "space-y-2" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "flex items-center justify-between" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "flex items-center gap-4" }, /* @__PURE__ */ import_react5.default.createElement(
+        "button",
+        {
+          onClick: () => setCurrentPage("templates"),
+          className: "text-gray-500 hover:text-gray-700 transition"
+        },
+        isExpanded ? /* @__PURE__ */ import_react5.default.createElement(ChevronDown, { size: 24 }) : /* @__PURE__ */ import_react5.default.createElement(ChevronRight, { size: 24 })
+      ), /* @__PURE__ */ import_react5.default.createElement("div", { className: "font-bold text-lg text-gray-800" }, template.name), /* @__PURE__ */ import_react5.default.createElement("div", { className: `flex items-center gap-1 font-bold text-lg ${template.amount >= 0 ? "text-green-600" : "text-red-600"}` }, /* @__PURE__ */ import_react5.default.createElement(DollarSign, { size: 20 }), template.amount >= 0 ? "+" : "", template.amount.toFixed(2)), /* @__PURE__ */ import_react5.default.createElement("span", { className: `px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(template.category)}` }, template.category), /* @__PURE__ */ import_react5.default.createElement("span", { className: "text-sm text-gray-600" }, "Every ", template.frequencyNumber, " ", template.frequencyPeriod), payments.length > 0 && /* @__PURE__ */ import_react5.default.createElement("span", { className: "px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium" }, payments.length, " payment", payments.length !== 1 ? "s" : "")), /* @__PURE__ */ import_react5.default.createElement("div", { className: "flex items-center gap-1" }, /* @__PURE__ */ import_react5.default.createElement(
+        "button",
+        {
+          onClick: () => startTemplateEdit(template),
+          className: "text-blue-500 hover:text-blue-700 transition p-2",
+          title: "Edit template"
+        },
+        /* @__PURE__ */ import_react5.default.createElement(Pen, { size: 20 })
+      ), /* @__PURE__ */ import_react5.default.createElement(
+        "button",
+        {
+          onClick: () => deleteTemplate(template.id),
+          className: "text-red-500 hover:text-red-700 transition p-2",
+          title: "Delete template"
+        },
+        /* @__PURE__ */ import_react5.default.createElement(Trash2, { size: 20 })
+      ))), template.notes && /* @__PURE__ */ import_react5.default.createElement("div", { className: "ml-10 text-sm text-gray-600 italic" }, template.notes))), isExpanded && payments.length > 0 && /* @__PURE__ */ import_react5.default.createElement("div", { className: "border-t border-gray-200 p-4 bg-gray-50" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "flex items-center justify-between mb-3" }, /* @__PURE__ */ import_react5.default.createElement("h3", { className: "text-sm font-semibold text-gray-700" }, "Payment History"), /* @__PURE__ */ import_react5.default.createElement(
+        "button",
+        {
+          onClick: () => {
+            const defaultDate = calculateNextPaymentDate(
+              template.id,
+              Number(template.frequencyNumber || 1),
+              template.frequencyPeriod || "months"
+            );
+            setTemplateDates({ ...templateDates, [template.id]: defaultDate });
+            addFromTemplate(template);
+          },
+          className: "px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm flex items-center gap-2"
+        },
+        /* @__PURE__ */ import_react5.default.createElement(Plus, { size: 16 }),
+        "Add Payment"
+      )), /* @__PURE__ */ import_react5.default.createElement("div", { className: "space-y-2" }, payments.map((payment) => /* @__PURE__ */ import_react5.default.createElement("div", { key: payment.id, className: "flex items-center justify-between p-3 bg-white rounded border border-gray-200" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "flex items-center gap-4" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "text-gray-700" }, new Date(payment.date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      })), /* @__PURE__ */ import_react5.default.createElement("div", { className: `flex items-center gap-1 font-semibold ${payment.amount >= 0 ? "text-green-600" : "text-red-600"}` }, /* @__PURE__ */ import_react5.default.createElement(DollarSign, { size: 16 }), payment.amount >= 0 ? "+" : "", payment.amount.toFixed(2))), /* @__PURE__ */ import_react5.default.createElement("div", { className: "flex items-center gap-1" }, /* @__PURE__ */ import_react5.default.createElement(
+        "button",
+        {
+          onClick: () => {
+            setCurrentPage("planner");
+            startEdit(payment);
+          },
+          className: "text-blue-500 hover:text-blue-700 transition p-1",
+          title: "Edit payment"
+        },
+        /* @__PURE__ */ import_react5.default.createElement(Pen, { size: 16 })
+      ), /* @__PURE__ */ import_react5.default.createElement(
+        "button",
+        {
+          onClick: () => deleteBill(payment.id),
+          className: "text-red-500 hover:text-red-700 transition p-1",
+          title: "Delete payment"
+        },
+        /* @__PURE__ */ import_react5.default.createElement(Trash2, { size: 16 })
+      )))))), isExpanded && payments.length === 0 && /* @__PURE__ */ import_react5.default.createElement("div", { className: "border-t border-gray-200 p-4 bg-gray-50" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "text-center" }, /* @__PURE__ */ import_react5.default.createElement("p", { className: "text-gray-500 text-sm mb-3" }, "No payments yet for this recurring bill"), /* @__PURE__ */ import_react5.default.createElement(
+        "button",
+        {
+          onClick: () => {
+            const defaultDate = calculateNextPaymentDate(
+              template.id,
+              Number(template.frequencyNumber || 1),
+              template.frequencyPeriod || "months"
+            );
+            setTemplateDates({ ...templateDates, [template.id]: defaultDate });
+            addFromTemplate(template);
+          },
+          className: "px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm flex items-center gap-2 mx-auto"
+        },
+        /* @__PURE__ */ import_react5.default.createElement(Plus, { size: 16 }),
+        "Add First Payment"
+      ))));
+    })));
+  }
+
+  // projects/bills/frontend/utils.ts
   var STORAGE_KEY = "bill-payment-planner-bills";
   var TEMPLATES_KEY = "bill-payment-planner-templates";
   var CATEGORIES = ["Income", "Housing", "Utilities", "Subscriptions", "Insurance", "Transportation", "Food", "Entertainment", "Healthcare", "Other"];
+  var TIME_PERIODS = ["days", "weeks", "months", "years"];
   var getInitialBills = () => {
     try {
       const savedBills = localStorage.getItem(STORAGE_KEY);
@@ -1255,31 +1610,32 @@
     }
     return [];
   };
-  var TIME_PERIODS = ["days", "weeks", "months", "years"];
+
+  // projects/bills/frontend/App.tsx
   function BillPaymentPlanner() {
-    const [bills, setBills] = (0, import_react3.useState)(getInitialBills());
-    const [templates, setTemplates] = (0, import_react3.useState)(getInitialTemplates());
-    const [draggedItem, setDraggedItem] = (0, import_react3.useState)(null);
-    const [newBill, setNewBill] = (0, import_react3.useState)({ name: "", amount: "", date: "", category: "Other", notes: "" });
-    const [editingId, setEditingId] = (0, import_react3.useState)(null);
-    const [editForm, setEditForm] = (0, import_react3.useState)({ name: "", amount: "", date: "", category: "Other", notes: "" });
-    const [sortBy, setSortBy] = (0, import_react3.useState)("order");
-    const [filterCategory, setFilterCategory] = (0, import_react3.useState)("all");
-    const [showTemplates, setShowTemplates] = (0, import_react3.useState)(false);
-    const [templateDates, setTemplateDates] = (0, import_react3.useState)({});
-    const [currentPage, setCurrentPage] = (0, import_react3.useState)("planner");
-    const [expandedTemplates, setExpandedTemplates] = (0, import_react3.useState)({});
-    const [editingTemplateId, setEditingTemplateId] = (0, import_react3.useState)(null);
-    const [templateEditForm, setTemplateEditForm] = (0, import_react3.useState)({ name: "", amount: "", category: "Other", frequencyNumber: 1, frequencyPeriod: "months", notes: "" });
-    const [newTemplate, setNewTemplate] = (0, import_react3.useState)({ name: "", amount: "", category: "Other", frequencyNumber: 1, frequencyPeriod: "months", notes: "" });
-    (0, import_react3.useEffect)(() => {
+    const [bills, setBills] = (0, import_react6.useState)(getInitialBills());
+    const [templates, setTemplates] = (0, import_react6.useState)(getInitialTemplates());
+    const [draggedItem, setDraggedItem] = (0, import_react6.useState)(null);
+    const [newBill, setNewBill] = (0, import_react6.useState)({ name: "", amount: "", date: "", category: "Other", notes: "" });
+    const [editingId, setEditingId] = (0, import_react6.useState)(null);
+    const [editForm, setEditForm] = (0, import_react6.useState)({ name: "", amount: "", date: "", category: "Other", notes: "" });
+    const [sortBy, setSortBy] = (0, import_react6.useState)("order");
+    const [filterCategory, setFilterCategory] = (0, import_react6.useState)("all");
+    const [showTemplates, setShowTemplates] = (0, import_react6.useState)(false);
+    const [templateDates, setTemplateDates] = (0, import_react6.useState)({});
+    const [currentPage, setCurrentPage] = (0, import_react6.useState)("planner");
+    const [expandedTemplates, setExpandedTemplates] = (0, import_react6.useState)({});
+    const [editingTemplateId, setEditingTemplateId] = (0, import_react6.useState)(null);
+    const [templateEditForm, setTemplateEditForm] = (0, import_react6.useState)({ name: "", amount: "", category: "Other", frequencyNumber: 1, frequencyPeriod: "months", notes: "" });
+    const [newTemplate, setNewTemplate] = (0, import_react6.useState)({ name: "", amount: "", category: "Other", frequencyNumber: 1, frequencyPeriod: "months", notes: "" });
+    (0, import_react6.useEffect)(() => {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(bills));
       } catch (error) {
         console.error("Error saving bills:", error);
       }
     }, [bills]);
-    (0, import_react3.useEffect)(() => {
+    (0, import_react6.useEffect)(() => {
       try {
         localStorage.setItem(TEMPLATES_KEY, JSON.stringify(templates));
       } catch (error) {
@@ -1356,7 +1712,7 @@
         name: newTemplate.name,
         amount: parseFloat(newTemplate.amount),
         category: newTemplate.category,
-        frequencyNumber: parseInt(newTemplate.frequencyNumber),
+        frequencyNumber: parseInt(String(newTemplate.frequencyNumber)),
         frequencyPeriod: newTemplate.frequencyPeriod,
         notes: newTemplate.notes
       };
@@ -1369,8 +1725,8 @@
         setExpandedTemplates({ [billId]: true });
       }
     };
-    const calculateNextPaymentDate = (templateName, frequencyNumber, frequencyPeriod) => {
-      const payments = getTemplatePayments(templateName);
+    const calculateNextPaymentDate = (templateId, frequencyNumber, frequencyPeriod) => {
+      const payments = getTemplatePayments(templateId);
       if (payments.length === 0) {
         return (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
       }
@@ -1394,7 +1750,11 @@
       return nextDate.toISOString().split("T")[0];
     };
     const addFromTemplate = (template) => {
-      const defaultDate = calculateNextPaymentDate(template.name, template.frequencyNumber, template.frequencyPeriod);
+      const defaultDate = calculateNextPaymentDate(
+        template.id,
+        Number(template.frequencyNumber || 1),
+        template.frequencyPeriod || "months"
+      );
       const selectedDate = templateDates[template.id] || defaultDate;
       const bill = {
         id: Date.now(),
@@ -1439,7 +1799,7 @@
           name: templateEditForm.name,
           amount: parseFloat(templateEditForm.amount),
           category: templateEditForm.category,
-          frequencyNumber: parseInt(templateEditForm.frequencyNumber),
+          frequencyNumber: parseInt(String(templateEditForm.frequencyNumber)),
           frequencyPeriod: templateEditForm.frequencyPeriod,
           notes: templateEditForm.notes
         } : template
@@ -1447,21 +1807,11 @@
       setEditingTemplateId(null);
       setTemplateEditForm({ name: "", amount: "", category: "Other", frequencyNumber: 1, frequencyPeriod: "months", notes: "" });
     };
-    const toggleTemplateExpand = (templateId) => {
-      setExpandedTemplates((prev) => ({
-        ...prev,
-        [templateId]: !prev[templateId]
-      }));
-    };
     const getTemplatePayments = (templateId) => {
-      return bills.filter((bill) => bill.billId === templateId).sort((a, b) => new Date(a.date) - new Date(b.date));
+      return bills.filter((bill) => bill.billId === templateId).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     };
     const isRecurringBill = (billId) => {
       return billId !== null && billId !== void 0;
-    };
-    const getTemplateName = (billId) => {
-      const template = templates.find((t) => t.id === billId);
-      return template ? template.name : null;
     };
     const exportPaymentsToCSV = () => {
       const headers = ["id", "name", "amount", "date", "category", "notes", "billId"];
@@ -1510,17 +1860,19 @@
       URL.revokeObjectURL(url);
     };
     const importPaymentsFromCSV = (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+      const file = files[0];
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
-          const text = e.target.result;
+          const text = e.target?.result;
+          if (typeof text !== "string") return;
           const lines = text.split("\n").filter((line) => line.trim());
-          const headers = lines[0].split(",").map((h) => h.replace(/"/g, "").trim());
           const newBills = [];
           for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g).map((v) => v.replace(/^"|"$/g, "").trim());
+            const match = lines[i].match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
+            const values = match.map((v) => v.replace(/^"|"$/g, "").trim());
             const bill = {
               id: parseInt(values[0]) || Date.now() + i,
               name: values[1] || "",
@@ -1542,20 +1894,22 @@
         }
       };
       reader.readAsText(file);
-      event.target.value = "";
+      if (event.target) event.target.value = "";
     };
     const importTemplatesFromCSV = (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+      const file = files[0];
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
-          const text = e.target.result;
+          const text = e.target?.result;
+          if (typeof text !== "string") return;
           const lines = text.split("\n").filter((line) => line.trim());
-          const headers = lines[0].split(",").map((h) => h.replace(/"/g, "").trim());
           const newTemplates = [];
           for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g).map((v) => v.replace(/^"|"$/g, "").trim());
+            const match = lines[i].match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g) || [];
+            const values = match.map((v) => v.replace(/^"|"$/g, "").trim());
             const template = {
               id: parseInt(values[0]) || Date.now() + i,
               name: values[1] || "",
@@ -1577,7 +1931,7 @@
         }
       };
       reader.readAsText(file);
-      event.target.value = "";
+      if (event.target) event.target.value = "";
     };
     const getFilteredAndSortedBills = () => {
       let filtered = bills;
@@ -1587,7 +1941,7 @@
       let sorted = [...filtered];
       switch (sortBy) {
         case "date":
-          sorted.sort((a, b) => new Date(a.date) - new Date(b.date));
+          sorted.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
           break;
         case "amount":
           sorted.sort((a, b) => a.amount - b.amount);
@@ -1623,21 +1977,21 @@
       };
       return colors[category] || colors["Other"];
     };
-    return /* @__PURE__ */ import_react3.default.createElement("div", { className: "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "max-w-4xl mx-auto" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "bg-white rounded-lg shadow-lg p-4 mb-6" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex gap-2" }, /* @__PURE__ */ import_react3.default.createElement(
+    return /* @__PURE__ */ import_react6.default.createElement("div", { className: "min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-8" }, /* @__PURE__ */ import_react6.default.createElement("div", { className: "max-w-4xl mx-auto" }, /* @__PURE__ */ import_react6.default.createElement("div", { className: "bg-white rounded-lg shadow-lg p-4 mb-6" }, /* @__PURE__ */ import_react6.default.createElement("div", { className: "flex gap-2" }, /* @__PURE__ */ import_react6.default.createElement(
       "button",
       {
         onClick: () => setCurrentPage("planner"),
         className: `flex-1 py-2 px-4 rounded-lg font-medium transition ${currentPage === "planner" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`
       },
-      /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center justify-center gap-2" }, /* @__PURE__ */ import_react3.default.createElement(Calendar, { size: 20 }), "Payment Planner")
-    ), /* @__PURE__ */ import_react3.default.createElement(
+      /* @__PURE__ */ import_react6.default.createElement("div", { className: "flex items-center justify-center gap-2" }, /* @__PURE__ */ import_react6.default.createElement(Calendar, { size: 20 }), "Payment Planner")
+    ), /* @__PURE__ */ import_react6.default.createElement(
       "button",
       {
         onClick: () => setCurrentPage("templates"),
         className: `flex-1 py-2 px-4 rounded-lg font-medium transition ${currentPage === "templates" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`
       },
-      /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center justify-center gap-2" }, /* @__PURE__ */ import_react3.default.createElement(RefreshCw, { size: 20 }), "Recurring Bills (", templates.length, ")")
-    ))), currentPage === "planner" && /* @__PURE__ */ import_react3.default.createElement(import_react3.default.Fragment, null, /* @__PURE__ */ import_react3.default.createElement("div", { className: "bg-white rounded-lg shadow-lg p-6 mb-6" }, /* @__PURE__ */ import_react3.default.createElement("h1", { className: "text-3xl font-bold text-gray-800 mb-2" }, "Bill Payment Planner"), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-gray-600 mb-4" }, "Manage your bills with categories and templates"), /* @__PURE__ */ import_react3.default.createElement("div", { className: "grid grid-cols-1 md:grid-cols-5 gap-3 mb-4" }, /* @__PURE__ */ import_react3.default.createElement(
+      /* @__PURE__ */ import_react6.default.createElement("div", { className: "flex items-center justify-center gap-2" }, /* @__PURE__ */ import_react6.default.createElement(RefreshCw, { size: 20 }), "Recurring Bills (", templates.length, ")")
+    ))), currentPage === "planner" && /* @__PURE__ */ import_react6.default.createElement(import_react6.default.Fragment, null, /* @__PURE__ */ import_react6.default.createElement("div", { className: "bg-white rounded-lg shadow-lg p-6 mb-6" }, /* @__PURE__ */ import_react6.default.createElement("h1", { className: "text-3xl font-bold text-gray-800 mb-2" }, "Bill Payment Planner"), /* @__PURE__ */ import_react6.default.createElement("p", { className: "text-gray-600 mb-4" }, "Manage your bills with categories and templates"), /* @__PURE__ */ import_react6.default.createElement("div", { className: "grid grid-cols-1 md:grid-cols-5 gap-3 mb-4" }, /* @__PURE__ */ import_react6.default.createElement(
       "input",
       {
         type: "text",
@@ -1646,7 +2000,7 @@
         onChange: (e) => setNewBill({ ...newBill, name: e.target.value }),
         className: "px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       }
-    ), /* @__PURE__ */ import_react3.default.createElement(
+    ), /* @__PURE__ */ import_react6.default.createElement(
       "input",
       {
         type: "number",
@@ -1656,7 +2010,7 @@
         onChange: (e) => setNewBill({ ...newBill, amount: e.target.value }),
         className: "px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       }
-    ), /* @__PURE__ */ import_react3.default.createElement(
+    ), /* @__PURE__ */ import_react6.default.createElement(
       "input",
       {
         type: "date",
@@ -1664,23 +2018,23 @@
         onChange: (e) => setNewBill({ ...newBill, date: e.target.value }),
         className: "px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       }
-    ), /* @__PURE__ */ import_react3.default.createElement(
+    ), /* @__PURE__ */ import_react6.default.createElement(
       "select",
       {
         value: newBill.category,
         onChange: (e) => setNewBill({ ...newBill, category: e.target.value }),
         className: "px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       },
-      CATEGORIES.map((cat) => /* @__PURE__ */ import_react3.default.createElement("option", { key: cat, value: cat }, cat))
-    ), /* @__PURE__ */ import_react3.default.createElement(
+      CATEGORIES.map((cat) => /* @__PURE__ */ import_react6.default.createElement("option", { key: cat, value: cat }, cat))
+    ), /* @__PURE__ */ import_react6.default.createElement(
       "button",
       {
         onClick: addBill,
         className: "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2"
       },
-      /* @__PURE__ */ import_react3.default.createElement(Plus, { size: 20 }),
+      /* @__PURE__ */ import_react6.default.createElement(Plus, { size: 20 }),
       "Add"
-    )), /* @__PURE__ */ import_react3.default.createElement("div", { className: "mb-4" }, /* @__PURE__ */ import_react3.default.createElement(
+    )), /* @__PURE__ */ import_react6.default.createElement("div", { className: "mb-4" }, /* @__PURE__ */ import_react6.default.createElement(
       "input",
       {
         type: "text",
@@ -1689,36 +2043,36 @@
         onChange: (e) => setNewBill({ ...newBill, notes: e.target.value }),
         className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       }
-    )), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex flex-wrap gap-3 items-center" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ import_react3.default.createElement(Funnel, { size: 18, className: "text-gray-600" }), /* @__PURE__ */ import_react3.default.createElement(
+    )), /* @__PURE__ */ import_react6.default.createElement("div", { className: "flex flex-wrap gap-3 items-center" }, /* @__PURE__ */ import_react6.default.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ import_react6.default.createElement(Funnel, { size: 18, className: "text-gray-600" }), /* @__PURE__ */ import_react6.default.createElement(
       "select",
       {
         value: filterCategory,
         onChange: (e) => setFilterCategory(e.target.value),
         className: "px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
       },
-      /* @__PURE__ */ import_react3.default.createElement("option", { value: "all" }, "All Categories"),
-      CATEGORIES.map((cat) => /* @__PURE__ */ import_react3.default.createElement("option", { key: cat, value: cat }, cat))
-    )), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ import_react3.default.createElement("span", { className: "text-gray-600 text-sm" }, "Sort by:"), /* @__PURE__ */ import_react3.default.createElement(
+      /* @__PURE__ */ import_react6.default.createElement("option", { value: "all" }, "All Categories"),
+      CATEGORIES.map((cat) => /* @__PURE__ */ import_react6.default.createElement("option", { key: cat, value: cat }, cat))
+    )), /* @__PURE__ */ import_react6.default.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ import_react6.default.createElement("span", { className: "text-gray-600 text-sm" }, "Sort by:"), /* @__PURE__ */ import_react6.default.createElement(
       "select",
       {
         value: sortBy,
         onChange: (e) => setSortBy(e.target.value),
         className: "px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
       },
-      /* @__PURE__ */ import_react3.default.createElement("option", { value: "order" }, "Manual Order"),
-      /* @__PURE__ */ import_react3.default.createElement("option", { value: "date" }, "Date"),
-      /* @__PURE__ */ import_react3.default.createElement("option", { value: "amount" }, "Amount"),
-      /* @__PURE__ */ import_react3.default.createElement("option", { value: "name" }, "Name"),
-      /* @__PURE__ */ import_react3.default.createElement("option", { value: "category" }, "Category")
-    )), /* @__PURE__ */ import_react3.default.createElement("div", { className: "ml-auto flex items-center gap-2" }, /* @__PURE__ */ import_react3.default.createElement(
+      /* @__PURE__ */ import_react6.default.createElement("option", { value: "order" }, "Manual Order"),
+      /* @__PURE__ */ import_react6.default.createElement("option", { value: "date" }, "Date"),
+      /* @__PURE__ */ import_react6.default.createElement("option", { value: "amount" }, "Amount"),
+      /* @__PURE__ */ import_react6.default.createElement("option", { value: "name" }, "Name"),
+      /* @__PURE__ */ import_react6.default.createElement("option", { value: "category" }, "Category")
+    )), /* @__PURE__ */ import_react6.default.createElement("div", { className: "ml-auto flex items-center gap-2" }, /* @__PURE__ */ import_react6.default.createElement(
       "button",
       {
         onClick: exportPaymentsToCSV,
         className: "px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition flex items-center gap-2 text-sm"
       },
-      /* @__PURE__ */ import_react3.default.createElement(Download, { size: 16 }),
+      /* @__PURE__ */ import_react6.default.createElement(Download, { size: 16 }),
       "Export"
-    ), /* @__PURE__ */ import_react3.default.createElement("label", { className: "px-3 py-1.5 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition flex items-center gap-2 text-sm cursor-pointer" }, /* @__PURE__ */ import_react3.default.createElement(Upload, { size: 16 }), "Import", /* @__PURE__ */ import_react3.default.createElement(
+    ), /* @__PURE__ */ import_react6.default.createElement("label", { className: "px-3 py-1.5 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition flex items-center gap-2 text-sm cursor-pointer" }, /* @__PURE__ */ import_react6.default.createElement(Upload, { size: 16 }), "Import", /* @__PURE__ */ import_react6.default.createElement(
       "input",
       {
         type: "file",
@@ -1726,362 +2080,82 @@
         onChange: importPaymentsFromCSV,
         className: "hidden"
       }
-    )), /* @__PURE__ */ import_react3.default.createElement(
+    )), /* @__PURE__ */ import_react6.default.createElement(
       "button",
       {
         onClick: () => setShowTemplates(!showTemplates),
         className: "px-4 py-1.5 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition flex items-center gap-2 text-sm"
       },
-      /* @__PURE__ */ import_react3.default.createElement(RefreshCw, { size: 16 }),
+      /* @__PURE__ */ import_react6.default.createElement(RefreshCw, { size: 16 }),
       "Quick Add from Templates"
-    )))), showTemplates && /* @__PURE__ */ import_react3.default.createElement("div", { className: "bg-white rounded-lg shadow-lg p-6 mb-6" }, /* @__PURE__ */ import_react3.default.createElement("h2", { className: "text-xl font-bold text-gray-800 mb-4" }, "Quick Add from Templates"), templates.length === 0 ? /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-gray-500 text-center py-4" }, "No templates saved. Click the refresh icon on any bill to save it as a template.") : /* @__PURE__ */ import_react3.default.createElement("div", { className: "space-y-2" }, templates.map((template) => {
-      const defaultDate = calculateNextPaymentDate(template.name, template.frequencyNumber, template.frequencyPeriod);
-      const templateDate = templateDates[template.id] || defaultDate;
-      return /* @__PURE__ */ import_react3.default.createElement("div", { key: template.id, className: "flex items-center justify-between p-3 bg-gray-50 rounded-lg" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-4" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "font-medium text-gray-800" }, template.name), /* @__PURE__ */ import_react3.default.createElement("div", { className: `flex items-center gap-1 font-semibold ${template.amount >= 0 ? "text-green-600" : "text-red-600"}` }, /* @__PURE__ */ import_react3.default.createElement(DollarSign, { size: 16 }), template.amount >= 0 ? "+" : "", template.amount.toFixed(2)), /* @__PURE__ */ import_react3.default.createElement("span", { className: `px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(template.category)}` }, template.category)), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ import_react3.default.createElement(
-        "input",
-        {
-          type: "date",
-          value: templateDate,
-          onChange: (e) => setTemplateDates({ ...templateDates, [template.id]: e.target.value }),
-          className: "px-3 py-1.5 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-        }
-      ), /* @__PURE__ */ import_react3.default.createElement(
-        "button",
-        {
-          onClick: () => addFromTemplate(template),
-          className: "px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm"
-        },
-        "Add to Bills"
-      )));
-    }))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "space-y-2" }, displayBills.map((bill, index) => {
-      const balance = getRunningBalance(index);
+    )))), showTemplates && /* @__PURE__ */ import_react6.default.createElement(
+      QuickTemplates,
+      {
+        templates,
+        templateDates,
+        setTemplateDates,
+        addFromTemplate,
+        calculateNextPaymentDate,
+        getCategoryColor
+      }
+    ), /* @__PURE__ */ import_react6.default.createElement("div", { className: "space-y-2" }, displayBills.map((bill, index) => {
       const isEditing = editingId === bill.id;
-      return /* @__PURE__ */ import_react3.default.createElement(
-        "div",
+      const balance = getRunningBalance(index);
+      return /* @__PURE__ */ import_react6.default.createElement(
+        BillItem,
         {
           key: bill.id,
-          draggable: !isEditing && sortBy === "order",
-          onDragStart: (e) => handleDragStart(e, index),
-          onDragOver: (e) => handleDragOver(e, index),
-          onDragEnd: handleDragEnd,
-          className: `bg-white rounded-lg shadow p-4 transition ${isEditing ? "" : sortBy === "order" ? "cursor-move hover:shadow-md" : "hover:shadow-md"} ${draggedItem === index ? "opacity-50" : ""}`
-        },
-        /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-4" }, /* @__PURE__ */ import_react3.default.createElement(
-          GripVertical,
-          {
-            className: `flex-shrink-0 ${sortBy === "order" && !isEditing ? "text-gray-400" : "text-gray-300"}`,
-            size: 24
-          }
-        ), isEditing ? /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex-1 grid grid-cols-1 md:grid-cols-5 gap-3 items-center" }, /* @__PURE__ */ import_react3.default.createElement(
-          "input",
-          {
-            type: "text",
-            value: editForm.name,
-            onChange: (e) => setEditForm({ ...editForm, name: e.target.value }),
-            className: "px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          }
-        ), /* @__PURE__ */ import_react3.default.createElement(
-          "input",
-          {
-            type: "number",
-            step: "0.01",
-            value: editForm.amount,
-            onChange: (e) => setEditForm({ ...editForm, amount: e.target.value }),
-            className: "px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          }
-        ), /* @__PURE__ */ import_react3.default.createElement(
-          "input",
-          {
-            type: "date",
-            value: editForm.date,
-            onChange: (e) => setEditForm({ ...editForm, date: e.target.value }),
-            className: "px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          }
-        ), /* @__PURE__ */ import_react3.default.createElement(
-          "select",
-          {
-            value: editForm.category,
-            onChange: (e) => setEditForm({ ...editForm, category: e.target.value }),
-            className: "px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          },
-          CATEGORIES.map((cat) => /* @__PURE__ */ import_react3.default.createElement("option", { key: cat, value: cat }, cat))
-        ), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-2 justify-end" }, /* @__PURE__ */ import_react3.default.createElement(
-          "button",
-          {
-            onClick: saveEdit,
-            className: "text-green-600 hover:text-green-700 transition p-2 bg-green-50 rounded"
-          },
-          /* @__PURE__ */ import_react3.default.createElement(Check, { size: 20 })
-        ), /* @__PURE__ */ import_react3.default.createElement(
-          "button",
-          {
-            onClick: cancelEdit,
-            className: "text-gray-600 hover:text-gray-700 transition p-2 bg-gray-50 rounded"
-          },
-          /* @__PURE__ */ import_react3.default.createElement(X, { size: 20 })
-        )), /* @__PURE__ */ import_react3.default.createElement("div", { className: "col-span-full" }, /* @__PURE__ */ import_react3.default.createElement(
-          "input",
-          {
-            type: "text",
-            placeholder: "Notes (optional)",
-            value: editForm.notes,
-            onChange: (e) => setEditForm({ ...editForm, notes: e.target.value }),
-            className: "w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-          }
-        ))) : /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex-1" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "grid grid-cols-1 md:grid-cols-5 gap-3 items-center" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "font-medium text-gray-800" }, bill.name), /* @__PURE__ */ import_react3.default.createElement("div", { className: `flex items-center gap-1 font-semibold ${bill.amount >= 0 ? "text-green-600" : "text-red-600"}` }, /* @__PURE__ */ import_react3.default.createElement(DollarSign, { size: 18 }), bill.amount >= 0 ? "+" : "", bill.amount.toFixed(2)), /* @__PURE__ */ import_react3.default.createElement("div", { className: "text-gray-600" }, new Date(bill.date).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric"
-        })), /* @__PURE__ */ import_react3.default.createElement("span", { className: `px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(bill.category)} w-fit` }, bill.category), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center justify-between md:justify-end gap-2" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: `font-medium text-sm ${balance >= 0 ? "text-green-700" : "text-red-700"}` }, "Balance: $", balance.toFixed(2)), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-1" }, isRecurringBill(bill.billId) ? /* @__PURE__ */ import_react3.default.createElement(
-          "button",
-          {
-            onClick: () => viewRecurringBill(bill.billId),
-            className: "text-purple-500 hover:text-purple-700 transition p-1",
-            title: "View recurring bill"
-          },
-          /* @__PURE__ */ import_react3.default.createElement(List, { size: 18 })
-        ) : /* @__PURE__ */ import_react3.default.createElement(
-          "button",
-          {
-            onClick: () => saveAsTemplate(bill),
-            className: "text-purple-500 hover:text-purple-700 transition p-1",
-            title: "Save as template"
-          },
-          /* @__PURE__ */ import_react3.default.createElement(RefreshCw, { size: 18 })
-        ), /* @__PURE__ */ import_react3.default.createElement(
-          "button",
-          {
-            onClick: () => startEdit(bill),
-            className: "text-blue-500 hover:text-blue-700 transition p-1"
-          },
-          /* @__PURE__ */ import_react3.default.createElement(Pen, { size: 18 })
-        ), /* @__PURE__ */ import_react3.default.createElement(
-          "button",
-          {
-            onClick: () => deleteBill(bill.id),
-            className: "text-red-500 hover:text-red-700 transition p-1"
-          },
-          /* @__PURE__ */ import_react3.default.createElement(Trash2, { size: 18 })
-        )))), bill.notes && /* @__PURE__ */ import_react3.default.createElement("div", { className: "mt-2 text-sm text-gray-600 italic" }, bill.notes)))
+          bill,
+          index,
+          isEditing,
+          balance,
+          editForm,
+          setEditForm,
+          saveEdit,
+          cancelEdit,
+          startEdit,
+          deleteBill,
+          saveAsTemplate,
+          viewRecurringBill,
+          getCategoryColor,
+          isRecurringBill,
+          handleDragStart,
+          handleDragOver,
+          handleDragEnd,
+          draggedItem,
+          sortBy
+        }
       );
-    })), displayBills.length === 0 && /* @__PURE__ */ import_react3.default.createElement("div", { className: "bg-white rounded-lg shadow p-8 text-center text-gray-500" }, filterCategory !== "all" ? "No bills in this category." : "No bills added yet. Add your first bill above!"), displayBills.length > 0 && /* @__PURE__ */ import_react3.default.createElement("div", { className: "bg-white rounded-lg shadow-lg p-6 mt-6" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex justify-between items-center" }, /* @__PURE__ */ import_react3.default.createElement("span", { className: "text-lg font-medium text-gray-700" }, filterCategory !== "all" ? `${filterCategory} Balance:` : "Final Balance:"), /* @__PURE__ */ import_react3.default.createElement("span", { className: `text-2xl font-bold ${runningTotal >= 0 ? "text-green-600" : "text-red-600"}` }, "$", runningTotal.toFixed(2))))), currentPage === "templates" && /* @__PURE__ */ import_react3.default.createElement(import_react3.default.Fragment, null, /* @__PURE__ */ import_react3.default.createElement("div", { className: "bg-white rounded-lg shadow-lg p-6 mb-6" }, /* @__PURE__ */ import_react3.default.createElement("h1", { className: "text-3xl font-bold text-gray-800 mb-2" }, "Recurring Bills"), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center justify-between mb-4" }, /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-gray-600" }, "Manage your recurring bill templates and view payment history"), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ import_react3.default.createElement(
-      "button",
+    })), displayBills.length === 0 && /* @__PURE__ */ import_react6.default.createElement("div", { className: "bg-white rounded-lg shadow p-8 text-center text-gray-500" }, filterCategory !== "all" ? "No bills in this category." : "No bills added yet. Add your first bill above!"), displayBills.length > 0 && /* @__PURE__ */ import_react6.default.createElement("div", { className: "bg-white rounded-lg shadow-lg p-6 mt-6" }, /* @__PURE__ */ import_react6.default.createElement("div", { className: "flex justify-between items-center" }, /* @__PURE__ */ import_react6.default.createElement("span", { className: "text-lg font-medium text-gray-700" }, filterCategory !== "all" ? `${filterCategory} Balance:` : "Final Balance:"), /* @__PURE__ */ import_react6.default.createElement("span", { className: `text-2xl font-bold ${runningTotal >= 0 ? "text-green-600" : "text-red-600"}` }, "$", runningTotal.toFixed(2))))), currentPage === "templates" && /* @__PURE__ */ import_react6.default.createElement(
+      TemplatesPanel,
       {
-        onClick: exportTemplatesToCSV,
-        className: "px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition flex items-center gap-2 text-sm"
-      },
-      /* @__PURE__ */ import_react3.default.createElement(Download, { size: 16 }),
-      "Export"
-    ), /* @__PURE__ */ import_react3.default.createElement("label", { className: "px-3 py-1.5 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition flex items-center gap-2 text-sm cursor-pointer" }, /* @__PURE__ */ import_react3.default.createElement(Upload, { size: 16 }), "Import", /* @__PURE__ */ import_react3.default.createElement(
-      "input",
-      {
-        type: "file",
-        accept: ".csv",
-        onChange: importTemplatesFromCSV,
-        className: "hidden"
+        templates,
+        expandedTemplates,
+        editingTemplateId,
+        templateEditForm,
+        setTemplateEditForm,
+        startTemplateEdit,
+        cancelTemplateEdit,
+        saveTemplateEdit,
+        deleteTemplate,
+        getTemplatePayments,
+        calculateNextPaymentDate,
+        setTemplateDates,
+        templateDates,
+        addFromTemplate,
+        addNewTemplate,
+        exportTemplatesToCSV,
+        importTemplatesFromCSV,
+        newTemplate,
+        setNewTemplate,
+        TIME_PERIODS,
+        CATEGORIES,
+        getCategoryColor,
+        setCurrentPage,
+        startEdit,
+        deleteBill
       }
-    )))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "grid grid-cols-1 md:grid-cols-7 gap-3 mb-3" }, /* @__PURE__ */ import_react3.default.createElement(
-      "input",
-      {
-        type: "text",
-        placeholder: "Bill name",
-        value: newTemplate.name,
-        onChange: (e) => setNewTemplate({ ...newTemplate, name: e.target.value }),
-        className: "px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      }
-    ), /* @__PURE__ */ import_react3.default.createElement(
-      "input",
-      {
-        type: "number",
-        placeholder: "Amount",
-        step: "0.01",
-        value: newTemplate.amount,
-        onChange: (e) => setNewTemplate({ ...newTemplate, amount: e.target.value }),
-        className: "px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      }
-    ), /* @__PURE__ */ import_react3.default.createElement(
-      "select",
-      {
-        value: newTemplate.category,
-        onChange: (e) => setNewTemplate({ ...newTemplate, category: e.target.value }),
-        className: "px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      },
-      CATEGORIES.map((cat) => /* @__PURE__ */ import_react3.default.createElement("option", { key: cat, value: cat }, cat))
-    ), /* @__PURE__ */ import_react3.default.createElement("div", { className: "col-span-2 flex gap-2" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-2 flex-1" }, /* @__PURE__ */ import_react3.default.createElement("span", { className: "text-sm text-gray-600 whitespace-nowrap" }, "Every"), /* @__PURE__ */ import_react3.default.createElement(
-      "input",
-      {
-        type: "number",
-        min: "1",
-        value: newTemplate.frequencyNumber,
-        onChange: (e) => setNewTemplate({ ...newTemplate, frequencyNumber: e.target.value }),
-        className: "w-16 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      }
-    ), /* @__PURE__ */ import_react3.default.createElement(
-      "select",
-      {
-        value: newTemplate.frequencyPeriod,
-        onChange: (e) => setNewTemplate({ ...newTemplate, frequencyPeriod: e.target.value }),
-        className: "flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      },
-      TIME_PERIODS.map((period) => /* @__PURE__ */ import_react3.default.createElement("option", { key: period, value: period }, period))
-    ))), /* @__PURE__ */ import_react3.default.createElement(
-      "button",
-      {
-        onClick: addNewTemplate,
-        className: "col-span-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center justify-center gap-2"
-      },
-      /* @__PURE__ */ import_react3.default.createElement(Plus, { size: 20 }),
-      "Add"
-    )), /* @__PURE__ */ import_react3.default.createElement(
-      "input",
-      {
-        type: "text",
-        placeholder: "Notes (optional)",
-        value: newTemplate.notes,
-        onChange: (e) => setNewTemplate({ ...newTemplate, notes: e.target.value }),
-        className: "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      }
-    )), templates.length === 0 ? /* @__PURE__ */ import_react3.default.createElement("div", { className: "bg-white rounded-lg shadow p-8 text-center text-gray-500" }, /* @__PURE__ */ import_react3.default.createElement(RefreshCw, { size: 48, className: "mx-auto mb-4 text-gray-400" }), /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-lg mb-2" }, "No recurring bills yet"), /* @__PURE__ */ import_react3.default.createElement("p", null, "Go to the Payment Planner and click the refresh icon on any bill to save it as a recurring template.")) : /* @__PURE__ */ import_react3.default.createElement("div", { className: "space-y-3" }, templates.map((template) => {
-      const isExpanded = expandedTemplates[template.id];
-      const isEditing = editingTemplateId === template.id;
-      const payments = getTemplatePayments(template.name);
-      return /* @__PURE__ */ import_react3.default.createElement("div", { key: template.id, className: "bg-white rounded-lg shadow" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "p-4" }, isEditing ? /* @__PURE__ */ import_react3.default.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-3" }, /* @__PURE__ */ import_react3.default.createElement(
-        "input",
-        {
-          type: "text",
-          value: templateEditForm.name,
-          onChange: (e) => setTemplateEditForm({ ...templateEditForm, name: e.target.value }),
-          className: "flex-1 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        }
-      ), /* @__PURE__ */ import_react3.default.createElement(
-        "input",
-        {
-          type: "number",
-          step: "0.01",
-          value: templateEditForm.amount,
-          onChange: (e) => setTemplateEditForm({ ...templateEditForm, amount: e.target.value }),
-          className: "w-32 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        }
-      ), /* @__PURE__ */ import_react3.default.createElement(
-        "select",
-        {
-          value: templateEditForm.category,
-          onChange: (e) => setTemplateEditForm({ ...templateEditForm, category: e.target.value }),
-          className: "w-40 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        },
-        CATEGORIES.map((cat) => /* @__PURE__ */ import_react3.default.createElement("option", { key: cat, value: cat }, cat))
-      ), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ import_react3.default.createElement("span", { className: "text-sm text-gray-600" }, "Every"), /* @__PURE__ */ import_react3.default.createElement(
-        "input",
-        {
-          type: "number",
-          min: "1",
-          value: templateEditForm.frequencyNumber,
-          onChange: (e) => setTemplateEditForm({ ...templateEditForm, frequencyNumber: e.target.value }),
-          className: "w-16 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        }
-      ), /* @__PURE__ */ import_react3.default.createElement(
-        "select",
-        {
-          value: templateEditForm.frequencyPeriod,
-          onChange: (e) => setTemplateEditForm({ ...templateEditForm, frequencyPeriod: e.target.value }),
-          className: "w-28 px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        },
-        TIME_PERIODS.map((period) => /* @__PURE__ */ import_react3.default.createElement("option", { key: period, value: period }, period))
-      )), /* @__PURE__ */ import_react3.default.createElement(
-        "button",
-        {
-          onClick: saveTemplateEdit,
-          className: "text-green-600 hover:text-green-700 transition p-2 bg-green-50 rounded"
-        },
-        /* @__PURE__ */ import_react3.default.createElement(Check, { size: 20 })
-      ), /* @__PURE__ */ import_react3.default.createElement(
-        "button",
-        {
-          onClick: cancelTemplateEdit,
-          className: "text-gray-600 hover:text-gray-700 transition p-2 bg-gray-50 rounded"
-        },
-        /* @__PURE__ */ import_react3.default.createElement(X, { size: 20 })
-      )), /* @__PURE__ */ import_react3.default.createElement(
-        "input",
-        {
-          type: "text",
-          placeholder: "Notes (optional)",
-          value: templateEditForm.notes,
-          onChange: (e) => setTemplateEditForm({ ...templateEditForm, notes: e.target.value }),
-          className: "w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-        }
-      )) : /* @__PURE__ */ import_react3.default.createElement("div", { className: "space-y-2" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center justify-between" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-4" }, /* @__PURE__ */ import_react3.default.createElement(
-        "button",
-        {
-          onClick: () => toggleTemplateExpand(template.id),
-          className: "text-gray-500 hover:text-gray-700 transition"
-        },
-        isExpanded ? /* @__PURE__ */ import_react3.default.createElement(ChevronDown, { size: 24 }) : /* @__PURE__ */ import_react3.default.createElement(ChevronRight, { size: 24 })
-      ), /* @__PURE__ */ import_react3.default.createElement("div", { className: "font-bold text-lg text-gray-800" }, template.name), /* @__PURE__ */ import_react3.default.createElement("div", { className: `flex items-center gap-1 font-bold text-lg ${template.amount >= 0 ? "text-green-600" : "text-red-600"}` }, /* @__PURE__ */ import_react3.default.createElement(DollarSign, { size: 20 }), template.amount >= 0 ? "+" : "", template.amount.toFixed(2)), /* @__PURE__ */ import_react3.default.createElement("span", { className: `px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(template.category)}` }, template.category), /* @__PURE__ */ import_react3.default.createElement("span", { className: "text-sm text-gray-600" }, "Every ", template.frequencyNumber, " ", template.frequencyPeriod), payments.length > 0 && /* @__PURE__ */ import_react3.default.createElement("span", { className: "px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium" }, payments.length, " payment", payments.length !== 1 ? "s" : "")), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-1" }, /* @__PURE__ */ import_react3.default.createElement(
-        "button",
-        {
-          onClick: () => startTemplateEdit(template),
-          className: "text-blue-500 hover:text-blue-700 transition p-2",
-          title: "Edit template"
-        },
-        /* @__PURE__ */ import_react3.default.createElement(Pen, { size: 20 })
-      ), /* @__PURE__ */ import_react3.default.createElement(
-        "button",
-        {
-          onClick: () => deleteTemplate(template.id),
-          className: "text-red-500 hover:text-red-700 transition p-2",
-          title: "Delete template"
-        },
-        /* @__PURE__ */ import_react3.default.createElement(Trash2, { size: 20 })
-      ))), template.notes && /* @__PURE__ */ import_react3.default.createElement("div", { className: "ml-10 text-sm text-gray-600 italic" }, template.notes))), isExpanded && payments.length > 0 && /* @__PURE__ */ import_react3.default.createElement("div", { className: "border-t border-gray-200 p-4 bg-gray-50" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center justify-between mb-3" }, /* @__PURE__ */ import_react3.default.createElement("h3", { className: "text-sm font-semibold text-gray-700" }, "Payment History"), /* @__PURE__ */ import_react3.default.createElement(
-        "button",
-        {
-          onClick: () => {
-            const defaultDate = calculateNextPaymentDate(template.name, template.frequencyNumber, template.frequencyPeriod);
-            setTemplateDates({ ...templateDates, [template.id]: defaultDate });
-            addFromTemplate(template);
-          },
-          className: "px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm flex items-center gap-2"
-        },
-        /* @__PURE__ */ import_react3.default.createElement(Plus, { size: 16 }),
-        "Add Payment"
-      )), /* @__PURE__ */ import_react3.default.createElement("div", { className: "space-y-2" }, payments.map((payment) => /* @__PURE__ */ import_react3.default.createElement("div", { key: payment.id, className: "flex items-center justify-between p-3 bg-white rounded border border-gray-200" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-4" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "text-gray-700" }, new Date(payment.date).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-      })), /* @__PURE__ */ import_react3.default.createElement("div", { className: `flex items-center gap-1 font-semibold ${payment.amount >= 0 ? "text-green-600" : "text-red-600"}` }, /* @__PURE__ */ import_react3.default.createElement(DollarSign, { size: 16 }), payment.amount >= 0 ? "+" : "", payment.amount.toFixed(2))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "flex items-center gap-1" }, /* @__PURE__ */ import_react3.default.createElement(
-        "button",
-        {
-          onClick: () => {
-            setCurrentPage("planner");
-            startEdit(payment);
-          },
-          className: "text-blue-500 hover:text-blue-700 transition p-1",
-          title: "Edit payment"
-        },
-        /* @__PURE__ */ import_react3.default.createElement(Pen, { size: 16 })
-      ), /* @__PURE__ */ import_react3.default.createElement(
-        "button",
-        {
-          onClick: () => deleteBill(payment.id),
-          className: "text-red-500 hover:text-red-700 transition p-1",
-          title: "Delete payment"
-        },
-        /* @__PURE__ */ import_react3.default.createElement(Trash2, { size: 16 })
-      )))))), isExpanded && payments.length === 0 && /* @__PURE__ */ import_react3.default.createElement("div", { className: "border-t border-gray-200 p-4 bg-gray-50" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "text-center" }, /* @__PURE__ */ import_react3.default.createElement("p", { className: "text-gray-500 text-sm mb-3" }, "No payments yet for this recurring bill"), /* @__PURE__ */ import_react3.default.createElement(
-        "button",
-        {
-          onClick: () => {
-            const defaultDate = calculateNextPaymentDate(template.name, template.frequencyNumber, template.frequencyPeriod);
-            setTemplateDates({ ...templateDates, [template.id]: defaultDate });
-            addFromTemplate(template);
-          },
-          className: "px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm flex items-center gap-2 mx-auto"
-        },
-        /* @__PURE__ */ import_react3.default.createElement(Plus, { size: 16 }),
-        "Add First Payment"
-      ))));
-    })))));
+    )));
   }
 })();
 /*! Bundled license information:
