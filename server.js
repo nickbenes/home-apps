@@ -1,17 +1,21 @@
 const express = require('express');
+const path = require('path');
 const app = express();
 const PORT = 3000;
 
 // Middleware
 app.use(express.json());
 
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public')));
+
 // In-memory storage
 let todos = [];
 let nextId = 1;
 
-// Root endpoint
+// Root endpoint - serve React app
 app.get('/', (req, res) => {
-  res.send('Todo API - Use /todos to interact with the API');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // GET all todos
