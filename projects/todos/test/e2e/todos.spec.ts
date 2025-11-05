@@ -1,9 +1,21 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Todo App E2E Tests', () => {
-  test.beforeEach(async ({ page }) => {
-    // Navigate to the todos app before each test
-  await page.goto('/todos/');
+  test.beforeEach(async ({ page, request }) => {
+    // Reset server-side state: delete any todos that may exist in the in-memory API.
+    // The app fetches todos from /api/todos, so clearing browser localStorage alone isn't sufficient.
+    const res = await request.get('/api/todos');
+    if (res.ok()) {
+      const existing = await res.json();
+      for (const t of existing) {
+        await request.delete(`/api/todos/${t.id}`);
+      }
+    }
+
+    // Navigate to the todos app and verify a clean slate.
+    await page.goto('/todos/');
+    const todoList = page.locator('ul li');
+    await expect(todoList).toHaveCount(0, { timeout: 2000 });
   });
 
   test.describe('Initial Page Load', () => {
@@ -111,8 +123,8 @@ test.describe('Todo App E2E Tests', () => {
   const checkbox = item.locator('input[type="checkbox"]');
   await expect(checkbox).not.toBeChecked();
 
-  // Click the checkbox to complete the todo
-  await checkbox.check();
+  // Click the checkbox to complete the todo (controlled input - click then wait for state)
+  await checkbox.click();
   await expect(checkbox).toBeChecked();
 
   // Verify the text has strikethrough styling
@@ -129,12 +141,12 @@ test.describe('Todo App E2E Tests', () => {
   const item = page.locator('ul li', { hasText: 'Toggle me' });
   const checkbox = item.locator('input[type="checkbox"]');
 
-  // Complete the todo
-  await checkbox.check();
+  // Complete the todo (click then wait for state)
+  await checkbox.click();
   await expect(checkbox).toBeChecked();
 
-  // Uncomplete the todo
-  await checkbox.uncheck();
+  // Uncomplete the todo (click then wait for state)
+  await checkbox.click();
   await expect(checkbox).not.toBeChecked();
 
   // Verify the text no longer has strikethrough
@@ -145,24 +157,26 @@ test.describe('Todo App E2E Tests', () => {
     test('should handle multiple todos with different completion states', async ({ page }) => {
       const input = page.getByPlaceholder('Add a new todo...');
 
-      // Add three todos
-      await input.fill('Todo 1');
-      await input.press('Enter');
+  // Add three todos and wait for each to appear
+  await input.fill('Todo 1');
+  await input.press('Enter');
+  await expect(page.getByText('Todo 1')).toBeVisible();
 
-      await input.fill('Todo 2');
-      await input.press('Enter');
+  await input.fill('Todo 2');
+  await input.press('Enter');
+  await expect(page.getByText('Todo 2')).toBeVisible();
 
-      await input.fill('Todo 3');
-      await input.press('Enter');
+  await input.fill('Todo 3');
+  await input.press('Enter');
+  await expect(page.getByText('Todo 3')).toBeVisible();
 
   // Complete the second todo by scoping to its list item
   const item1 = page.locator('ul li', { hasText: 'Todo 1' });
   const item2 = page.locator('ul li', { hasText: 'Todo 2' });
   const item3 = page.locator('ul li', { hasText: 'Todo 3' });
 
-  await item2.locator('input[type="checkbox"]').check();
-
-  // Verify states
+  await item2.locator('input[type="checkbox"]').click();
+  // Verify states: only the second todo should be checked
   await expect(item1.locator('input[type="checkbox"]')).not.toBeChecked();
   await expect(item2.locator('input[type="checkbox"]')).toBeChecked();
   await expect(item3.locator('input[type="checkbox"]')).not.toBeChecked();
@@ -210,15 +224,20 @@ test.describe('Todo App E2E Tests', () => {
 
   // Delete the middle todo by scoping to its list item text
   const delItem = page.locator('ul li', { hasText: 'Delete me' });
+
+  // Sanity: ensure three items are present before deletion
+  const todoItemsBefore = page.locator('ul li');
+  await expect(todoItemsBefore).toHaveCount(3);
+
   await delItem.getByRole('button', { name: 'Delete' }).click();
 
-      // Verify the correct todo was deleted
-      await expect(page.getByText('Keep me 1')).toBeVisible();
-      await expect(page.getByText('Delete me')).not.toBeVisible();
-      await expect(page.getByText('Keep me 2')).toBeVisible();
+  // Wait for the list to update and verify the correct todo was deleted
+  const todoItems = page.locator('ul li');
+  await expect(todoItems).toHaveCount(2);
 
-      const todoItems = page.locator('ul li');
-      await expect(todoItems).toHaveCount(2);
+  await expect(page.getByText('Keep me 1')).toBeVisible();
+  await expect(page.getByText('Delete me')).not.toBeVisible();
+  await expect(page.getByText('Keep me 2')).toBeVisible();
     });
 
     test('should delete a completed todo', async ({ page }) => {
@@ -229,7 +248,8 @@ test.describe('Todo App E2E Tests', () => {
 
   const delItem = page.locator('ul li', { hasText: 'Complete and delete' });
   const checkbox = delItem.locator('input[type="checkbox"]');
-  await checkbox.check();
+  await checkbox.click();
+  await expect(checkbox).toBeChecked();
 
   // Delete the completed todo (scoped)
   await delItem.getByRole('button', { name: 'Delete' }).click();
@@ -254,15 +274,15 @@ test.describe('Todo App E2E Tests', () => {
   // 2-4. Toggle completion using the scoped item checkbox
   const lifecycleItem = page.locator('ul li', { hasText: 'Complete lifecycle' });
   const lifecycleCheckbox = lifecycleItem.locator('input[type="checkbox"]');
-  await lifecycleCheckbox.check();
+  await lifecycleCheckbox.click();
   await expect(lifecycleCheckbox).toBeChecked();
 
   // 3. Mark as incomplete
-  await lifecycleCheckbox.uncheck();
+  await lifecycleCheckbox.click();
   await expect(lifecycleCheckbox).not.toBeChecked();
 
   // 4. Mark as complete again
-  await lifecycleCheckbox.check();
+  await lifecycleCheckbox.click();
   await expect(lifecycleCheckbox).toBeChecked();
 
   // 5. Delete the todo (scoped)
@@ -273,23 +293,28 @@ test.describe('Todo App E2E Tests', () => {
     test('should manage multiple todos with various operations', async ({ page }) => {
       const input = page.getByPlaceholder('Add a new todo...');
 
-      // Add multiple todos
-      await input.fill('Task 1');
-      await input.press('Enter');
+  // Add multiple todos and wait for them to show up
+  await input.fill('Task 1');
+  await input.press('Enter');
+  await expect(page.getByText('Task 1')).toBeVisible();
 
-      await input.fill('Task 2');
-      await input.press('Enter');
+  await input.fill('Task 2');
+  await input.press('Enter');
+  await expect(page.getByText('Task 2')).toBeVisible();
 
-      await input.fill('Task 3');
-      await input.press('Enter');
+  await input.fill('Task 3');
+  await input.press('Enter');
+  await expect(page.getByText('Task 3')).toBeVisible();
 
   // Complete first and third tasks by scoping to their items
   const t1 = page.locator('ul li', { hasText: 'Task 1' });
   const t2 = page.locator('ul li', { hasText: 'Task 2' });
   const t3 = page.locator('ul li', { hasText: 'Task 3' });
 
-  await t1.locator('input[type="checkbox"]').check();
-  await t3.locator('input[type="checkbox"]').check();
+  await t1.locator('input[type="checkbox"]').click();
+  await expect(t1.locator('input[type="checkbox"]')).toBeChecked();
+  await t3.locator('input[type="checkbox"]').click();
+  await expect(t3.locator('input[type="checkbox"]')).toBeChecked();
 
   // Verify states
   await expect(t1.locator('input[type="checkbox"]')).toBeChecked();
@@ -311,17 +336,21 @@ test.describe('Todo App E2E Tests', () => {
     test('should persist state across operations', async ({ page }) => {
       const input = page.getByPlaceholder('Add a new todo...');
 
-      // Add several todos
+      // Add several todos and wait for each to appear
       for (let i = 1; i <= 5; i++) {
-        await input.fill(`Todo ${i}`);
+        const text = `Todo ${i}`;
+        await input.fill(text);
         await input.press('Enter');
+        await expect(page.getByText(text)).toBeVisible();
       }
 
   // Complete todos 2 and 4 (scoped)
   const t2 = page.locator('ul li', { hasText: 'Todo 2' });
   const t4 = page.locator('ul li', { hasText: 'Todo 4' });
-  await t2.locator('input[type="checkbox"]').check();
-  await t4.locator('input[type="checkbox"]').check();
+  await t2.locator('input[type="checkbox"]').click();
+  await expect(t2.locator('input[type="checkbox"]')).toBeChecked();
+  await t4.locator('input[type="checkbox"]').click();
+  await expect(t4.locator('input[type="checkbox"]')).toBeChecked();
 
   // Delete todo 3 (scoped)
   const t3 = page.locator('ul li', { hasText: 'Todo 3' });
