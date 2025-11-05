@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main, feat/multi-entry-build-and-lint ]
+    branches: [ main, '**' ]
   pull_request:
     branches: [ main ]
 
@@ -50,15 +50,7 @@ jobs:
         env:
           CI: true
         run: npm run test:e2e
-name: CI
 
-on:
-  push:
-    branches: [ main, '**' ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
