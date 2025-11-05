@@ -2,6 +2,58 @@ name: CI
 
 on:
   push:
+    branches: [ main, feat/multi-entry-build-and-lint ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  unit-tests:
+    name: Unit tests (Jest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+  e2e-tests:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers and deps
+        run: |
+          npx playwright install --with-deps
+
+      - name: Run Playwright tests (e2e)
+        # Playwright config will start the web server defined in playwright.config.ts
+        env:
+          CI: true
+        run: npm run test:e2e
+name: CI
+
+on:
+  push:
     branches: [ main, '**' ]
   pull_request:
     branches: [ main ]
