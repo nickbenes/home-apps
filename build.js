@@ -11,10 +11,10 @@ function findFrontendEntries(root = path.join(__dirname, 'projects')) {
     .map(name => {
       const frontendDir = path.join(root, name, 'frontend');
       const candidates = [
-        path.join(frontendDir, 'App.tsx'),
         path.join(frontendDir, 'index.tsx'),
-        path.join(frontendDir, 'App.jsx'),
+        path.join(frontendDir, 'App.tsx'),
         path.join(frontendDir, 'index.jsx'),
+        path.join(frontendDir, 'App.jsx'),
       ];
       const entry = candidates.find(p => fs.existsSync(p));
       return entry ? { name, entry } : null;
