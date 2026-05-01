@@ -1,5 +1,5 @@
-# claude
-sandbox for learning about claude code
+# bills-tracker
+Agentic vibe-coding experiment: recurring bills priority scheduler built with Claude Code.
 
 ## Building frontends
 
