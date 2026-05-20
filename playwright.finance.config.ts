@@ -20,7 +20,7 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: 'npm run finance:dev',
+    command: 'npm run finance:build && npm run finance:dev',
     url: 'http://localhost:3001',
     reuseExistingServer: !process.env.CI,
   },
