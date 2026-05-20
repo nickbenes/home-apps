@@ -17,7 +17,8 @@
     "test:all": "npm run test:unit && npm run test:e2e",
     "deploy:bills": "npx firebase-tools deploy --only hosting",
     "smoke:deploy": "bash ./scripts/smoke/deploy-smoke.sh",
-    "smoke:e2e": "npx playwright test projects/bills/test/e2e/bills.spec.ts --reporter=list"
+    "smoke:e2e": "npx playwright test projects/bills/test/e2e/bills.spec.ts --reporter=list",
+    "db:migrate": "tsx projects/benes-finance/backend/migrate.ts"
   },
   "dependencies": {
     "@types/better-sqlite3": "^7.6.13",
@@ -50,6 +51,7 @@
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
     "supertest": "^6.3.3",
+    "tsx": "^4.22.3",
     "typescript": "^5.9.3"
   }
 }
