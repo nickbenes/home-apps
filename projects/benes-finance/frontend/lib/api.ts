@@ -6,6 +6,16 @@ async function get<T>(path: string): Promise<T> {
   return res.json();
 }
 
+async function patch<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`PATCH ${path} → ${res.status}`);
+  return res.json();
+}
+
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     method: 'POST',
@@ -98,6 +108,8 @@ export interface TransactionFilters {
 export const api = {
   accounts: {
     list: () => get<Account[]>('/accounts'),
+    update: (id: string, body: Partial<Pick<Account, 'current_balance' | 'balance_date' | 'status' | 'notes'>>) =>
+      patch<Account>(`/accounts/${id}`, body),
   },
   budget: {
     items: () => get<BudgetItem[]>('/budget/items'),
