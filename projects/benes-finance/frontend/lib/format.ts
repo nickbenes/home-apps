@@ -35,6 +35,15 @@ export const STATUS_SORT: Record<string, number> = {
   active: 4, settled: 5, paid_off: 6,
 };
 
+export const FREQUENCY_LABEL: Record<string, string> = {
+  weekly:        'Weekly',
+  biweekly:      'Biweekly',
+  monthly:       'Monthly',
+  every_4_weeks: 'Every 4 wks',
+  annually:      'Annually',
+  one_time:      'One-time',
+};
+
 export const TYPE_LABEL: Record<string, string> = {
   personal_loan: 'Personal Loan',
   mortgage:      'Mortgage',

@@ -2,6 +2,57 @@ import { Router } from 'express';
 import { randomUUID } from 'crypto';
 import type BetterSqlite3 from 'better-sqlite3';
 
+// ── Scheduling helpers (pure, no DB dependency) ──────────────────────────────
+
+function localDate(d = new Date()): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function addDays(dateStr: string, n: number): string {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return localDate(new Date(y, m - 1, d + n));
+}
+
+function nextOccurrence(dateStr: string, frequency: string): string {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  switch (frequency) {
+    case 'weekly':        return localDate(new Date(y, m - 1, d + 7));
+    case 'biweekly':      return localDate(new Date(y, m - 1, d + 14));
+    case 'every_4_weeks': return localDate(new Date(y, m - 1, d + 28));
+    case 'monthly':       return localDate(new Date(y, m,     d));     // m (not m-1) advances month
+    case 'annually':      return localDate(new Date(y + 1, m - 1, d));
+    default:              return '9999-12-31';                          // one_time sentinel
+  }
+}
+
+function projectDates(item: {
+  projected_start_date: string | null;
+  projected_stop_date: string | null;
+  created_at: string;
+  frequency: string;
+}, from: string, to: string): string[] {
+  if (item.frequency === 'one_time') {
+    const d = item.projected_start_date;
+    return d && d >= from && d <= to ? [d] : [];
+  }
+  // Use projected_start_date as anchor; fall back to the date portion of created_at
+  let cur = item.projected_start_date ?? item.created_at.slice(0, 10);
+  const stop = item.projected_stop_date;
+
+  // Advance to first occurrence >= from
+  while (cur < from) cur = nextOccurrence(cur, item.frequency);
+
+  const dates: string[] = [];
+  while (cur <= to) {
+    if (stop && cur > stop) break;
+    dates.push(cur);
+    const next = nextOccurrence(cur, item.frequency);
+    if (next <= cur) break;  // safety guard against infinite loop
+    cur = next;
+  }
+  return dates;
+}
+
 export function createRouter(db: BetterSqlite3.Database): Router {
   const router = Router();
 
@@ -164,6 +215,46 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     })();
 
     res.status(204).send();
+  });
+
+  // ── Scheduled payments ──────────────────────────────────────────────────────
+
+  // Projects due dates from active cashflow items; no DB writes.
+  // ?days=90 (1–365, default 90)
+  router.get('/scheduled', (req, res) => {
+    const days = Math.min(Math.max(parseInt((req.query.days as string) || '90'), 1), 365);
+    const today = localDate();
+    const end = addDays(today, days);
+
+    // Include items that are active, haven't ended, and start before the window closes.
+    // Intentionally bypasses the active_cashflow_items view so items starting later this
+    // week/month (projected_start_date > today) still appear in the schedule.
+    const items = db.prepare(`
+      SELECT ci.*, a.creditor
+      FROM cashflow_items ci
+      LEFT JOIN accounts a ON ci.account_id = a.account_id
+      WHERE ci.is_active = 1
+        AND (ci.projected_stop_date  IS NULL OR ci.projected_stop_date  >= ?)
+        AND (ci.projected_start_date IS NULL OR ci.projected_start_date <= ?)
+    `).all(today, end) as any[];
+
+    const result: object[] = [];
+    for (const item of items) {
+      for (const due_date of projectDates(item, today, end)) {
+        result.push({
+          cashflow_item_id: item.cashflow_item_id,
+          name: item.name,
+          due_date,
+          amount: item.amount,
+          frequency: item.frequency,
+          account_id: item.account_id ?? null,
+          creditor: item.creditor ?? null,
+        });
+      }
+    }
+
+    (result as any[]).sort((a, b) => a.due_date.localeCompare(b.due_date));
+    res.json(result);
   });
 
   // ── Summary ─────────────────────────────────────────────────────────────────

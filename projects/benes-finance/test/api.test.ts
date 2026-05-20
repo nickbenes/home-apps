@@ -310,6 +310,134 @@ describe('Benes Finance API', () => {
     });
   });
 
+  // ── Scheduled payments ──────────────────────────────────────────────────────
+
+  describe('GET /api/scheduled', () => {
+    function dateFromToday(offsetDays: number): string {
+      const d = new Date();
+      d.setDate(d.getDate() + offsetDays);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function insertCashflow(db: Database.Database, overrides: Record<string, unknown> = {}) {
+      const defaults = {
+        cashflow_item_id: 'test_cf',
+        budget_item_id: 'loan_payment',
+        account_id: 'test_loan',
+        name: 'Test Bill',
+        amount: -100,
+        frequency: 'monthly',
+        payments_per_year: 12,
+        effective_monthly: -100,
+        projected_start_date: dateFromToday(0),
+        projected_stop_date: null,
+        is_active: 1,
+      };
+      const row = { ...defaults, ...overrides };
+      db.prepare(`
+        INSERT INTO cashflow_items
+          (cashflow_item_id, budget_item_id, account_id, name, amount, frequency,
+           payments_per_year, effective_monthly, projected_start_date, projected_stop_date, is_active)
+        VALUES
+          (@cashflow_item_id, @budget_item_id, @account_id, @name, @amount, @frequency,
+           @payments_per_year, @effective_monthly, @projected_start_date, @projected_stop_date, @is_active)
+      `).run(row);
+    }
+
+    test('returns an array', async () => {
+      const res = await request(app).get('/api/scheduled');
+      expect(res.statusCode).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+    });
+
+    test('includes item starting today', async () => {
+      insertCashflow(db, { cashflow_item_id: 'cf_today', projected_start_date: dateFromToday(0) });
+      const res = await request(app).get('/api/scheduled?days=90');
+      const ids = res.body.map((p: any) => p.cashflow_item_id);
+      expect(ids).toContain('cf_today');
+    });
+
+    test('excludes item starting after the window', async () => {
+      insertCashflow(db, { cashflow_item_id: 'cf_far', projected_start_date: dateFromToday(91) });
+      const res = await request(app).get('/api/scheduled?days=90');
+      const ids = res.body.map((p: any) => p.cashflow_item_id);
+      expect(ids).not.toContain('cf_far');
+    });
+
+    test('monthly item appears multiple times within 90-day window', async () => {
+      insertCashflow(db, { cashflow_item_id: 'cf_monthly', projected_start_date: dateFromToday(0) });
+      const res = await request(app).get('/api/scheduled?days=90');
+      const occurrences = res.body.filter((p: any) => p.cashflow_item_id === 'cf_monthly');
+      expect(occurrences.length).toBeGreaterThanOrEqual(2);
+    });
+
+    test('one_time item appears exactly once', async () => {
+      insertCashflow(db, {
+        cashflow_item_id: 'cf_once',
+        frequency: 'one_time',
+        payments_per_year: 1,
+        effective_monthly: -8.33,
+        projected_start_date: dateFromToday(5),
+      });
+      const res = await request(app).get('/api/scheduled?days=30');
+      const occurrences = res.body.filter((p: any) => p.cashflow_item_id === 'cf_once');
+      expect(occurrences).toHaveLength(1);
+      expect(occurrences[0].due_date).toBe(dateFromToday(5));
+    });
+
+    test('respects projected_stop_date', async () => {
+      // starts today, stops in 10 days — should not appear at +30d
+      insertCashflow(db, {
+        cashflow_item_id: 'cf_stops',
+        frequency: 'weekly',
+        payments_per_year: 52,
+        effective_monthly: -433,
+        projected_start_date: dateFromToday(0),
+        projected_stop_date: dateFromToday(10),
+      });
+      const res = await request(app).get('/api/scheduled?days=90');
+      const occurrences = res.body.filter((p: any) => p.cashflow_item_id === 'cf_stops');
+      expect(occurrences.every((p: any) => p.due_date <= dateFromToday(10))).toBe(true);
+    });
+
+    test('inactive items are excluded', async () => {
+      insertCashflow(db, { cashflow_item_id: 'cf_inactive', is_active: 0 });
+      const res = await request(app).get('/api/scheduled?days=90');
+      const ids = res.body.map((p: any) => p.cashflow_item_id);
+      expect(ids).not.toContain('cf_inactive');
+    });
+
+    test('each item includes name, amount, frequency, due_date', async () => {
+      insertCashflow(db, {
+        cashflow_item_id: 'cf_shape',
+        name: 'Shape Test Bill',
+        amount: -150,
+        frequency: 'monthly',
+        projected_start_date: dateFromToday(1),
+      });
+      const res = await request(app).get('/api/scheduled?days=60');
+      const item = res.body.find((p: any) => p.cashflow_item_id === 'cf_shape');
+      expect(item).toBeDefined();
+      expect(item.name).toBe('Shape Test Bill');
+      expect(item.amount).toBe(-150);
+      expect(item.frequency).toBe('monthly');
+      expect(typeof item.due_date).toBe('string');
+    });
+
+    test('results are sorted by due_date ascending', async () => {
+      const res = await request(app).get('/api/scheduled?days=90');
+      const dates: string[] = res.body.map((p: any) => p.due_date);
+      expect(dates).toEqual([...dates].sort());
+    });
+
+    test('creditor is joined from accounts table', async () => {
+      insertCashflow(db, { cashflow_item_id: 'cf_creditor', projected_start_date: dateFromToday(0) });
+      const res = await request(app).get('/api/scheduled?days=30');
+      const item = res.body.find((p: any) => p.cashflow_item_id === 'cf_creditor');
+      expect(item.creditor).toBe('Sample Lender LLC');
+    });
+  });
+
   // ── Summary ─────────────────────────────────────────────────────────────────
 
   describe('GET /api/summary', () => {

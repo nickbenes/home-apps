@@ -89,6 +89,16 @@ export interface Mapping {
   category_name?: string;
 }
 
+export interface ScheduledPayment {
+  cashflow_item_id: string;
+  name: string;
+  due_date: string;
+  amount: number;
+  frequency: string;
+  account_id: string | null;
+  creditor: string | null;
+}
+
 export interface Summary {
   total_debt: number | null;
   monthly_cashflow_by_category: { category_id: string; category_name: string; total_effective_monthly: number }[];
@@ -133,6 +143,9 @@ export const api = {
   },
   mappings: {
     delete: (id: string) => del(`/mappings/${id}`),
+  },
+  scheduled: {
+    list: (days = 90) => get<ScheduledPayment[]>(`/scheduled?days=${days}`),
   },
   summary: () => get<Summary>('/summary'),
 };
