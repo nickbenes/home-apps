@@ -9,11 +9,14 @@
 //   2. Ensures source bank accounts exist in the accounts table (INSERT OR IGNORE)
 //   3. Generates a deterministic transaction_id for each row (for deduplication)
 //   4. Inserts new transactions; skips rows that already exist
-//   5. Reports: inserted / skipped-duplicate / skipped-category counts
+//   5. Auto-classifies imported transactions using CATEGORY_MAP (RocketMoney category → budget item)
+//   6. Runs the classification rules engine on any remaining unclassified transactions
+//   7. Reports: inserted / classified / skipped-duplicate / skipped-category counts
 
 import { getDb } from './db.js';
+import { applyRules } from './classify.js';
 import { parse } from 'csv-parse/sync';
-import { createHash } from 'crypto';
+import { createHash, randomUUID } from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
@@ -32,6 +35,31 @@ const ACCOUNT_MAP: Record<string, { account_id: string; creditor: string }> = {
   // 'My Savings|5678':        { account_id: 'bank_savings_5678',  creditor: 'My Bank' },
   // 'Personal Profile|':      { account_id: 'venmo',              creditor: 'Venmo' },
   // 'Save for an Emergency|': { account_id: 'rm_savings',         creditor: 'Rocket Money' },
+};
+
+// ── RocketMoney category → budget_item_id ────────────────────────────────────
+// Maps RocketMoney's "Category" column to budget_item_ids in our DB.
+// Transactions whose RocketMoney category is listed here get auto-classified on
+// import with confidence 'auto_medium' (broad category-level match).
+// Leave empty {} to skip this step and rely solely on the rules engine.
+//
+// To find your budget_item_ids, run:  SELECT budget_item_id, name FROM budget_items;
+//
+// Common RocketMoney categories (add/adjust to match your export):
+const CATEGORY_MAP: Record<string, string> = {
+  // 'Food & Drink':          'groceries',
+  // 'Restaurants':           'restaurants',
+  // 'Groceries':             'groceries',
+  // 'Shopping':              'shopping',
+  // 'Entertainment':         'entertainment',
+  // 'Bills & Utilities':     'utilities',
+  // 'Gas & Fuel':            'gas',
+  // 'Auto & Transport':      'auto',
+  // 'Health & Fitness':      'health',
+  // 'Personal Care':         'personal_care',
+  // 'Pets':                  'pets',
+  // 'Travel':                'travel',
+  // 'Subscriptions':         'subscriptions',
 };
 
 // ── Skip rules ───────────────────────────────────────────────────────────────
@@ -118,6 +146,7 @@ function importRows(rows: Record<string, string>[], batchId: string): void {
   let skippedDupe = 0;
   let skippedCategory = 0;
   let skippedNoAccount = 0;
+  const insertedIds: string[] = [];
 
   db.transaction(() => {
     for (const row of rows) {
@@ -151,12 +180,42 @@ function importRows(rows: Record<string, string>[], batchId: string): void {
         batchId,
       );
 
-      if (result.changes > 0) inserted++;
-      else skippedDupe++;
+      if (result.changes > 0) {
+        inserted++;
+        insertedIds.push(txId);
+      } else {
+        skippedDupe++;
+      }
     }
   })();
 
+  // ── Pass 1: classify by RocketMoney category ────────────────────────────────
+  let classifiedByCategory = 0;
+  if (Object.keys(CATEGORY_MAP).length > 0 && insertedIds.length > 0) {
+    const insertMapping = db.prepare(`
+      INSERT OR IGNORE INTO transaction_budget_item_mappings
+        (mapping_id, transaction_id, budget_item_id, allocated_amount, confidence, classified_by)
+      VALUES (?, ?, ?, ?, 'auto_medium', 'import')
+    `);
+    db.transaction(() => {
+      for (let i = 0; i < rows.length; i++) {
+        const txId = makeTransactionId(rows[i]);
+        if (!insertedIds.includes(txId)) continue; // only newly inserted
+        const budgetItemId = CATEGORY_MAP[rows[i]['Category']];
+        if (!budgetItemId) continue;
+        const amount = -parseFloat(rows[i]['Amount']);
+        const result = insertMapping.run(randomUUID(), txId, budgetItemId, amount);
+        if (result.changes > 0) classifiedByCategory++;
+      }
+    })();
+  }
+
+  // ── Pass 2: run rules engine on remaining unclassified ──────────────────────
+  const { classified: classifiedByRules } = applyRules(db, insertedIds);
+
   console.log(`  Inserted:            ${inserted}`);
+  console.log(`  Classified (category map):  ${classifiedByCategory}`);
+  console.log(`  Classified (rules engine):  ${classifiedByRules}`);
   console.log(`  Skipped (duplicate): ${skippedDupe}`);
   console.log(`  Skipped (category):  ${skippedCategory}`);
   if (skippedNoAccount) console.warn(`  Skipped (no account map): ${skippedNoAccount} — add to ACCOUNT_MAP`);

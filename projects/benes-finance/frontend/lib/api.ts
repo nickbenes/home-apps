@@ -126,6 +126,21 @@ export interface DebtPriorityItem {
   payoff_date_est: string | null;
 }
 
+export interface ClassificationRule {
+  rule_id: string;
+  pattern: string;
+  match_field: 'merchant_normalized' | 'merchant_text';
+  match_type: 'contains' | 'starts_with' | 'exact';
+  budget_item_id: string;
+  budget_item_name: string;
+  category_name: string;
+  confidence: 'auto_high' | 'auto_medium' | 'auto_low';
+  priority: number;
+  is_active: number;
+  source: string;
+  notes: string | null;
+}
+
 export interface BudgetVarianceItem {
   budget_item_id: string;
   item_name: string;
@@ -202,6 +217,14 @@ export const api = {
   },
   scheduled: {
     list: (days = 90) => get<ScheduledPayment[]>(`/scheduled?days=${days}`),
+  },
+  rules: {
+    list:   ()                                                        => get<ClassificationRule[]>('/rules'),
+    create: (body: Omit<ClassificationRule, 'rule_id' | 'budget_item_name' | 'category_name' | 'source'>) =>
+              post<ClassificationRule>('/rules', body),
+    update: (id: string, body: Partial<ClassificationRule>)          => patch<ClassificationRule>(`/rules/${id}`, body),
+    delete: (id: string)                                             => del(`/rules/${id}`),
+    apply:  ()                                                       => post<{ classified: number; skipped: number }>('/rules/apply', {}),
   },
   debtPriority: () => get<DebtPriorityItem[]>('/debt-priority'),
   summary: () => get<Summary>('/summary'),

@@ -1,12 +1,13 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, CreditCard, Repeat2, List, CalendarDays, TrendingDown, Zap, Activity, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, CreditCard, Repeat2, List, CalendarDays, TrendingDown, Zap, Activity, BarChart3, Wand2 } from 'lucide-react';
 
 const NAV = [
   { to: '/dashboard',    label: 'Dashboard',    icon: LayoutDashboard },
   { to: '/accounts',     label: 'Accounts',     icon: CreditCard },
   { to: '/recurring',    label: 'Recurring',    icon: Repeat2 },
   { to: '/transactions', label: 'Transactions', icon: List },
+  { to: '/rules',        label: 'Rules',        icon: Wand2 },
   { to: '/schedule',     label: 'Schedule',     icon: CalendarDays },
   { to: '/budget',       label: 'Budget',       icon: BarChart3 },
   { to: '/cashflow',     label: 'Cash Flow',    icon: Activity },

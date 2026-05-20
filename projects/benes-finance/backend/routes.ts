@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
 import type BetterSqlite3 from 'better-sqlite3';
+import { applyRules } from './classify.js';
 
 // ── Scheduling helpers (pure, no DB dependency) ──────────────────────────────
 
@@ -413,6 +414,82 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     }
 
     (result as any[]).sort((a, b) => a.due_date.localeCompare(b.due_date));
+    res.json(result);
+  });
+
+  // ── Classification rules ─────────────────────────────────────────────────────
+
+  router.get('/rules', (_req, res) => {
+    const rows = db.prepare(`
+      SELECT r.*, bi.name AS budget_item_name, bc.name AS category_name
+      FROM classification_rules r
+      JOIN budget_items bi ON r.budget_item_id = bi.budget_item_id
+      JOIN budget_categories bc ON bi.category_id = bc.category_id
+      ORDER BY r.priority DESC, r.created_at ASC
+    `).all();
+    res.json(rows);
+  });
+
+  router.post('/rules', (req, res) => {
+    const { pattern, match_field = 'merchant_normalized', match_type = 'contains',
+            budget_item_id, confidence = 'auto_high', priority = 0, notes } = req.body;
+
+    if (!pattern || !budget_item_id) {
+      return res.status(400).json({ error: 'pattern and budget_item_id are required' });
+    }
+    const item = db.prepare('SELECT 1 FROM budget_items WHERE budget_item_id = ?').get(budget_item_id);
+    if (!item) return res.status(400).json({ error: 'budget_item_id not found' });
+
+    const id = randomUUID();
+    db.prepare(`
+      INSERT INTO classification_rules
+        (rule_id, pattern, match_field, match_type, budget_item_id, confidence, priority, notes)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(id, pattern.trim(), match_field, match_type, budget_item_id, confidence, priority, notes ?? null);
+
+    const row = db.prepare(`
+      SELECT r.*, bi.name AS budget_item_name, bc.name AS category_name
+      FROM classification_rules r
+      JOIN budget_items bi ON r.budget_item_id = bi.budget_item_id
+      JOIN budget_categories bc ON bi.category_id = bc.category_id
+      WHERE r.rule_id = ?
+    `).get(id);
+    res.status(201).json(row);
+  });
+
+  router.patch('/rules/:id', (req, res) => {
+    const ALLOWED = ['pattern', 'match_field', 'match_type', 'budget_item_id',
+                     'confidence', 'priority', 'is_active', 'notes'] as const;
+    const entries = Object.entries(req.body).filter(([k]) => (ALLOWED as readonly string[]).includes(k));
+    if (!entries.length) return res.status(400).json({ error: `Allowed fields: ${ALLOWED.join(', ')}` });
+
+    const rule = db.prepare('SELECT 1 FROM classification_rules WHERE rule_id = ?').get(req.params.id);
+    if (!rule) return res.status(404).json({ error: 'Rule not found' });
+
+    const sets = entries.map(([k]) => `${k} = ?`).join(', ');
+    db.prepare(
+      `UPDATE classification_rules SET ${sets}, updated_at = datetime('now') WHERE rule_id = ?`
+    ).run([...entries.map(([, v]) => v), req.params.id]);
+
+    res.json(db.prepare(`
+      SELECT r.*, bi.name AS budget_item_name, bc.name AS category_name
+      FROM classification_rules r
+      JOIN budget_items bi ON r.budget_item_id = bi.budget_item_id
+      JOIN budget_categories bc ON bi.category_id = bc.category_id
+      WHERE r.rule_id = ?
+    `).get(req.params.id));
+  });
+
+  router.delete('/rules/:id', (req, res) => {
+    const rule = db.prepare('SELECT 1 FROM classification_rules WHERE rule_id = ?').get(req.params.id);
+    if (!rule) return res.status(404).json({ error: 'Rule not found' });
+    db.prepare('DELETE FROM classification_rules WHERE rule_id = ?').run(req.params.id);
+    res.status(204).send();
+  });
+
+  // Applies all active rules to every unclassified transaction.
+  router.post('/rules/apply', (_req, res) => {
+    const result = applyRules(db);
     res.json(result);
   });
 
