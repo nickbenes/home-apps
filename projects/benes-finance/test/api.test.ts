@@ -111,6 +111,90 @@ describe('Benes Finance API', () => {
 
   // ── Cashflow ────────────────────────────────────────────────────────────────
 
+  describe('POST /api/recurring', () => {
+    const body = { name: 'New Test Bill', amount: -75, frequency: 'monthly' };
+
+    test('creates a recurring item and returns 201', async () => {
+      const res = await request(app).post('/api/recurring').send(body);
+      expect(res.statusCode).toBe(201);
+      expect(res.body.name).toBe('New Test Bill');
+      expect(res.body.amount).toBe(-75);
+      expect(res.body.effective_monthly).toBeCloseTo(-75);
+      expect(res.body.payments_per_year).toBe(12);
+    });
+
+    test('auto-generates a slug id from name', async () => {
+      const res = await request(app).post('/api/recurring').send(body);
+      expect(res.body.recurring_item_id).toBe('new_test_bill');
+    });
+
+    test('appends suffix on id collision', async () => {
+      await request(app).post('/api/recurring').send(body);
+      const res2 = await request(app).post('/api/recurring').send(body);
+      expect(res2.statusCode).toBe(201);
+      expect(res2.body.recurring_item_id).not.toBe('new_test_bill');
+      expect(res2.body.recurring_item_id).toMatch(/^new_test_bill_/);
+    });
+
+    test('400 when required fields missing', async () => {
+      const res = await request(app).post('/api/recurring').send({ name: 'Only Name' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    test('400 for invalid frequency', async () => {
+      const res = await request(app).post('/api/recurring').send({ ...body, frequency: 'yearly' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    test('computes effective_monthly correctly for biweekly', async () => {
+      const res = await request(app).post('/api/recurring')
+        .send({ name: 'Biweekly Pay', amount: 2000, frequency: 'biweekly' });
+      expect(res.body.payments_per_year).toBe(26);
+      expect(res.body.effective_monthly).toBeCloseTo(2000 * 26 / 12);
+    });
+  });
+
+  describe('PATCH /api/recurring/:id', () => {
+    test('updates amount and recomputes effective_monthly', async () => {
+      const res = await request(app)
+        .patch('/api/recurring/loan_cf')
+        .send({ amount: -250 });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.amount).toBe(-250);
+      expect(res.body.effective_monthly).toBeCloseTo(-250);
+    });
+
+    test('deactivates item with is_active: 0', async () => {
+      await request(app).patch('/api/recurring/loan_cf').send({ is_active: 0 });
+      const res = await request(app).get('/api/recurring');
+      expect(res.body).toHaveLength(0);
+    });
+
+    test('400 for no valid fields', async () => {
+      const res = await request(app).patch('/api/recurring/loan_cf').send({ recurring_item_id: 'hack' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    test('404 for unknown id', async () => {
+      const res = await request(app).patch('/api/recurring/no_such').send({ amount: -10 });
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('DELETE /api/recurring/:id', () => {
+    test('deletes the item and returns 204', async () => {
+      const res = await request(app).delete('/api/recurring/loan_cf');
+      expect(res.statusCode).toBe(204);
+      const check = await request(app).get('/api/recurring?all=true');
+      expect(check.body).toHaveLength(0);
+    });
+
+    test('404 for unknown id', async () => {
+      const res = await request(app).delete('/api/recurring/no_such');
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
   describe('GET /api/recurring', () => {
     test('returns active recurring items', async () => {
       const res = await request(app).get('/api/recurring');

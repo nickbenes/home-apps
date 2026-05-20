@@ -55,6 +55,19 @@ export interface BudgetItem {
   expected_amount: number | null;
 }
 
+export interface RecurringItemInput {
+  recurring_item_id?: string;
+  name: string;
+  amount: number;
+  frequency: string;
+  budget_item_id?: string | null;
+  account_id?: string | null;
+  projected_start_date?: string | null;
+  projected_stop_date?: string | null;
+  is_active?: number;
+  notes?: string | null;
+}
+
 export interface RecurringItem {
   recurring_item_id: string;
   name: string;
@@ -125,7 +138,11 @@ export const api = {
     items: () => get<BudgetItem[]>('/budget/items'),
   },
   recurring: {
-    list: () => get<RecurringItem[]>('/recurring'),
+    list:    ()                                                 => get<RecurringItem[]>('/recurring'),
+    listAll: ()                                                 => get<RecurringItem[]>('/recurring?all=true'),
+    create:  (body: Omit<RecurringItemInput, 'recurring_item_id'>) => post<RecurringItem>('/recurring', body),
+    update:  (id: string, body: Partial<RecurringItemInput>)    => patch<RecurringItem>(`/recurring/${id}`, body),
+    delete:  (id: string)                                       => del(`/recurring/${id}`),
   },
   transactions: {
     list: (filters: TransactionFilters = {}) => {

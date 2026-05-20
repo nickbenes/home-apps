@@ -53,6 +53,14 @@ function projectDates(item: {
   return dates;
 }
 
+const PAYMENTS_PER_YEAR: Record<string, number> = {
+  weekly: 52, biweekly: 26, monthly: 12, every_4_weeks: 13, annually: 1, one_time: 1,
+};
+
+function slugify(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'item';
+}
+
 export function createRouter(db: BetterSqlite3.Database): Router {
   const router = Router();
 
@@ -110,6 +118,77 @@ export function createRouter(db: BetterSqlite3.Database): Router {
       ? db.prepare('SELECT * FROM recurring_items ORDER BY frequency, name').all()
       : db.prepare('SELECT * FROM active_recurring_items ORDER BY frequency, name').all();
     res.json(rows);
+  });
+
+  router.post('/recurring', (req, res) => {
+    const { name, amount, frequency, budget_item_id, account_id,
+            projected_start_date, projected_stop_date, notes } = req.body;
+
+    if (!name || amount == null || !frequency) {
+      return res.status(400).json({ error: 'name, amount, and frequency are required' });
+    }
+    if (!(frequency in PAYMENTS_PER_YEAR)) {
+      return res.status(400).json({ error: `Invalid frequency: ${frequency}` });
+    }
+
+    const ppy = PAYMENTS_PER_YEAR[frequency];
+    const effective_monthly = amount * (ppy / 12);
+
+    const base = slugify(name);
+    const taken = db.prepare('SELECT 1 FROM recurring_items WHERE recurring_item_id = ?').get(base);
+    const id = taken ? `${base}_${randomUUID().slice(0, 8)}` : base;
+
+    db.prepare(`
+      INSERT INTO recurring_items
+        (recurring_item_id, name, amount, frequency, payments_per_year, effective_monthly,
+         budget_item_id, account_id, projected_start_date, projected_stop_date, notes)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(id, name, amount, frequency, ppy, effective_monthly,
+           budget_item_id ?? null, account_id ?? null,
+           projected_start_date ?? null, projected_stop_date ?? null, notes ?? null);
+
+    res.status(201).json(db.prepare('SELECT * FROM recurring_items WHERE recurring_item_id = ?').get(id));
+  });
+
+  router.patch('/recurring/:id', (req, res) => {
+    const ALLOWED = ['name', 'amount', 'frequency', 'budget_item_id', 'account_id',
+      'projected_start_date', 'projected_stop_date', 'is_active', 'notes'] as const;
+
+    const entries = Object.entries(req.body).filter(([k]) => (ALLOWED as readonly string[]).includes(k));
+    if (!entries.length) {
+      return res.status(400).json({ error: `No valid fields. Allowed: ${ALLOWED.join(', ')}` });
+    }
+
+    const current = db.prepare('SELECT * FROM recurring_items WHERE recurring_item_id = ?')
+      .get(req.params.id) as Record<string, unknown> | undefined;
+    if (!current) return res.status(404).json({ error: 'Recurring item not found' });
+
+    const updates = Object.fromEntries(entries);
+    const newFreq = ('frequency' in updates ? updates.frequency : current.frequency) as string;
+    if ('frequency' in updates && !(newFreq in PAYMENTS_PER_YEAR)) {
+      return res.status(400).json({ error: `Invalid frequency: ${newFreq}` });
+    }
+
+    const newAmount = Number('amount' in updates ? updates.amount : current.amount);
+    const ppy = PAYMENTS_PER_YEAR[newFreq];
+    const effective_monthly = newAmount * (ppy / 12);
+
+    const allEntries = [...entries, ['payments_per_year', ppy], ['effective_monthly', effective_monthly]];
+    const sets = allEntries.map(([k]) => `${k} = ?`).join(', ');
+    const vals = [...allEntries.map(([, v]) => v), req.params.id];
+
+    db.prepare(
+      `UPDATE recurring_items SET ${sets}, updated_at = datetime('now') WHERE recurring_item_id = ?`
+    ).run(vals);
+
+    res.json(db.prepare('SELECT * FROM recurring_items WHERE recurring_item_id = ?').get(req.params.id));
+  });
+
+  router.delete('/recurring/:id', (req, res) => {
+    const item = db.prepare('SELECT 1 FROM recurring_items WHERE recurring_item_id = ?').get(req.params.id);
+    if (!item) return res.status(404).json({ error: 'Recurring item not found' });
+    db.prepare('DELETE FROM recurring_items WHERE recurring_item_id = ?').run(req.params.id);
+    res.status(204).send();
   });
 
   // ── Transactions ────────────────────────────────────────────────────────────

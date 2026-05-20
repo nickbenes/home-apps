@@ -1,10 +1,11 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, CreditCard, List, CalendarDays } from 'lucide-react';
+import { LayoutDashboard, CreditCard, Repeat2, List, CalendarDays } from 'lucide-react';
 
 const NAV = [
   { to: '/dashboard',    label: 'Dashboard',    icon: LayoutDashboard },
   { to: '/accounts',     label: 'Accounts',     icon: CreditCard },
+  { to: '/recurring',    label: 'Recurring',    icon: Repeat2 },
   { to: '/transactions', label: 'Transactions', icon: List },
   { to: '/schedule',     label: 'Schedule',     icon: CalendarDays },
 ];
