@@ -145,7 +145,7 @@ export interface TransactionFilters {
 export const api = {
   accounts: {
     list: () => get<Account[]>('/accounts'),
-    update: (id: string, body: Partial<Pick<Account, 'current_balance' | 'balance_date' | 'status' | 'notes'>>) =>
+    update: (id: string, body: Partial<Pick<Account, 'current_balance' | 'balance_date' | 'interest_rate_pct' | 'status' | 'notes'>>) =>
       patch<Account>(`/accounts/${id}`, body),
   },
   budget: {

@@ -79,7 +79,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
 
   // Only updates fields present in the request body; supports explicit null to clear a field.
   router.patch('/accounts/:id', (req, res) => {
-    const ALLOWED = ['current_balance', 'balance_date', 'status', 'notes'] as const;
+    const ALLOWED = ['current_balance', 'balance_date', 'interest_rate_pct', 'status', 'notes'] as const;
     const entries = Object.entries(req.body).filter(([k]) => (ALLOWED as readonly string[]).includes(k));
     if (!entries.length) {
       return res.status(400).json({ error: `No valid fields. Allowed: ${ALLOWED.join(', ')}` });
