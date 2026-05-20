@@ -112,6 +112,20 @@ export interface ScheduledPayment {
   creditor: string | null;
 }
 
+export interface DebtPriorityItem {
+  account_id: string;
+  creditor: string;
+  account_type: string;
+  status: string;
+  current_balance: number;
+  interest_rate_pct: number | null;
+  monthly_payment: number | null;
+  monthly_interest: number | null;
+  months_to_payoff: number | null;
+  payoff_date: string | null;
+  payoff_date_est: string | null;
+}
+
 export interface Summary {
   total_debt: number | null;
   monthly_recurring_by_category: { category_id: string; category_name: string; total_effective_monthly: number }[];
@@ -164,5 +178,6 @@ export const api = {
   scheduled: {
     list: (days = 90) => get<ScheduledPayment[]>(`/scheduled?days=${days}`),
   },
+  debtPriority: () => get<DebtPriorityItem[]>('/debt-priority'),
   summary: () => get<Summary>('/summary'),
 };

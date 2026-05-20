@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, CreditCard, Repeat2, List, CalendarDays } from 'lucide-react';
+import { LayoutDashboard, CreditCard, Repeat2, List, CalendarDays, TrendingDown } from 'lucide-react';
 
 const NAV = [
   { to: '/dashboard',    label: 'Dashboard',    icon: LayoutDashboard },
@@ -8,6 +8,7 @@ const NAV = [
   { to: '/recurring',    label: 'Recurring',    icon: Repeat2 },
   { to: '/transactions', label: 'Transactions', icon: List },
   { to: '/schedule',     label: 'Schedule',     icon: CalendarDays },
+  { to: '/debt',         label: 'Debt',         icon: TrendingDown },
 ];
 
 export default function Layout() {

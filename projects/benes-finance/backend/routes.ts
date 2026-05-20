@@ -338,6 +338,61 @@ export function createRouter(db: BetterSqlite3.Database): Router {
 
   // ── Summary ─────────────────────────────────────────────────────────────────
 
+  router.get('/debt-priority', (_req, res) => {
+    const rows = db.prepare(`
+      SELECT
+        a.account_id,
+        a.creditor,
+        a.account_type,
+        a.status,
+        a.current_balance,
+        a.interest_rate_pct,
+        a.balance_date,
+        a.payoff_date_est,
+        ABS(SUM(ri.effective_monthly)) AS monthly_payment
+      FROM accounts a
+      LEFT JOIN recurring_items ri
+        ON ri.account_id = a.account_id AND ri.is_active = 1 AND ri.amount < 0
+      WHERE a.account_type != 'income_source'
+        AND a.status NOT IN ('paid_off', 'settled')
+        AND a.current_balance IS NOT NULL
+        AND a.current_balance > 0
+      GROUP BY a.account_id
+    `).all() as {
+      account_id: string; creditor: string; account_type: string; status: string;
+      current_balance: number; interest_rate_pct: number | null;
+      balance_date: string | null; payoff_date_est: string | null;
+      monthly_payment: number | null;
+    }[];
+
+    const today = new Date();
+    const result = rows.map(r => {
+      const rate = r.interest_rate_pct != null ? r.interest_rate_pct / 100 / 12 : null;
+      const monthly_interest = rate != null ? r.current_balance * rate : null;
+      const pmt = r.monthly_payment ?? 0;
+
+      let months_to_payoff: number | null = null;
+      if (pmt > 0) {
+        if (rate == null || rate === 0) {
+          months_to_payoff = r.current_balance / pmt;
+        } else if (pmt > r.current_balance * rate) {
+          months_to_payoff = -Math.log(1 - rate * r.current_balance / pmt) / Math.log(1 + rate);
+        }
+      }
+
+      let payoff_date: string | null = null;
+      if (months_to_payoff != null) {
+        const d = new Date(today);
+        d.setMonth(d.getMonth() + Math.ceil(months_to_payoff));
+        payoff_date = d.toISOString().slice(0, 7); // YYYY-MM
+      }
+
+      return { ...r, monthly_interest, months_to_payoff, payoff_date };
+    });
+
+    res.json(result);
+  });
+
   router.get('/summary', (_req, res) => {
     const totalDebt = db.prepare(`
       SELECT SUM(current_balance) AS total
