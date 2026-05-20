@@ -55,6 +55,19 @@ Current focus: **P0 — Foundation / Data Layer**
 - Budget categories + items seeder
 - Basic REST API (Express endpoints for all entities)
 
+## Folder structure
+
+```
+projects/benes-finance/
+  db/
+    migrations/       ← SQL migration files (001_initial.sql, etc.)
+  backend/            ← Express server, TypeScript types, DB access layer
+  frontend/           ← React components
+  test/               ← Jest unit tests + Playwright e2e
+```
+
+No nested `src/` — code lives directly in `backend/` or `frontend/`.
+
 ## Stack
 
 - **Runtime:** Node.js + TypeScript
