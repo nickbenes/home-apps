@@ -11,6 +11,7 @@ import DebtCascade from './components/DebtCascade';
 import CashFlowStress from './components/CashFlowStress';
 import BudgetVariance from './components/BudgetVariance';
 import Rules from './components/Rules';
+import Projections from './components/Projections';
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
           <Route path="recurring" element={<RecurringItems />} />
           <Route path="schedule" element={<ScheduledPayments />} />
           <Route path="debt" element={<DebtPriority />} />
+          <Route path="projections" element={<Projections />} />
           <Route path="rules" element={<Rules />} />
           <Route path="budget" element={<BudgetVariance />} />
           <Route path="cashflow" element={<CashFlowStress />} />
