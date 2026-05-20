@@ -20,6 +20,8 @@
     "smoke:e2e": "npx playwright test projects/bills/test/e2e/bills.spec.ts --reporter=list"
   },
   "dependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "better-sqlite3": "^12.10.0",
     "express": "^4.18.2",
     "lucide-react": "^0.552.0",
     "react": "^19.2.6",
