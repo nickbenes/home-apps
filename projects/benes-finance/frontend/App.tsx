@@ -7,6 +7,7 @@ import Transactions from './components/Transactions';
 import ScheduledPayments from './components/ScheduledPayments';
 import RecurringItems from './components/RecurringItems';
 import DebtPriority from './components/DebtPriority';
+import DebtCascade from './components/DebtCascade';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="recurring" element={<RecurringItems />} />
           <Route path="schedule" element={<ScheduledPayments />} />
           <Route path="debt" element={<DebtPriority />} />
+          <Route path="cascade" element={<DebtCascade />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
       </Routes>
