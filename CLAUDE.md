@@ -86,6 +86,6 @@ Reusable utility scripts live in `scripts/`. Run with `python3 scripts/<name>.py
 
 - Use ISO 8601 strings for all dates in SQLite (`TEXT` columns, not `INTEGER` epoch)
 - Negative amounts = outflow, positive = income (consistent across all tables)
-- Slug-style IDs as primary keys where possible (e.g. `'avant'`, `'opploans_payment'`)
+- Slug-style IDs as primary keys where possible (e.g. `'my_bank'`, `'lender_payment'`)
 - Migration files: `db/migrations/001_initial.sql`, `002_...`, etc.
 - Never skip `--no-verify` on commits
