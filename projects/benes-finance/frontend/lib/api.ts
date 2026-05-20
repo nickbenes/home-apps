@@ -55,8 +55,8 @@ export interface BudgetItem {
   expected_amount: number | null;
 }
 
-export interface CashflowItem {
-  cashflow_item_id: string;
+export interface RecurringItem {
+  recurring_item_id: string;
   name: string;
   amount: number;
   effective_monthly: number;
@@ -90,7 +90,7 @@ export interface Mapping {
 }
 
 export interface ScheduledPayment {
-  cashflow_item_id: string;
+  recurring_item_id: string;
   name: string;
   due_date: string;
   amount: number;
@@ -101,7 +101,7 @@ export interface ScheduledPayment {
 
 export interface Summary {
   total_debt: number | null;
-  monthly_cashflow_by_category: { category_id: string; category_name: string; total_effective_monthly: number }[];
+  monthly_recurring_by_category: { category_id: string; category_name: string; total_effective_monthly: number }[];
   unmatched_transaction_count: number;
 }
 
@@ -124,8 +124,8 @@ export const api = {
   budget: {
     items: () => get<BudgetItem[]>('/budget/items'),
   },
-  cashflow: {
-    list: () => get<CashflowItem[]>('/cashflow'),
+  recurring: {
+    list: () => get<RecurringItem[]>('/recurring'),
   },
   transactions: {
     list: (filters: TransactionFilters = {}) => {

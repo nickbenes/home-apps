@@ -111,25 +111,25 @@ describe('Benes Finance API', () => {
 
   // ── Cashflow ────────────────────────────────────────────────────────────────
 
-  describe('GET /api/cashflow', () => {
-    test('returns active cashflow items', async () => {
-      const res = await request(app).get('/api/cashflow');
+  describe('GET /api/recurring', () => {
+    test('returns active recurring items', async () => {
+      const res = await request(app).get('/api/recurring');
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveLength(1);
-      expect(res.body[0].cashflow_item_id).toBe('loan_cf');
+      expect(res.body[0].recurring_item_id).toBe('loan_cf');
     });
 
     test('?all=true returns all items (same result when none are inactive)', async () => {
-      const res = await request(app).get('/api/cashflow?all=true');
+      const res = await request(app).get('/api/recurring?all=true');
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveLength(1);
     });
 
     test('inactive items are excluded by default', async () => {
-      db.prepare(`UPDATE cashflow_items SET is_active = 0 WHERE cashflow_item_id = 'loan_cf'`).run();
-      const active = await request(app).get('/api/cashflow');
+      db.prepare(`UPDATE recurring_items SET is_active = 0 WHERE recurring_item_id = 'loan_cf'`).run();
+      const active = await request(app).get('/api/recurring');
       expect(active.body).toHaveLength(0);
-      const all = await request(app).get('/api/cashflow?all=true');
+      const all = await request(app).get('/api/recurring?all=true');
       expect(all.body).toHaveLength(1);
     });
   });
@@ -321,7 +321,7 @@ describe('Benes Finance API', () => {
 
     function insertCashflow(db: Database.Database, overrides: Record<string, unknown> = {}) {
       const defaults = {
-        cashflow_item_id: 'test_cf',
+        recurring_item_id: 'test_cf',   // overridden in each test
         budget_item_id: 'loan_payment',
         account_id: 'test_loan',
         name: 'Test Bill',
@@ -335,11 +335,11 @@ describe('Benes Finance API', () => {
       };
       const row = { ...defaults, ...overrides };
       db.prepare(`
-        INSERT INTO cashflow_items
-          (cashflow_item_id, budget_item_id, account_id, name, amount, frequency,
+        INSERT INTO recurring_items
+          (recurring_item_id, budget_item_id, account_id, name, amount, frequency,
            payments_per_year, effective_monthly, projected_start_date, projected_stop_date, is_active)
         VALUES
-          (@cashflow_item_id, @budget_item_id, @account_id, @name, @amount, @frequency,
+          (@recurring_item_id, @budget_item_id, @account_id, @name, @amount, @frequency,
            @payments_per_year, @effective_monthly, @projected_start_date, @projected_stop_date, @is_active)
       `).run(row);
     }
@@ -351,36 +351,36 @@ describe('Benes Finance API', () => {
     });
 
     test('includes item starting today', async () => {
-      insertCashflow(db, { cashflow_item_id: 'cf_today', projected_start_date: dateFromToday(0) });
+      insertCashflow(db, { recurring_item_id: 'cf_today', projected_start_date: dateFromToday(0) });
       const res = await request(app).get('/api/scheduled?days=90');
-      const ids = res.body.map((p: any) => p.cashflow_item_id);
+      const ids = res.body.map((p: any) => p.recurring_item_id);
       expect(ids).toContain('cf_today');
     });
 
     test('excludes item starting after the window', async () => {
-      insertCashflow(db, { cashflow_item_id: 'cf_far', projected_start_date: dateFromToday(91) });
+      insertCashflow(db, { recurring_item_id: 'cf_far', projected_start_date: dateFromToday(91) });
       const res = await request(app).get('/api/scheduled?days=90');
-      const ids = res.body.map((p: any) => p.cashflow_item_id);
+      const ids = res.body.map((p: any) => p.recurring_item_id);
       expect(ids).not.toContain('cf_far');
     });
 
     test('monthly item appears multiple times within 90-day window', async () => {
-      insertCashflow(db, { cashflow_item_id: 'cf_monthly', projected_start_date: dateFromToday(0) });
+      insertCashflow(db, { recurring_item_id: 'cf_monthly', projected_start_date: dateFromToday(0) });
       const res = await request(app).get('/api/scheduled?days=90');
-      const occurrences = res.body.filter((p: any) => p.cashflow_item_id === 'cf_monthly');
+      const occurrences = res.body.filter((p: any) => p.recurring_item_id === 'cf_monthly');
       expect(occurrences.length).toBeGreaterThanOrEqual(2);
     });
 
     test('one_time item appears exactly once', async () => {
       insertCashflow(db, {
-        cashflow_item_id: 'cf_once',
+        recurring_item_id: 'cf_once',
         frequency: 'one_time',
         payments_per_year: 1,
         effective_monthly: -8.33,
         projected_start_date: dateFromToday(5),
       });
       const res = await request(app).get('/api/scheduled?days=30');
-      const occurrences = res.body.filter((p: any) => p.cashflow_item_id === 'cf_once');
+      const occurrences = res.body.filter((p: any) => p.recurring_item_id === 'cf_once');
       expect(occurrences).toHaveLength(1);
       expect(occurrences[0].due_date).toBe(dateFromToday(5));
     });
@@ -388,7 +388,7 @@ describe('Benes Finance API', () => {
     test('respects projected_stop_date', async () => {
       // starts today, stops in 10 days — should not appear at +30d
       insertCashflow(db, {
-        cashflow_item_id: 'cf_stops',
+        recurring_item_id: 'cf_stops',
         frequency: 'weekly',
         payments_per_year: 52,
         effective_monthly: -433,
@@ -396,27 +396,27 @@ describe('Benes Finance API', () => {
         projected_stop_date: dateFromToday(10),
       });
       const res = await request(app).get('/api/scheduled?days=90');
-      const occurrences = res.body.filter((p: any) => p.cashflow_item_id === 'cf_stops');
+      const occurrences = res.body.filter((p: any) => p.recurring_item_id === 'cf_stops');
       expect(occurrences.every((p: any) => p.due_date <= dateFromToday(10))).toBe(true);
     });
 
     test('inactive items are excluded', async () => {
-      insertCashflow(db, { cashflow_item_id: 'cf_inactive', is_active: 0 });
+      insertCashflow(db, { recurring_item_id: 'cf_inactive', is_active: 0 });
       const res = await request(app).get('/api/scheduled?days=90');
-      const ids = res.body.map((p: any) => p.cashflow_item_id);
+      const ids = res.body.map((p: any) => p.recurring_item_id);
       expect(ids).not.toContain('cf_inactive');
     });
 
     test('each item includes name, amount, frequency, due_date', async () => {
       insertCashflow(db, {
-        cashflow_item_id: 'cf_shape',
+        recurring_item_id: 'cf_shape',
         name: 'Shape Test Bill',
         amount: -150,
         frequency: 'monthly',
         projected_start_date: dateFromToday(1),
       });
       const res = await request(app).get('/api/scheduled?days=60');
-      const item = res.body.find((p: any) => p.cashflow_item_id === 'cf_shape');
+      const item = res.body.find((p: any) => p.recurring_item_id === 'cf_shape');
       expect(item).toBeDefined();
       expect(item.name).toBe('Shape Test Bill');
       expect(item.amount).toBe(-150);
@@ -431,9 +431,9 @@ describe('Benes Finance API', () => {
     });
 
     test('creditor is joined from accounts table', async () => {
-      insertCashflow(db, { cashflow_item_id: 'cf_creditor', projected_start_date: dateFromToday(0) });
+      insertCashflow(db, { recurring_item_id: 'cf_creditor', projected_start_date: dateFromToday(0) });
       const res = await request(app).get('/api/scheduled?days=30');
-      const item = res.body.find((p: any) => p.cashflow_item_id === 'cf_creditor');
+      const item = res.body.find((p: any) => p.recurring_item_id === 'cf_creditor');
       expect(item.creditor).toBe('Sample Lender LLC');
     });
   });
@@ -441,12 +441,12 @@ describe('Benes Finance API', () => {
   // ── Summary ─────────────────────────────────────────────────────────────────
 
   describe('GET /api/summary', () => {
-    test('returns total_debt, monthly cashflow, and unmatched count', async () => {
+    test('returns total_debt, monthly recurring totals, and unmatched count', async () => {
       const res = await request(app).get('/api/summary');
       expect(res.statusCode).toBe(200);
       expect(res.body.total_debt).toBe(5000);
       expect(res.body.unmatched_transaction_count).toBe(3);
-      expect(Array.isArray(res.body.monthly_cashflow_by_category)).toBe(true);
+      expect(Array.isArray(res.body.monthly_recurring_by_category)).toBe(true);
     });
 
     test('total_debt excludes income_source accounts', async () => {

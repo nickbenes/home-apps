@@ -49,10 +49,10 @@ export function seedFixtures(db: Database.Database): void {
       VALUES ('loan_payment', 'debts', 'Sample Lender Payment', -200.00)
     `).run();
 
-    // Cashflow item (active, no date bounds)
+    // Recurring item (active, no date bounds)
     db.prepare(`
-      INSERT INTO cashflow_items
-        (cashflow_item_id, budget_item_id, account_id, name, amount, frequency, payments_per_year, effective_monthly)
+      INSERT INTO recurring_items
+        (recurring_item_id, budget_item_id, account_id, name, amount, frequency, payments_per_year, effective_monthly)
       VALUES ('loan_cf', 'loan_payment', 'test_loan', 'Sample Lender Payment', -200.00, 'monthly', 12, -200.00)
     `).run();
 

@@ -204,10 +204,10 @@ function seedAccounts(accountRows: Record<string, string>[]): void {
   console.log(`  accounts: ${count} rows`);
 }
 
-function seedCashflowItems(cashflowRows: Record<string, string>[]): void {
+function seedRecurringItems(cashflowRows: Record<string, string>[]): void {
   const stmt = db.prepare(`
-    INSERT OR REPLACE INTO cashflow_items (
-      cashflow_item_id, budget_item_id, account_id, name,
+    INSERT OR REPLACE INTO recurring_items (
+      recurring_item_id, budget_item_id, account_id, name,
       amount, frequency, payments_per_year, effective_monthly,
       is_active, notes
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, ?)
@@ -241,7 +241,7 @@ function seedCashflowItems(cashflowRows: Record<string, string>[]): void {
     count++;
   }
 
-  console.log(`  cashflow_items: ${count} rows`);
+  console.log(`  recurring_items: ${count} rows`);
   if (unmatched.length) {
     console.warn(`  ⚠ cashflow items not in CASHFLOW_TO_BUDGET_ITEM mapping: ${unmatched.join(', ')}`);
     console.warn('    Add them to CASHFLOW_TO_BUDGET_ITEM in seed.ts (or set to null if no budget item yet)');
@@ -259,6 +259,6 @@ db.transaction(() => {
   seedBudgetCategories(budgetRows);
   seedBudgetItems(budgetRows);
   seedAccounts(accountRows);
-  seedCashflowItems(cashflowRows);
+  seedRecurringItems(cashflowRows);
 })();
 console.log('Done.');

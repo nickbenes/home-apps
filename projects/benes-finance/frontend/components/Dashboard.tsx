@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { api, Summary, CashflowItem } from '../lib/api';
+import { api, Summary, RecurringItem } from '../lib/api';
 import { formatCurrency } from '../lib/format';
 
 function StatCard({ title, value, sub, linkTo, valueClass = '' }: {
@@ -22,23 +22,23 @@ function StatCard({ title, value, sub, linkTo, valueClass = '' }: {
 
 export default function Dashboard() {
   const [summary, setSummary] = useState<Summary | null>(null);
-  const [cashflow, setCashflow] = useState<CashflowItem[]>([]);
+  const [recurring, setRecurring] = useState<RecurringItem[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([api.summary(), api.cashflow.list()])
-      .then(([s, cf]) => { setSummary(s); setCashflow(cf); })
+    Promise.all([api.summary(), api.recurring.list()])
+      .then(([s, cf]) => { setSummary(s); setRecurring(cf); })
       .catch(e => setError(e.message));
   }, []);
 
   if (error) return <p className="text-red-600 text-sm">{error}</p>;
   if (!summary) return <p className="text-gray-400 text-sm">Loading…</p>;
 
-  const monthlyIncome = cashflow
-    .filter(cf => cf.effective_monthly > 0)
-    .reduce((sum, cf) => sum + cf.effective_monthly, 0);
+  const monthlyIncome = recurring
+    .filter(r => r.effective_monthly > 0)
+    .reduce((sum, r) => sum + r.effective_monthly, 0);
 
-  const monthlyExpenses = summary.monthly_cashflow_by_category
+  const monthlyExpenses = summary.monthly_recurring_by_category
     .reduce((sum, cat) => sum + cat.total_effective_monthly, 0);
 
   const net = monthlyIncome + monthlyExpenses;
@@ -54,7 +54,7 @@ export default function Dashboard() {
         <StatCard
           title="Est. Monthly Expenses"
           value={formatCurrency(Math.abs(monthlyExpenses))}
-          sub="from active cashflow items"
+          sub="from active recurring items"
           valueClass="text-amber-600"
         />
         <StatCard
@@ -71,11 +71,11 @@ export default function Dashboard() {
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100">
             <h2 className="text-sm font-medium text-gray-700">Monthly Expenses by Category</h2>
-            <p className="text-xs text-gray-400">from active cashflow items</p>
+            <p className="text-xs text-gray-400">from active recurring items</p>
           </div>
           <table className="w-full text-sm">
             <tbody>
-              {summary.monthly_cashflow_by_category.map(cat => (
+              {summary.monthly_recurring_by_category.map(cat => (
                 <tr key={cat.category_id} className="border-b border-gray-50 last:border-0">
                   <td className="px-4 py-2 text-gray-700">{cat.category_name}</td>
                   <td className="px-4 py-2 text-right font-mono text-red-600">
@@ -95,15 +95,15 @@ export default function Dashboard() {
             </div>
             <table className="w-full text-sm">
               <tbody>
-                {cashflow.filter(cf => cf.effective_monthly > 0).map(cf => (
-                  <tr key={cf.cashflow_item_id} className="border-b border-gray-50 last:border-0">
-                    <td className="px-4 py-2 text-gray-700">{cf.name}</td>
+                {recurring.filter(r => r.effective_monthly > 0).map(r => (
+                  <tr key={r.recurring_item_id} className="border-b border-gray-50 last:border-0">
+                    <td className="px-4 py-2 text-gray-700">{r.name}</td>
                     <td className="px-4 py-2 text-right font-mono text-green-600">
-                      {formatCurrency(cf.effective_monthly)}
+                      {formatCurrency(r.effective_monthly)}
                     </td>
                   </tr>
                 ))}
-                {cashflow.filter(cf => cf.effective_monthly > 0).length === 0 && (
+                {recurring.filter(r => r.effective_monthly > 0).length === 0 && (
                   <tr><td className="px-4 py-3 text-gray-400 italic" colSpan={2}>No income items</td></tr>
                 )}
               </tbody>

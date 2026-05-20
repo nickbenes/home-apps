@@ -105,10 +105,10 @@ export function createRouter(db: BetterSqlite3.Database): Router {
   // ── Cashflow ────────────────────────────────────────────────────────────────
 
   // ?all=true to include inactive items; default returns only active (via view)
-  router.get('/cashflow', (req, res) => {
+  router.get('/recurring', (req, res) => {
     const rows = req.query.all === 'true'
-      ? db.prepare('SELECT * FROM cashflow_items ORDER BY frequency, name').all()
-      : db.prepare('SELECT * FROM active_cashflow_items ORDER BY frequency, name').all();
+      ? db.prepare('SELECT * FROM recurring_items ORDER BY frequency, name').all()
+      : db.prepare('SELECT * FROM active_recurring_items ORDER BY frequency, name').all();
     res.json(rows);
   });
 
@@ -219,7 +219,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
 
   // ── Scheduled payments ──────────────────────────────────────────────────────
 
-  // Projects due dates from active cashflow items; no DB writes.
+  // Projects due dates from active recurring items; no DB writes.
   // ?days=90 (1–365, default 90)
   router.get('/scheduled', (req, res) => {
     const days = Math.min(Math.max(parseInt((req.query.days as string) || '90'), 1), 365);
@@ -227,22 +227,22 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     const end = addDays(today, days);
 
     // Include items that are active, haven't ended, and start before the window closes.
-    // Intentionally bypasses the active_cashflow_items view so items starting later this
+    // Intentionally bypasses the active_recurring_items view so items starting later this
     // week/month (projected_start_date > today) still appear in the schedule.
     const items = db.prepare(`
-      SELECT ci.*, a.creditor
-      FROM cashflow_items ci
-      LEFT JOIN accounts a ON ci.account_id = a.account_id
-      WHERE ci.is_active = 1
-        AND (ci.projected_stop_date  IS NULL OR ci.projected_stop_date  >= ?)
-        AND (ci.projected_start_date IS NULL OR ci.projected_start_date <= ?)
+      SELECT ri.*, a.creditor
+      FROM recurring_items ri
+      LEFT JOIN accounts a ON ri.account_id = a.account_id
+      WHERE ri.is_active = 1
+        AND (ri.projected_stop_date  IS NULL OR ri.projected_stop_date  >= ?)
+        AND (ri.projected_start_date IS NULL OR ri.projected_start_date <= ?)
     `).all(today, end) as any[];
 
     const result: object[] = [];
     for (const item of items) {
       for (const due_date of projectDates(item, today, end)) {
         result.push({
-          cashflow_item_id: item.cashflow_item_id,
+          recurring_item_id: item.recurring_item_id,
           name: item.name,
           due_date,
           amount: item.amount,
@@ -278,7 +278,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
 
     res.json({
       total_debt: totalDebt.total,
-      monthly_cashflow_by_category: monthlyCashflow,
+      monthly_recurring_by_category: monthlyCashflow,
       unmatched_transaction_count: unmatchedCount.count,
     });
   });

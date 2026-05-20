@@ -131,7 +131,7 @@ export default function ScheduledPayments() {
                 {/* Items */}
                 <div className="divide-y divide-gray-50">
                   {items.map((p, i) => (
-                    <div key={`${p.cashflow_item_id}-${i}`} className="px-4 py-2.5 flex items-center gap-3">
+                    <div key={`${p.recurring_item_id}-${i}`} className="px-4 py-2.5 flex items-center gap-3">
                       <div className="flex-1 min-w-0">
                         <span className="text-sm text-gray-800">{p.name}</span>
                         {p.creditor && (

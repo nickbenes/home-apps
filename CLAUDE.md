@@ -32,8 +32,8 @@ SQLite database via `better-sqlite3`. Eight tables:
 | `accounts` | One row per creditor/account |
 | `budget_categories` | Top-level groupings (Food, Auto, Debts, etc.) |
 | `budget_items` | Named line items; classification targets for transactions |
-| `cashflow_items` | Recurring templates (income + bills); have temporal bounds |
-| `scheduled_payments` | Projected future instances of cashflow items |
+| `recurring_items` | Recurring templates (income + bills); have temporal bounds |
+| `scheduled_payments` | Projected future instances of recurring items |
 | `transactions` | **Immutable** ground truth from bank/card feeds |
 | `transaction_budget_item_mappings` | Mutable many-to-many classification layer; supports splits |
 | `classification_audit_log` | Append-only history of classification changes |
@@ -50,7 +50,7 @@ Full backlog: `projects/benes-finance/data/data-model-session-logs/2026-05-19_fe
 
 Current focus: **P0 — Foundation / Data Layer**
 - Schema migration runner (`schema.sql` via `better-sqlite3`, versioned migrations)
-- CSV seeder for accounts + cashflow
+- CSV seeder for accounts + recurring items
 - Transaction CSV importer (RocketMoney export format)
 - Budget categories + items seeder
 - Basic REST API (Express endpoints for all entities)
