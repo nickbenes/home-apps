@@ -3,7 +3,7 @@ module.exports = {
   coverageDirectory: 'coverage',
   collectCoverageFrom: [
     'server.js',
-    'projects/**/backend/**/*.js',
+    'projects/**/backend/**/*.{js,ts}',
     'projects/**/frontend/**/*.{js,jsx,ts,tsx}',
     '!**/node_modules/**',
     '!**/coverage/**',
@@ -24,14 +24,19 @@ module.exports = {
       ]
     }]
   },
+  // Allows TypeScript files that use .js extensions in imports (ESM convention)
+  // by stripping the extension so Jest can resolve the .ts source instead.
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1'
+  },
   projects: [
     {
       displayName: 'node',
       testEnvironment: 'node',
       testMatch: [
         '**/server.test.js',
-        '**/projects/**/backend/**/*.test.js',
-        '**/projects/**/test/api.test.js'
+        '**/projects/**/backend/**/*.test.{js,ts}',
+        '**/projects/**/test/api.test.{js,ts}'
       ]
     },
     {

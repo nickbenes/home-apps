@@ -10,9 +10,16 @@ This repository uses a small esbuild-based script, `build.js`, to compile fronte
 - The build is intentionally minimal: it bundles with sensible defaults (minify in production, sourcemaps in development) and exits non-zero on failure.
 
 To add a new frontend app, create the folder `projects/<your-app>/frontend` and include one of the recognized entry files (for example `App.tsx`). Then run:
-
 ```bash
 npm run build
 ```
 
-If you want incremental builds or a dev server, I can add a `--watch` or `serve` option to `build.js` — tell me if you'd like that.
+To build and then run a local dev server (`server.js`), run:
+```bash
+npm run dev
+```
+
+To watch for file changes and run incremental builds:
+```bash
+npm run watch
+```

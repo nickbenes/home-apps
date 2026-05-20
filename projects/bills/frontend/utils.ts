@@ -75,7 +75,7 @@ export const calculateNextPaymentDate = (templateId: number, frequencyNumber: nu
   if (payments.length === 0) return new Date().toISOString().split('T')[0];
 
   const latestPayment = payments[payments.length - 1];
-  const latestDate = new Date(latestPayment.date);
+  const latestDate = new Date(latestPayment.date + 'T00:00:00'); // Ensure time is set to midnight for consistency
   let nextDate = new Date(latestDate);
 
   switch (frequencyPeriod) {

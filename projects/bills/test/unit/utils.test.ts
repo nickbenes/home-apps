@@ -9,7 +9,7 @@ describe('utils helpers', () => {
   it('calculates next payment date in months', () => {
     const next = calculateNextPaymentDate(100, 1, 'months', bills as any);
     // latest payment in bills is 2025-02-01 -> next month is 2025-03-01
-    expect(next.startsWith('2025-03-01')).toBeTruthy();
+    expect(next).toBe('2025-03-01');
   });
 
   it('returns payments for a template id', () => {
