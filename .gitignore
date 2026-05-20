@@ -7,3 +7,7 @@ coverage
 
 # Ignore local data
 data
+
+# Seeder contains personal financial data (accounts, debts, etc.)
+# See seed.example.ts for the version-controlled template
+projects/benes-finance/backend/seed.ts
