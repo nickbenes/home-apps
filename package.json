@@ -25,7 +25,8 @@
     "finance:css": "tailwindcss -i projects/benes-finance/frontend/index.css -o public/benes-finance/bundle.css",
     "finance:css:watch": "tailwindcss -i projects/benes-finance/frontend/index.css -o public/benes-finance/bundle.css --watch",
     "finance:build": "npm run build && npm run finance:css",
-    "finance:dev": "tsx projects/benes-finance/backend/server.ts"
+    "finance:dev": "tsx projects/benes-finance/backend/server.ts",
+    "finance:test:e2e": "playwright test --config=playwright.finance.config.ts"
   },
   "dependencies": {
     "@types/better-sqlite3": "^7.6.13",
