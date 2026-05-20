@@ -126,6 +126,30 @@ export interface DebtPriorityItem {
   payoff_date_est: string | null;
 }
 
+export interface BudgetVarianceItem {
+  budget_item_id: string;
+  item_name: string;
+  category_id: string;
+  category_name: string;
+  budgeted_monthly: number;
+  actual_amount: number;
+  tx_count: number;
+}
+
+export interface BudgetVarianceCategory {
+  category_id: string;
+  category_name: string;
+  display_order: number;
+  budgeted: number;
+  actual: number;
+  items: BudgetVarianceItem[];
+}
+
+export interface BudgetVariance {
+  month: string;
+  categories: BudgetVarianceCategory[];
+}
+
 export interface Summary {
   total_debt: number | null;
   monthly_recurring_by_category: { category_id: string; category_name: string; total_effective_monthly: number }[];
@@ -149,7 +173,8 @@ export const api = {
       patch<Account>(`/accounts/${id}`, body),
   },
   budget: {
-    items: () => get<BudgetItem[]>('/budget/items'),
+    items:    ()            => get<BudgetItem[]>('/budget/items'),
+    variance: (month: string) => get<BudgetVariance>(`/budget/variance?month=${month}`),
   },
   recurring: {
     list:    ()                                                 => get<RecurringItem[]>('/recurring'),

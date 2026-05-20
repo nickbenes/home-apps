@@ -100,6 +100,86 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     res.json(rows);
   });
 
+  router.get('/budget/variance', (req, res) => {
+    const month = (req.query.month as string) || new Date().toISOString().slice(0, 7);
+    if (!/^\d{4}-\d{2}$/.test(month)) {
+      return res.status(400).json({ error: 'month must be YYYY-MM' });
+    }
+    const [y, m] = month.split('-').map(Number);
+    const monthStart = `${month}-01`;
+    const monthEnd   = `${m === 12 ? y + 1 : y}-${String(m === 12 ? 1 : m + 1).padStart(2, '0')}-01`;
+
+    const rows = db.prepare(`
+      WITH budgeted AS (
+        SELECT
+          bi.budget_item_id,
+          bi.name            AS item_name,
+          bc.category_id,
+          bc.name            AS category_name,
+          bc.display_order,
+          ABS(COALESCE(SUM(ri.effective_monthly), 0)) AS budgeted_monthly
+        FROM budget_items bi
+        JOIN budget_categories bc ON bi.category_id = bc.category_id
+        LEFT JOIN recurring_items ri
+          ON ri.budget_item_id = bi.budget_item_id
+         AND ri.is_active = 1
+         AND ri.amount < 0
+        GROUP BY bi.budget_item_id, bi.name, bc.category_id, bc.name, bc.display_order
+      ),
+      actuals AS (
+        SELECT
+          m.budget_item_id,
+          ABS(SUM(m.allocated_amount)) AS actual_amount,
+          COUNT(DISTINCT m.transaction_id)  AS tx_count
+        FROM transaction_budget_item_mappings m
+        JOIN transactions t ON m.transaction_id = t.transaction_id
+        WHERE t.transaction_date >= ? AND t.transaction_date < ?
+        GROUP BY m.budget_item_id
+      )
+      SELECT
+        b.budget_item_id,
+        b.item_name,
+        b.category_id,
+        b.category_name,
+        b.display_order,
+        b.budgeted_monthly,
+        COALESCE(a.actual_amount, 0) AS actual_amount,
+        COALESCE(a.tx_count, 0)      AS tx_count
+      FROM budgeted b
+      LEFT JOIN actuals a ON b.budget_item_id = a.budget_item_id
+      WHERE b.budgeted_monthly > 0 OR COALESCE(a.actual_amount, 0) > 0
+      ORDER BY b.display_order, b.item_name
+    `).all(monthStart, monthEnd) as {
+      budget_item_id: string; item_name: string;
+      category_id: string; category_name: string; display_order: number;
+      budgeted_monthly: number; actual_amount: number; tx_count: number;
+    }[];
+
+    // Group flat rows into categories
+    const catMap = new Map<string, {
+      category_id: string; category_name: string; display_order: number;
+      budgeted: number; actual: number;
+      items: typeof rows;
+    }>();
+    for (const r of rows) {
+      if (!catMap.has(r.category_id)) {
+        catMap.set(r.category_id, {
+          category_id: r.category_id, category_name: r.category_name,
+          display_order: r.display_order, budgeted: 0, actual: 0, items: [],
+        });
+      }
+      const cat = catMap.get(r.category_id)!;
+      cat.budgeted += r.budgeted_monthly;
+      cat.actual   += r.actual_amount;
+      cat.items.push(r);
+    }
+
+    res.json({
+      month,
+      categories: [...catMap.values()].sort((a, b) => a.display_order - b.display_order),
+    });
+  });
+
   router.get('/budget/items', (_req, res) => {
     const rows = db.prepare(`
       SELECT bi.*, bc.name AS category_name, bc.display_order AS category_display_order
