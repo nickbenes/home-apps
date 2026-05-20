@@ -17,7 +17,7 @@
 -- ============================================================
 CREATE TABLE accounts (
   account_id          TEXT PRIMARY KEY,
-  -- e.g. 'avant', 'irs', 'opploans'
+  -- e.g. 'my_bank', 'lender_a', 'lender_b'
   creditor            TEXT NOT NULL,
   account_type        TEXT NOT NULL CHECK (account_type IN (
                         'personal_loan', 'mortgage', 'credit_card',
@@ -58,7 +58,7 @@ CREATE TABLE budget_categories (
 -- ============================================================
 CREATE TABLE budget_items (
   budget_item_id      TEXT PRIMARY KEY,
-  -- e.g. 'groceries', 'opploans_payment'
+  -- e.g. 'groceries', 'lender_payment'
   category_id         TEXT NOT NULL REFERENCES budget_categories(category_id),
   name                TEXT NOT NULL,
   expected_amount     REAL,                      -- typical amount per occurrence
@@ -73,7 +73,7 @@ CREATE TABLE budget_items (
 -- Temporal bounds: only active between projected_start/stop dates
 -- ============================================================
 CREATE TABLE cashflow_items (
-  cashflow_item_id      TEXT PRIMARY KEY,        -- e.g. 'avant_payment', 'trinet_income'
+  cashflow_item_id      TEXT PRIMARY KEY,        -- e.g. 'lender_payment', 'employer_income'
   budget_item_id        TEXT REFERENCES budget_items(budget_item_id),
   account_id            TEXT REFERENCES accounts(account_id),
   name                  TEXT NOT NULL,
