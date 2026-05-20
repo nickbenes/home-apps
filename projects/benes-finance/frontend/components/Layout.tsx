@@ -13,7 +13,7 @@ const NAV = [
 export default function Layout() {
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="bg-white border-b border-gray-200 px-6 py-0 flex items-center gap-8 h-12 shrink-0">
+      <header className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-0 flex items-center gap-8 h-12 shrink-0">
         <span className="font-semibold text-gray-900 text-sm tracking-wide">Benes Finance</span>
         <nav className="flex items-center gap-1 h-full">
           {NAV.map(({ to, label, icon: Icon }) => (
