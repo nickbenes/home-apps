@@ -1,5 +1,9 @@
 node_modules
 coverage
 
+# Claude Code local settings (machine-specific permissions)
+*.local.json
+.claude/settings.local.json
+
 # Ignore local data
 data
