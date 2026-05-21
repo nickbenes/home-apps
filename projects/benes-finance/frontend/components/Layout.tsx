@@ -3,6 +3,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, CreditCard, Repeat2, List, CalendarDays, TrendingDown,
   Zap, Activity, BarChart3, Wand2, LineChart, ScrollText, Menu, X, SplitSquareHorizontal,
+  CalendarClock, MessageSquarePlus,
 } from 'lucide-react';
 
 const NAV = [
@@ -12,6 +13,7 @@ const NAV = [
   { to: '/recurring',    label: 'Recurring',    icon: Repeat2 },
   { to: '/rules',        label: 'Rules',        icon: Wand2 },
   { to: '/schedule',     label: 'Schedule',     icon: CalendarDays },
+  { to: '/forecast',     label: 'Forecast',     icon: CalendarClock },
   { to: '/budget',       label: 'Budget',       icon: BarChart3 },
   { to: '/cashflow',     label: 'Cash Flow',    icon: Activity },
   { to: '/debt',         label: 'Debt',         icon: TrendingDown },
@@ -19,6 +21,7 @@ const NAV = [
   { to: '/scenarios',    label: 'Scenarios',    icon: SplitSquareHorizontal },
   { to: '/cascade',      label: 'Cascade',      icon: Zap },
   { to: '/audit',        label: 'Audit',        icon: ScrollText },
+  { to: '/requests',     label: 'Requests',     icon: MessageSquarePlus },
 ];
 
 function NavItems({ onClick }: { onClick?: () => void }) {
