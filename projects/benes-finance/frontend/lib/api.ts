@@ -78,6 +78,10 @@ export interface RecurringItem {
   budget_item_id: string | null;
   account_id: string | null;
   is_active: number;
+  projected_start_date?: string | null;
+  projected_stop_date?: string | null;
+  notes?: string | null;
+  tags: string[];
 }
 
 export interface Transaction {
@@ -213,11 +217,14 @@ export const api = {
     variance: (month: string) => get<BudgetVariance>(`/budget/variance?month=${month}`),
   },
   recurring: {
-    list:    ()                                                 => get<RecurringItem[]>('/recurring'),
-    listAll: ()                                                 => get<RecurringItem[]>('/recurring?all=true'),
-    create:  (body: Omit<RecurringItemInput, 'recurring_item_id'>) => post<RecurringItem>('/recurring', body),
-    update:  (id: string, body: Partial<RecurringItemInput>)    => patch<RecurringItem>(`/recurring/${id}`, body),
-    delete:  (id: string)                                       => del(`/recurring/${id}`),
+    list:      ()                                                 => get<RecurringItem[]>('/recurring'),
+    listAll:   ()                                                 => get<RecurringItem[]>('/recurring?all=true'),
+    create:    (body: Omit<RecurringItemInput, 'recurring_item_id'>) => post<RecurringItem>('/recurring', body),
+    update:    (id: string, body: Partial<RecurringItemInput>)    => patch<RecurringItem>(`/recurring/${id}`, body),
+    delete:    (id: string)                                       => del(`/recurring/${id}`),
+    addTag:    (id: string, tag: string)                          => post<RecurringItem>(`/recurring/${id}/tags`, { tag }),
+    removeTag: (id: string, tag: string)                          => del(`/recurring/${id}/tags/${encodeURIComponent(tag)}`),
+    allTags:   ()                                                 => get<string[]>('/recurring/tags'),
   },
   transactions: {
     list: (filters: TransactionFilters = {}) => {
