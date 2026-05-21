@@ -194,11 +194,43 @@ export function createRouter(db: BetterSqlite3.Database): Router {
   // ── Cashflow ────────────────────────────────────────────────────────────────
 
   // ?all=true to include inactive items; default returns only active (via view)
+  // ── Tag helpers ─────────────────────────────────────────────────────────────
+
+  function attachTags<T extends { recurring_item_id: string }>(items: T[]): (T & { tags: string[] })[] {
+    if (!items.length) return items.map(i => ({ ...i, tags: [] }));
+    const ids = items.map(i => i.recurring_item_id);
+    const placeholders = ids.map(() => '?').join(', ');
+    const tagRows = db.prepare(
+      `SELECT entity_id, tag_name FROM tags WHERE entity_type = 'recurring_item' AND entity_id IN (${placeholders}) ORDER BY tag_name`
+    ).all(ids) as { entity_id: string; tag_name: string }[];
+    const tagMap: Record<string, string[]> = {};
+    for (const { entity_id, tag_name } of tagRows) {
+      (tagMap[entity_id] ??= []).push(tag_name);
+    }
+    return items.map(i => ({ ...i, tags: tagMap[i.recurring_item_id] ?? [] }));
+  }
+
+  function recurringWithTags(id: string) {
+    const item = db.prepare('SELECT * FROM recurring_items WHERE recurring_item_id = ?').get(id) as { recurring_item_id: string } | undefined;
+    if (!item) return undefined;
+    return attachTags([item])[0];
+  }
+
+  // ── Recurring items ──────────────────────────────────────────────────────────
+
+  // List all distinct tag names used on recurring items (for filter suggestions)
+  router.get('/recurring/tags', (_req, res) => {
+    const rows = db.prepare(
+      `SELECT DISTINCT tag_name FROM tags WHERE entity_type = 'recurring_item' ORDER BY tag_name`
+    ).all() as { tag_name: string }[];
+    res.json(rows.map(r => r.tag_name));
+  });
+
   router.get('/recurring', (req, res) => {
-    const rows = req.query.all === 'true'
+    const rows = (req.query.all === 'true'
       ? db.prepare('SELECT * FROM recurring_items ORDER BY frequency, name').all()
-      : db.prepare('SELECT * FROM active_recurring_items ORDER BY frequency, name').all();
-    res.json(rows);
+      : db.prepare('SELECT * FROM active_recurring_items ORDER BY frequency, name').all()) as { recurring_item_id: string }[];
+    res.json(attachTags(rows));
   });
 
   router.post('/recurring', (req, res) => {
@@ -228,7 +260,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
            budget_item_id ?? null, account_id ?? null,
            projected_start_date ?? null, projected_stop_date ?? null, notes ?? null);
 
-    res.status(201).json(db.prepare('SELECT * FROM recurring_items WHERE recurring_item_id = ?').get(id));
+    res.status(201).json(recurringWithTags(id));
   });
 
   router.patch('/recurring/:id', (req, res) => {
@@ -262,7 +294,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
       `UPDATE recurring_items SET ${sets}, updated_at = datetime('now') WHERE recurring_item_id = ?`
     ).run(vals);
 
-    res.json(db.prepare('SELECT * FROM recurring_items WHERE recurring_item_id = ?').get(req.params.id));
+    res.json(recurringWithTags(req.params.id));
   });
 
   router.delete('/recurring/:id', (req, res) => {
@@ -270,6 +302,24 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     if (!item) return res.status(404).json({ error: 'Recurring item not found' });
     db.prepare('DELETE FROM recurring_items WHERE recurring_item_id = ?').run(req.params.id);
     res.status(204).send();
+  });
+
+  router.post('/recurring/:id/tags', (req, res) => {
+    const { tag } = req.body as { tag?: string };
+    if (!tag?.trim()) return res.status(400).json({ error: 'tag is required' });
+    const item = db.prepare('SELECT 1 FROM recurring_items WHERE recurring_item_id = ?').get(req.params.id);
+    if (!item) return res.status(404).json({ error: 'Recurring item not found' });
+    db.prepare(
+      `INSERT OR IGNORE INTO tags (tag_id, entity_type, entity_id, tag_name) VALUES (?, 'recurring_item', ?, ?)`
+    ).run(randomUUID(), req.params.id, tag.trim());
+    res.json(recurringWithTags(req.params.id));
+  });
+
+  router.delete('/recurring/:id/tags/:tag', (req, res) => {
+    db.prepare(
+      `DELETE FROM tags WHERE entity_type = 'recurring_item' AND entity_id = ? AND tag_name = ?`
+    ).run(req.params.id, decodeURIComponent(req.params.tag));
+    res.json(recurringWithTags(req.params.id));
   });
 
   // ── Transactions ────────────────────────────────────────────────────────────
