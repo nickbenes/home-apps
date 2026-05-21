@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { api, Summary, RecurringItem } from '../lib/api';
+import { api, Summary, RecurringItem, DebtPriorityItem } from '../lib/api';
 import { formatCurrency } from '../lib/format';
+import BalloonCountdown from './BalloonCountdown';
 
 function StatCard({ title, value, sub, linkTo, valueClass = '' }: {
   title: string;
@@ -21,13 +22,14 @@ function StatCard({ title, value, sub, linkTo, valueClass = '' }: {
 }
 
 export default function Dashboard() {
-  const [summary, setSummary] = useState<Summary | null>(null);
+  const [summary, setSummary]   = useState<Summary | null>(null);
   const [recurring, setRecurring] = useState<RecurringItem[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [debtItems, setDebtItems] = useState<DebtPriorityItem[]>([]);
+  const [error, setError]       = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([api.summary(), api.recurring.list()])
-      .then(([s, cf]) => { setSummary(s); setRecurring(cf); })
+    Promise.all([api.summary(), api.recurring.list(), api.debtPriority()])
+      .then(([s, cf, debt]) => { setSummary(s); setRecurring(cf); setDebtItems(debt); })
       .catch(e => setError(e.message));
   }, []);
 
@@ -45,6 +47,8 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
+      <BalloonCountdown items={debtItems} />
+
       <div className="grid grid-cols-3 gap-4">
         <StatCard
           title="Total Debt"

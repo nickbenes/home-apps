@@ -12,6 +12,7 @@ import CashFlowStress from './components/CashFlowStress';
 import BudgetVariance from './components/BudgetVariance';
 import Rules from './components/Rules';
 import Projections from './components/Projections';
+import AuditLog from './components/AuditLog';
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="budget" element={<BudgetVariance />} />
           <Route path="cashflow" element={<CashFlowStress />} />
           <Route path="cascade" element={<DebtCascade />} />
+          <Route path="audit" element={<AuditLog />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
       </Routes>

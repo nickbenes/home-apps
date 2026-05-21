@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { CheckCircle, Circle, ChevronDown, ChevronUp, X } from 'lucide-react';
+import { CheckCircle, Circle, ChevronDown, ChevronUp, X, Download } from 'lucide-react';
 import { api, Transaction, Account, BudgetItem, Mapping } from '../lib/api';
 import { formatCurrency, formatDate } from '../lib/format';
+import { downloadCsv } from '../lib/csv';
 
 const PAGE_SIZE = 50;
 
@@ -203,6 +204,30 @@ export default function Transactions() {
     }
   }
 
+  async function handleExport() {
+    const all = await api.transactions.list({
+      q: q || undefined,
+      account_id: accountId || undefined,
+      unmatched: unmatched || undefined,
+      limit: 5000,
+      offset: 0,
+    });
+    const date = new Date().toISOString().slice(0, 10);
+    downloadCsv(
+      `transactions-${date}.csv`,
+      ['Date', 'Merchant', 'Merchant (raw)', 'Amount', 'Account', 'Matched', 'Transaction ID'],
+      all.map(tx => [
+        tx.transaction_date,
+        tx.merchant_normalized ?? tx.merchant_text,
+        tx.merchant_text,
+        tx.amount.toFixed(2),
+        tx.account_id,
+        tx.mapping_count > 0 ? 'Yes' : 'No',
+        tx.transaction_id,
+      ]),
+    );
+  }
+
   const debitSources = accounts.filter(a => a.account_type === 'income_source');
 
   if (error) return <p className="text-red-600 text-sm">{error}</p>;
@@ -238,6 +263,12 @@ export default function Transactions() {
           Unmatched only
         </label>
         <span className="text-xs text-gray-400 ml-auto">{transactions.length} transactions</span>
+        <button
+          onClick={handleExport}
+          className="flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50"
+        >
+          <Download size={12} /> CSV
+        </button>
       </div>
 
       {/* Table */}

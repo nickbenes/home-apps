@@ -277,7 +277,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
   // Supports: ?account_id= ?start= ?end= ?unmatched=true ?q= ?limit= ?offset=
   router.get('/transactions', (req, res) => {
     const { account_id, start, end, unmatched, q } = req.query as Record<string, string | undefined>;
-    const limit = Math.min(parseInt((req.query.limit as string) || '50'), 200);
+    const limit = Math.min(parseInt((req.query.limit as string) || '50'), 5000);
     const offset = parseInt((req.query.offset as string) || '0');
 
     const conditions: string[] = [];
@@ -491,6 +491,46 @@ export function createRouter(db: BetterSqlite3.Database): Router {
   router.post('/rules/apply', (_req, res) => {
     const result = applyRules(db);
     res.json(result);
+  });
+
+  // ── Audit log ───────────────────────────────────────────────────────────────
+
+  // ?transaction_id= ?action= ?changed_by= ?limit= ?offset=
+  router.get('/audit', (req, res) => {
+    const { transaction_id, action, changed_by } = req.query as Record<string, string | undefined>;
+    const limit  = Math.min(parseInt((req.query.limit  as string) || '100'), 500);
+    const offset = parseInt((req.query.offset as string) || '0');
+
+    const conditions: string[] = [];
+    const params: unknown[] = [];
+
+    if (transaction_id) { conditions.push('l.transaction_id = ?'); params.push(transaction_id); }
+    if (action)         { conditions.push('l.action = ?');         params.push(action); }
+    if (changed_by)     { conditions.push('l.changed_by = ?');     params.push(changed_by); }
+
+    const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
+
+    const rows = db.prepare(`
+      SELECT
+        l.*,
+        bi.name              AS budget_item_name,
+        bc.name              AS category_name,
+        obi.name             AS old_budget_item_name,
+        t.merchant_normalized,
+        t.merchant_text,
+        t.transaction_date,
+        t.amount             AS transaction_amount
+      FROM classification_audit_log l
+      LEFT JOIN budget_items bi    ON l.budget_item_id     = bi.budget_item_id
+      LEFT JOIN budget_categories bc ON bi.category_id     = bc.category_id
+      LEFT JOIN budget_items obi   ON l.old_budget_item_id = obi.budget_item_id
+      LEFT JOIN transactions t     ON l.transaction_id     = t.transaction_id
+      ${where}
+      ORDER BY l.created_at DESC
+      LIMIT ? OFFSET ?
+    `).all([...params, limit, offset]);
+
+    res.json(rows);
   });
 
   // ── Summary ─────────────────────────────────────────────────────────────────

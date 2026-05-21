@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Download } from 'lucide-react';
 import { api, DebtPriorityItem } from '../lib/api';
 import { formatCurrency } from '../lib/format';
+import { downloadCsv } from '../lib/csv';
 
 type Mode = 'avalanche' | 'snowball';
 
@@ -51,6 +52,29 @@ export default function DebtPriority() {
   const totalPayment  = items.reduce((s, i) => s + (i.monthly_payment ?? 0), 0);
   const totalInterest = items.reduce((s, i) => s + (i.monthly_interest ?? 0), 0);
 
+  function handleExport() {
+    const date = new Date().toISOString().slice(0, 10);
+    downloadCsv(
+      `debt-summary-${date}.csv`,
+      ['Rank', 'Creditor', 'Type', 'Balance', 'APR %', 'Monthly Payment', 'Monthly Interest', 'Payoff ETA', 'Deadline'],
+      [
+        ...sorted(items, mode).map((item, i) => [
+          i + 1,
+          item.creditor,
+          item.account_type.replace(/_/g, ' '),
+          item.current_balance.toFixed(2),
+          item.interest_rate_pct ?? '',
+          item.monthly_payment?.toFixed(2) ?? '',
+          item.monthly_interest?.toFixed(2) ?? '',
+          item.payoff_date ?? '',
+          item.payoff_date_est ?? '',
+        ]),
+        [],
+        ['', 'TOTAL', '', totalBalance.toFixed(2), '', totalPayment.toFixed(2), totalInterest.toFixed(2), '', ''],
+      ],
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-baseline gap-4">
@@ -69,6 +93,12 @@ export default function DebtPriority() {
         <span className="text-xs text-gray-400">
           {mode === 'avalanche' ? 'Highest APR first — minimizes total interest paid' : 'Lowest balance first — fastest wins'}
         </span>
+        <button
+          onClick={handleExport}
+          className="ml-auto flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50"
+        >
+          <Download size={12} /> CSV
+        </button>
       </div>
 
       {/* Summary cards */}

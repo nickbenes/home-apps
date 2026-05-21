@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Download } from 'lucide-react';
 import { api, BudgetVarianceCategory, BudgetVarianceItem } from '../lib/api';
 import { formatCurrency } from '../lib/format';
+import { downloadCsv } from '../lib/csv';
 
 function currentMonth(): string {
   const d = new Date();
@@ -146,6 +147,31 @@ export default function BudgetVariance() {
   const totalVariance = totalActual - totalBudgeted;
   const isFuture      = month > currentMonth();
 
+  function handleExport() {
+    if (!data) return;
+    const rows: (string | number | null)[][] = [];
+    for (const cat of data.categories) {
+      for (const item of cat.items) {
+        rows.push([
+          cat.category_name,
+          item.item_name,
+          item.budgeted_monthly.toFixed(2),
+          item.actual_amount.toFixed(2),
+          (item.actual_amount - item.budgeted_monthly).toFixed(2),
+          item.tx_count,
+        ]);
+      }
+      rows.push([cat.category_name, 'SUBTOTAL', cat.budgeted.toFixed(2), cat.actual.toFixed(2), (cat.actual - cat.budgeted).toFixed(2), '']);
+      rows.push([]);
+    }
+    rows.push(['TOTAL', '', totalBudgeted.toFixed(2), totalActual.toFixed(2), totalVariance.toFixed(2), '']);
+    downloadCsv(
+      `budget-variance-${month}.csv`,
+      ['Category', 'Budget Item', 'Budgeted', 'Actual', 'Variance', 'Transactions'],
+      rows,
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header + month nav */}
@@ -171,6 +197,14 @@ export default function BudgetVariance() {
           <span className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded px-2 py-0.5">
             Future month — actuals will be $0
           </span>
+        )}
+        {data && (
+          <button
+            onClick={handleExport}
+            className="ml-auto flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50"
+          >
+            <Download size={12} /> CSV
+          </button>
         )}
       </div>
 

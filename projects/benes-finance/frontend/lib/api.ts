@@ -165,6 +165,27 @@ export interface BudgetVariance {
   categories: BudgetVarianceCategory[];
 }
 
+export interface AuditEntry {
+  log_id: string;
+  mapping_id: string;
+  transaction_id: string;
+  budget_item_id: string;
+  action: 'created' | 'updated' | 'deleted';
+  old_budget_item_id: string | null;
+  old_allocated_amount: number | null;
+  new_allocated_amount: number | null;
+  changed_by: 'user' | 'rule' | 'import' | null;
+  notes: string | null;
+  created_at: string;
+  budget_item_name: string | null;
+  category_name: string | null;
+  old_budget_item_name: string | null;
+  merchant_normalized: string | null;
+  merchant_text: string | null;
+  transaction_date: string | null;
+  transaction_amount: number | null;
+}
+
 export interface Summary {
   total_debt: number | null;
   monthly_recurring_by_category: { category_id: string; category_name: string; total_effective_monthly: number }[];
@@ -225,6 +246,17 @@ export const api = {
     update: (id: string, body: Partial<ClassificationRule>)          => patch<ClassificationRule>(`/rules/${id}`, body),
     delete: (id: string)                                             => del(`/rules/${id}`),
     apply:  ()                                                       => post<{ classified: number; skipped: number }>('/rules/apply', {}),
+  },
+  audit: {
+    list: (filters: { transaction_id?: string; action?: string; changed_by?: string; limit?: number; offset?: number } = {}) => {
+      const qs = new URLSearchParams();
+      if (filters.transaction_id) qs.set('transaction_id', filters.transaction_id);
+      if (filters.action)         qs.set('action',         filters.action);
+      if (filters.changed_by)     qs.set('changed_by',     filters.changed_by);
+      if (filters.limit)          qs.set('limit',          String(filters.limit));
+      if (filters.offset)         qs.set('offset',         String(filters.offset));
+      return get<AuditEntry[]>(`/audit?${qs}`);
+    },
   },
   debtPriority: () => get<DebtPriorityItem[]>('/debt-priority'),
   summary: () => get<Summary>('/summary'),

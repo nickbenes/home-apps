@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, CreditCard, Repeat2, List, CalendarDays, TrendingDown, Zap, Activity, BarChart3, Wand2, LineChart } from 'lucide-react';
+import { LayoutDashboard, CreditCard, Repeat2, List, CalendarDays, TrendingDown, Zap, Activity, BarChart3, Wand2, LineChart, ScrollText } from 'lucide-react';
 
 const NAV = [
   { to: '/dashboard',    label: 'Dashboard',    icon: LayoutDashboard },
@@ -14,6 +14,7 @@ const NAV = [
   { to: '/debt',         label: 'Debt',         icon: TrendingDown },
   { to: '/projections',  label: 'Projections',  icon: LineChart },
   { to: '/cascade',      label: 'Cascade',      icon: Zap },
+  { to: '/audit',        label: 'Audit',        icon: ScrollText },
 ];
 
 export default function Layout() {
