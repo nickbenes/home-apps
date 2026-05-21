@@ -127,6 +127,7 @@ export interface ForecastItem {
   creditor: string | null;
   notes: string | null;
   is_active: number;
+  is_extra_debt_payment: number;
   created_at: string;
 }
 
@@ -155,6 +156,7 @@ export interface DebtPriorityItem {
   months_to_payoff: number | null;
   payoff_date: string | null;
   payoff_date_est: string | null;
+  extra_payments: { amount: number; item_date: string }[];
 }
 
 export interface ClassificationRule {
@@ -294,9 +296,9 @@ export const api = {
   },
   forecast: {
     list:   (activeOnly = true) => get<ForecastItem[]>(`/forecast${activeOnly ? '' : '?active=false'}`),
-    create: (body: Pick<ForecastItem, 'name' | 'amount' | 'item_date'> & { account_id?: string | null; notes?: string | null }) =>
+    create: (body: Pick<ForecastItem, 'name' | 'amount' | 'item_date'> & { account_id?: string | null; notes?: string | null; is_extra_debt_payment?: number }) =>
               post<ForecastItem>('/forecast', body),
-    update: (id: string, body: Partial<Pick<ForecastItem, 'name' | 'amount' | 'item_date' | 'account_id' | 'notes' | 'is_active'>>) =>
+    update: (id: string, body: Partial<Pick<ForecastItem, 'name' | 'amount' | 'item_date' | 'account_id' | 'notes' | 'is_active' | 'is_extra_debt_payment'>>) =>
               patch<ForecastItem>(`/forecast/${id}`, body),
     delete: (id: string) => del(`/forecast/${id}`),
   },
