@@ -13,6 +13,7 @@ import BudgetVariance from './components/BudgetVariance';
 import Rules from './components/Rules';
 import Projections from './components/Projections';
 import AuditLog from './components/AuditLog';
+import IncomeScenarios from './components/IncomeScenarios';
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="budget" element={<BudgetVariance />} />
           <Route path="cashflow" element={<CashFlowStress />} />
           <Route path="cascade" element={<DebtCascade />} />
+          <Route path="scenarios" element={<IncomeScenarios />} />
           <Route path="audit" element={<AuditLog />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>

@@ -102,7 +102,7 @@ export default function DebtPriority() {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { label: 'Total Debt',         value: formatCurrency(totalBalance) },
           { label: 'Monthly Payments',   value: formatCurrency(totalPayment) },

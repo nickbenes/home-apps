@@ -82,7 +82,7 @@ export default function ScheduledPayments() {
       </div>
 
       {/* Period summary */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div className="bg-white rounded-lg border border-gray-200 px-4 py-3">
           <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Income</p>
           <p className="text-lg font-semibold text-green-600 font-mono">{formatCurrency(totalIncome)}</p>
