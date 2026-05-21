@@ -1,9 +1,16 @@
 #!/bin/bash
-# Called by the post-merge git hook when main is updated.
-# Rebuilds the frontend bundle and restarts the user service (no sudo needed).
+# Rebuilds the frontend bundle and restarts the benes-finance user service.
+# Used as the post-merge git hook (via symlink from .git/hooks/post-merge).
+# Can also be run directly for a manual deploy.
 set -euo pipefail
 
-REPO=/home/nickbenes/dev/bills-tracker
+# When invoked as a git hook, only deploy on main.
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+if [ "$BRANCH" != "main" ] && [ "$BRANCH" != "unknown" ]; then
+  exit 0
+fi
+
+REPO=$(git rev-parse --show-toplevel)
 
 echo "[CD] Building benes-finance…"
 cd "$REPO"
