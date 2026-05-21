@@ -205,7 +205,7 @@ export default function Projections() {
         <span className="text-xs text-gray-400">Click any account to see month-by-month amortization</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="bg-white rounded-lg border border-gray-200 px-4 py-3">
           <p className="text-xs text-gray-500">Total Active Debt</p>
           <p className="text-xl font-mono font-semibold text-gray-900 mt-0.5">{formatCurrency(totalDebt)}</p>

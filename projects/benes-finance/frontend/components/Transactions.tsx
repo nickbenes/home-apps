@@ -84,14 +84,14 @@ function ClassifyPanel({ tx, budgetItems, onDone }: {
   }
 
   return (
-    <div className="bg-blue-50 border-t border-blue-100 px-4 py-3">
+    <div className="bg-blue-50 border-t border-blue-100 px-3 sm:px-4 py-3">
       {mappings.length > 0 && (
         <div className="mb-3 space-y-1">
           {mappings.map(m => (
-            <div key={m.mapping_id} className="flex items-center gap-2 text-sm text-gray-700">
+            <div key={m.mapping_id} className="flex items-center gap-2 text-sm text-gray-700 flex-wrap">
               <CheckCircle size={13} className="text-green-500 shrink-0" />
-              <span>{m.budget_item_name ?? m.budget_item_id}</span>
-              <span className="text-gray-400">({m.category_name})</span>
+              <span className="truncate max-w-[140px] sm:max-w-none">{m.budget_item_name ?? m.budget_item_id}</span>
+              <span className="text-gray-400 hidden sm:inline">({m.category_name})</span>
               <span className="font-mono ml-auto">{formatCurrency(m.allocated_amount, true)}</span>
               <button onClick={() => handleDelete(m.mapping_id)} className="text-gray-400 hover:text-red-500 ml-1">
                 <X size={13} />
@@ -108,7 +108,7 @@ function ClassifyPanel({ tx, budgetItems, onDone }: {
           step="0.01"
           value={amount}
           onChange={e => setAmount(e.target.value)}
-          className="border border-gray-300 rounded px-2 py-1 text-sm w-28 font-mono focus:outline-none focus:ring-1 focus:ring-blue-400"
+          className="border border-gray-300 rounded px-2 py-1 text-sm w-24 font-mono focus:outline-none focus:ring-1 focus:ring-blue-400"
         />
         <button
           onClick={handleClassify}
@@ -117,7 +117,7 @@ function ClassifyPanel({ tx, budgetItems, onDone }: {
         >
           {saving ? 'Saving…' : 'Classify'}
         </button>
-        {err && <span className="text-red-600 text-xs">{err}</span>}
+        {err && <span className="text-red-600 text-xs w-full">{err}</span>}
       </div>
     </div>
   );
@@ -235,13 +235,13 @@ export default function Transactions() {
   return (
     <div className="space-y-4">
       {/* Filter bar */}
-      <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex items-center gap-2 flex-wrap">
         <input
           type="search"
           placeholder="Search merchant…"
           value={q}
           onChange={e => setFilter('q', e.target.value)}
-          className="border border-gray-300 rounded px-3 py-1.5 text-sm w-56 focus:outline-none focus:ring-1 focus:ring-blue-400"
+          className="border border-gray-300 rounded px-3 py-1.5 text-sm w-full sm:w-48 focus:outline-none focus:ring-1 focus:ring-blue-400"
         />
         <select
           value={accountId}
@@ -262,7 +262,7 @@ export default function Transactions() {
           />
           Unmatched only
         </label>
-        <span className="text-xs text-gray-400 ml-auto">{transactions.length} transactions</span>
+        <span className="text-xs text-gray-400 ml-auto hidden sm:inline">{transactions.length} transactions</span>
         <button
           onClick={handleExport}
           className="flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50"
@@ -273,14 +273,15 @@ export default function Transactions() {
 
       {/* Table */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide">
-              <th className="px-4 py-2 text-left font-medium w-20">Date</th>
-              <th className="px-4 py-2 text-left font-medium">Merchant</th>
-              <th className="px-4 py-2 text-right font-medium w-24">Amount</th>
-              <th className="px-4 py-2 text-left font-medium w-28">Account</th>
-              <th className="px-4 py-2 text-center font-medium w-10"></th>
+              <th className="px-3 sm:px-4 py-2 text-left font-medium w-20">Date</th>
+              <th className="px-3 sm:px-4 py-2 text-left font-medium">Merchant</th>
+              <th className="px-3 sm:px-4 py-2 text-right font-medium w-20 sm:w-24">Amount</th>
+              <th className="px-3 sm:px-4 py-2 text-left font-medium w-28 hidden sm:table-cell">Account</th>
+              <th className="px-3 sm:px-4 py-2 text-center font-medium w-8"></th>
             </tr>
           </thead>
           <tbody>
@@ -295,17 +296,17 @@ export default function Transactions() {
                     onClick={() => setExpandedId(isExpanded ? null : tx.transaction_id)}
                     className={`border-b border-gray-50 last:border-0 cursor-pointer hover:bg-gray-50 ${isExpanded ? 'bg-blue-50' : ''}`}
                   >
-                    <td className="px-4 py-2.5 text-gray-400 text-xs whitespace-nowrap">
+                    <td className="px-3 sm:px-4 py-2.5 text-gray-400 text-xs whitespace-nowrap">
                       {formatDate(tx.transaction_date)}
                     </td>
-                    <td className="px-4 py-2.5 text-gray-800 max-w-xs truncate" title={tx.merchant_text}>
+                    <td className="px-3 sm:px-4 py-2.5 text-gray-800 max-w-[140px] sm:max-w-xs truncate" title={tx.merchant_text}>
                       {merchantDisplay}
                     </td>
-                    <td className={`px-4 py-2.5 text-right font-mono text-xs ${tx.amount < 0 ? 'text-red-600' : 'text-green-600'}`}>
+                    <td className={`px-3 sm:px-4 py-2.5 text-right font-mono text-xs ${tx.amount < 0 ? 'text-red-600' : 'text-green-600'}`}>
                       {tx.amount < 0 ? '−' : '+'}{formatCurrency(Math.abs(tx.amount), true)}
                     </td>
-                    <td className="px-4 py-2.5 text-gray-400 text-xs">{tx.account_id}</td>
-                    <td className="px-4 py-2.5 text-center">
+                    <td className="px-3 sm:px-4 py-2.5 text-gray-400 text-xs hidden sm:table-cell">{tx.account_id}</td>
+                    <td className="px-3 sm:px-4 py-2.5 text-center">
                       {isMatched
                         ? <CheckCircle size={14} className="text-green-500 mx-auto" />
                         : <Circle size={14} className="text-gray-300 mx-auto" />}
@@ -334,6 +335,7 @@ export default function Transactions() {
             )}
           </tbody>
         </table>
+        </div>
 
         {loading && (
           <div className="px-4 py-3 text-center text-gray-400 text-sm border-t border-gray-100">

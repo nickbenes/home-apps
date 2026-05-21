@@ -49,7 +49,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       <BalloonCountdown items={debtItems} />
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard
           title="Total Debt"
           value={formatCurrency(summary.total_debt ?? 0)}
@@ -70,7 +70,7 @@ export default function Dashboard() {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Cashflow by category */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100">

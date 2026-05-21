@@ -155,7 +155,7 @@ export default function CashFlowStress() {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white rounded-lg border border-gray-200 px-4 py-3">
           <p className="text-xs text-gray-500">Total Inflow ({numWeeks}w)</p>
           <p className="text-xl font-mono font-semibold text-green-700 mt-0.5">{formatCurrency(totalIncome)}</p>
