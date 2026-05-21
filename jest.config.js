@@ -37,7 +37,10 @@ module.exports = {
         '**/server.test.js',
         '**/projects/**/backend/**/*.test.{js,ts}',
         '**/projects/**/test/api.test.{js,ts}'
-      ]
+      ],
+      moduleNameMapper: {
+        '^(\\.{1,2}/.*)\\.js$': '$1'
+      },
     },
     {
       displayName: 'jsdom',
@@ -48,6 +51,7 @@ module.exports = {
       ],
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
       moduleNameMapper: {
+        '^(\\.{1,2}/.*)\\.js$': '$1',
         '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
       },
       transform: {

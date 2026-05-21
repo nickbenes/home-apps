@@ -112,6 +112,80 @@ export interface ScheduledPayment {
   creditor: string | null;
 }
 
+export interface DebtPriorityItem {
+  account_id: string;
+  creditor: string;
+  account_type: string;
+  status: string;
+  current_balance: number;
+  interest_rate_pct: number | null;
+  monthly_payment: number | null;
+  monthly_interest: number | null;
+  months_to_payoff: number | null;
+  payoff_date: string | null;
+  payoff_date_est: string | null;
+}
+
+export interface ClassificationRule {
+  rule_id: string;
+  pattern: string;
+  match_field: 'merchant_normalized' | 'merchant_text';
+  match_type: 'contains' | 'starts_with' | 'exact';
+  budget_item_id: string;
+  budget_item_name: string;
+  category_name: string;
+  confidence: 'auto_high' | 'auto_medium' | 'auto_low';
+  priority: number;
+  is_active: number;
+  source: string;
+  notes: string | null;
+}
+
+export interface BudgetVarianceItem {
+  budget_item_id: string;
+  item_name: string;
+  category_id: string;
+  category_name: string;
+  budgeted_monthly: number;
+  actual_amount: number;
+  tx_count: number;
+}
+
+export interface BudgetVarianceCategory {
+  category_id: string;
+  category_name: string;
+  display_order: number;
+  budgeted: number;
+  actual: number;
+  items: BudgetVarianceItem[];
+}
+
+export interface BudgetVariance {
+  month: string;
+  categories: BudgetVarianceCategory[];
+}
+
+export interface AuditEntry {
+  log_id: string;
+  mapping_id: string;
+  transaction_id: string;
+  budget_item_id: string;
+  action: 'created' | 'updated' | 'deleted';
+  old_budget_item_id: string | null;
+  old_allocated_amount: number | null;
+  new_allocated_amount: number | null;
+  changed_by: 'user' | 'rule' | 'import' | null;
+  notes: string | null;
+  created_at: string;
+  budget_item_name: string | null;
+  category_name: string | null;
+  old_budget_item_name: string | null;
+  merchant_normalized: string | null;
+  merchant_text: string | null;
+  transaction_date: string | null;
+  transaction_amount: number | null;
+}
+
 export interface Summary {
   total_debt: number | null;
   monthly_recurring_by_category: { category_id: string; category_name: string; total_effective_monthly: number }[];
@@ -131,11 +205,12 @@ export interface TransactionFilters {
 export const api = {
   accounts: {
     list: () => get<Account[]>('/accounts'),
-    update: (id: string, body: Partial<Pick<Account, 'current_balance' | 'balance_date' | 'status' | 'notes'>>) =>
+    update: (id: string, body: Partial<Pick<Account, 'current_balance' | 'balance_date' | 'interest_rate_pct' | 'status' | 'notes'>>) =>
       patch<Account>(`/accounts/${id}`, body),
   },
   budget: {
-    items: () => get<BudgetItem[]>('/budget/items'),
+    items:    ()            => get<BudgetItem[]>('/budget/items'),
+    variance: (month: string) => get<BudgetVariance>(`/budget/variance?month=${month}`),
   },
   recurring: {
     list:    ()                                                 => get<RecurringItem[]>('/recurring'),
@@ -164,5 +239,25 @@ export const api = {
   scheduled: {
     list: (days = 90) => get<ScheduledPayment[]>(`/scheduled?days=${days}`),
   },
+  rules: {
+    list:   ()                                                        => get<ClassificationRule[]>('/rules'),
+    create: (body: Omit<ClassificationRule, 'rule_id' | 'budget_item_name' | 'category_name' | 'source'>) =>
+              post<ClassificationRule>('/rules', body),
+    update: (id: string, body: Partial<ClassificationRule>)          => patch<ClassificationRule>(`/rules/${id}`, body),
+    delete: (id: string)                                             => del(`/rules/${id}`),
+    apply:  ()                                                       => post<{ classified: number; skipped: number }>('/rules/apply', {}),
+  },
+  audit: {
+    list: (filters: { transaction_id?: string; action?: string; changed_by?: string; limit?: number; offset?: number } = {}) => {
+      const qs = new URLSearchParams();
+      if (filters.transaction_id) qs.set('transaction_id', filters.transaction_id);
+      if (filters.action)         qs.set('action',         filters.action);
+      if (filters.changed_by)     qs.set('changed_by',     filters.changed_by);
+      if (filters.limit)          qs.set('limit',          String(filters.limit));
+      if (filters.offset)         qs.set('offset',         String(filters.offset));
+      return get<AuditEntry[]>(`/audit?${qs}`);
+    },
+  },
+  debtPriority: () => get<DebtPriorityItem[]>('/debt-priority'),
   summary: () => get<Summary>('/summary'),
 };

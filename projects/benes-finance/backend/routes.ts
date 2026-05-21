@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { randomUUID } from 'crypto';
 import type BetterSqlite3 from 'better-sqlite3';
+import { applyRules } from './classify.js';
 
 // ── Scheduling helpers (pure, no DB dependency) ──────────────────────────────
 
@@ -79,7 +80,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
 
   // Only updates fields present in the request body; supports explicit null to clear a field.
   router.patch('/accounts/:id', (req, res) => {
-    const ALLOWED = ['current_balance', 'balance_date', 'status', 'notes'] as const;
+    const ALLOWED = ['current_balance', 'balance_date', 'interest_rate_pct', 'status', 'notes'] as const;
     const entries = Object.entries(req.body).filter(([k]) => (ALLOWED as readonly string[]).includes(k));
     if (!entries.length) {
       return res.status(400).json({ error: `No valid fields. Allowed: ${ALLOWED.join(', ')}` });
@@ -98,6 +99,86 @@ export function createRouter(db: BetterSqlite3.Database): Router {
   router.get('/budget/categories', (_req, res) => {
     const rows = db.prepare('SELECT * FROM budget_categories ORDER BY display_order').all();
     res.json(rows);
+  });
+
+  router.get('/budget/variance', (req, res) => {
+    const month = (req.query.month as string) || new Date().toISOString().slice(0, 7);
+    if (!/^\d{4}-\d{2}$/.test(month)) {
+      return res.status(400).json({ error: 'month must be YYYY-MM' });
+    }
+    const [y, m] = month.split('-').map(Number);
+    const monthStart = `${month}-01`;
+    const monthEnd   = `${m === 12 ? y + 1 : y}-${String(m === 12 ? 1 : m + 1).padStart(2, '0')}-01`;
+
+    const rows = db.prepare(`
+      WITH budgeted AS (
+        SELECT
+          bi.budget_item_id,
+          bi.name            AS item_name,
+          bc.category_id,
+          bc.name            AS category_name,
+          bc.display_order,
+          ABS(COALESCE(SUM(ri.effective_monthly), 0)) AS budgeted_monthly
+        FROM budget_items bi
+        JOIN budget_categories bc ON bi.category_id = bc.category_id
+        LEFT JOIN recurring_items ri
+          ON ri.budget_item_id = bi.budget_item_id
+         AND ri.is_active = 1
+         AND ri.amount < 0
+        GROUP BY bi.budget_item_id, bi.name, bc.category_id, bc.name, bc.display_order
+      ),
+      actuals AS (
+        SELECT
+          m.budget_item_id,
+          ABS(SUM(m.allocated_amount)) AS actual_amount,
+          COUNT(DISTINCT m.transaction_id)  AS tx_count
+        FROM transaction_budget_item_mappings m
+        JOIN transactions t ON m.transaction_id = t.transaction_id
+        WHERE t.transaction_date >= ? AND t.transaction_date < ?
+        GROUP BY m.budget_item_id
+      )
+      SELECT
+        b.budget_item_id,
+        b.item_name,
+        b.category_id,
+        b.category_name,
+        b.display_order,
+        b.budgeted_monthly,
+        COALESCE(a.actual_amount, 0) AS actual_amount,
+        COALESCE(a.tx_count, 0)      AS tx_count
+      FROM budgeted b
+      LEFT JOIN actuals a ON b.budget_item_id = a.budget_item_id
+      WHERE b.budgeted_monthly > 0 OR COALESCE(a.actual_amount, 0) > 0
+      ORDER BY b.display_order, b.item_name
+    `).all(monthStart, monthEnd) as {
+      budget_item_id: string; item_name: string;
+      category_id: string; category_name: string; display_order: number;
+      budgeted_monthly: number; actual_amount: number; tx_count: number;
+    }[];
+
+    // Group flat rows into categories
+    const catMap = new Map<string, {
+      category_id: string; category_name: string; display_order: number;
+      budgeted: number; actual: number;
+      items: typeof rows;
+    }>();
+    for (const r of rows) {
+      if (!catMap.has(r.category_id)) {
+        catMap.set(r.category_id, {
+          category_id: r.category_id, category_name: r.category_name,
+          display_order: r.display_order, budgeted: 0, actual: 0, items: [],
+        });
+      }
+      const cat = catMap.get(r.category_id)!;
+      cat.budgeted += r.budgeted_monthly;
+      cat.actual   += r.actual_amount;
+      cat.items.push(r);
+    }
+
+    res.json({
+      month,
+      categories: [...catMap.values()].sort((a, b) => a.display_order - b.display_order),
+    });
   });
 
   router.get('/budget/items', (_req, res) => {
@@ -196,7 +277,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
   // Supports: ?account_id= ?start= ?end= ?unmatched=true ?q= ?limit= ?offset=
   router.get('/transactions', (req, res) => {
     const { account_id, start, end, unmatched, q } = req.query as Record<string, string | undefined>;
-    const limit = Math.min(parseInt((req.query.limit as string) || '50'), 200);
+    const limit = Math.min(parseInt((req.query.limit as string) || '50'), 5000);
     const offset = parseInt((req.query.offset as string) || '0');
 
     const conditions: string[] = [];
@@ -336,7 +417,178 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     res.json(result);
   });
 
+  // ── Classification rules ─────────────────────────────────────────────────────
+
+  router.get('/rules', (_req, res) => {
+    const rows = db.prepare(`
+      SELECT r.*, bi.name AS budget_item_name, bc.name AS category_name
+      FROM classification_rules r
+      JOIN budget_items bi ON r.budget_item_id = bi.budget_item_id
+      JOIN budget_categories bc ON bi.category_id = bc.category_id
+      ORDER BY r.priority DESC, r.created_at ASC
+    `).all();
+    res.json(rows);
+  });
+
+  router.post('/rules', (req, res) => {
+    const { pattern, match_field = 'merchant_normalized', match_type = 'contains',
+            budget_item_id, confidence = 'auto_high', priority = 0, notes } = req.body;
+
+    if (!pattern || !budget_item_id) {
+      return res.status(400).json({ error: 'pattern and budget_item_id are required' });
+    }
+    const item = db.prepare('SELECT 1 FROM budget_items WHERE budget_item_id = ?').get(budget_item_id);
+    if (!item) return res.status(400).json({ error: 'budget_item_id not found' });
+
+    const id = randomUUID();
+    db.prepare(`
+      INSERT INTO classification_rules
+        (rule_id, pattern, match_field, match_type, budget_item_id, confidence, priority, notes)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(id, pattern.trim(), match_field, match_type, budget_item_id, confidence, priority, notes ?? null);
+
+    const row = db.prepare(`
+      SELECT r.*, bi.name AS budget_item_name, bc.name AS category_name
+      FROM classification_rules r
+      JOIN budget_items bi ON r.budget_item_id = bi.budget_item_id
+      JOIN budget_categories bc ON bi.category_id = bc.category_id
+      WHERE r.rule_id = ?
+    `).get(id);
+    res.status(201).json(row);
+  });
+
+  router.patch('/rules/:id', (req, res) => {
+    const ALLOWED = ['pattern', 'match_field', 'match_type', 'budget_item_id',
+                     'confidence', 'priority', 'is_active', 'notes'] as const;
+    const entries = Object.entries(req.body).filter(([k]) => (ALLOWED as readonly string[]).includes(k));
+    if (!entries.length) return res.status(400).json({ error: `Allowed fields: ${ALLOWED.join(', ')}` });
+
+    const rule = db.prepare('SELECT 1 FROM classification_rules WHERE rule_id = ?').get(req.params.id);
+    if (!rule) return res.status(404).json({ error: 'Rule not found' });
+
+    const sets = entries.map(([k]) => `${k} = ?`).join(', ');
+    db.prepare(
+      `UPDATE classification_rules SET ${sets}, updated_at = datetime('now') WHERE rule_id = ?`
+    ).run([...entries.map(([, v]) => v), req.params.id]);
+
+    res.json(db.prepare(`
+      SELECT r.*, bi.name AS budget_item_name, bc.name AS category_name
+      FROM classification_rules r
+      JOIN budget_items bi ON r.budget_item_id = bi.budget_item_id
+      JOIN budget_categories bc ON bi.category_id = bc.category_id
+      WHERE r.rule_id = ?
+    `).get(req.params.id));
+  });
+
+  router.delete('/rules/:id', (req, res) => {
+    const rule = db.prepare('SELECT 1 FROM classification_rules WHERE rule_id = ?').get(req.params.id);
+    if (!rule) return res.status(404).json({ error: 'Rule not found' });
+    db.prepare('DELETE FROM classification_rules WHERE rule_id = ?').run(req.params.id);
+    res.status(204).send();
+  });
+
+  // Applies all active rules to every unclassified transaction.
+  router.post('/rules/apply', (_req, res) => {
+    const result = applyRules(db);
+    res.json(result);
+  });
+
+  // ── Audit log ───────────────────────────────────────────────────────────────
+
+  // ?transaction_id= ?action= ?changed_by= ?limit= ?offset=
+  router.get('/audit', (req, res) => {
+    const { transaction_id, action, changed_by } = req.query as Record<string, string | undefined>;
+    const limit  = Math.min(parseInt((req.query.limit  as string) || '100'), 500);
+    const offset = parseInt((req.query.offset as string) || '0');
+
+    const conditions: string[] = [];
+    const params: unknown[] = [];
+
+    if (transaction_id) { conditions.push('l.transaction_id = ?'); params.push(transaction_id); }
+    if (action)         { conditions.push('l.action = ?');         params.push(action); }
+    if (changed_by)     { conditions.push('l.changed_by = ?');     params.push(changed_by); }
+
+    const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
+
+    const rows = db.prepare(`
+      SELECT
+        l.*,
+        bi.name              AS budget_item_name,
+        bc.name              AS category_name,
+        obi.name             AS old_budget_item_name,
+        t.merchant_normalized,
+        t.merchant_text,
+        t.transaction_date,
+        t.amount             AS transaction_amount
+      FROM classification_audit_log l
+      LEFT JOIN budget_items bi    ON l.budget_item_id     = bi.budget_item_id
+      LEFT JOIN budget_categories bc ON bi.category_id     = bc.category_id
+      LEFT JOIN budget_items obi   ON l.old_budget_item_id = obi.budget_item_id
+      LEFT JOIN transactions t     ON l.transaction_id     = t.transaction_id
+      ${where}
+      ORDER BY l.created_at DESC
+      LIMIT ? OFFSET ?
+    `).all([...params, limit, offset]);
+
+    res.json(rows);
+  });
+
   // ── Summary ─────────────────────────────────────────────────────────────────
+
+  router.get('/debt-priority', (_req, res) => {
+    const rows = db.prepare(`
+      SELECT
+        a.account_id,
+        a.creditor,
+        a.account_type,
+        a.status,
+        a.current_balance,
+        a.interest_rate_pct,
+        a.balance_date,
+        a.payoff_date_est,
+        ABS(SUM(ri.effective_monthly)) AS monthly_payment
+      FROM accounts a
+      LEFT JOIN recurring_items ri
+        ON ri.account_id = a.account_id AND ri.is_active = 1 AND ri.amount < 0
+      WHERE a.account_type != 'income_source'
+        AND a.status NOT IN ('paid_off', 'settled')
+        AND a.current_balance IS NOT NULL
+        AND a.current_balance > 0
+      GROUP BY a.account_id
+    `).all() as {
+      account_id: string; creditor: string; account_type: string; status: string;
+      current_balance: number; interest_rate_pct: number | null;
+      balance_date: string | null; payoff_date_est: string | null;
+      monthly_payment: number | null;
+    }[];
+
+    const today = new Date();
+    const result = rows.map(r => {
+      const rate = r.interest_rate_pct != null ? r.interest_rate_pct / 100 / 12 : null;
+      const monthly_interest = rate != null ? r.current_balance * rate : null;
+      const pmt = r.monthly_payment ?? 0;
+
+      let months_to_payoff: number | null = null;
+      if (pmt > 0) {
+        if (rate == null || rate === 0) {
+          months_to_payoff = r.current_balance / pmt;
+        } else if (pmt > r.current_balance * rate) {
+          months_to_payoff = -Math.log(1 - rate * r.current_balance / pmt) / Math.log(1 + rate);
+        }
+      }
+
+      let payoff_date: string | null = null;
+      if (months_to_payoff != null) {
+        const d = new Date(today);
+        d.setMonth(d.getMonth() + Math.ceil(months_to_payoff));
+        payoff_date = d.toISOString().slice(0, 7); // YYYY-MM
+      }
+
+      return { ...r, monthly_interest, months_to_payoff, payoff_date };
+    });
+
+    res.json(result);
+  });
 
   router.get('/summary', (_req, res) => {
     const totalDebt = db.prepare(`

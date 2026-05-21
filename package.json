@@ -11,7 +11,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "test": "jest --coverage",
-    "test:unit": "jest --testPathPattern='unit|api.test' --coverage",
+    "test:unit": "jest --testPathPatterns='unit|api.test' --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:all": "npm run test:unit && npm run test:e2e",
@@ -25,7 +25,8 @@
     "finance:css": "tailwindcss -i projects/benes-finance/frontend/index.css -o public/benes-finance/bundle.css",
     "finance:css:watch": "tailwindcss -i projects/benes-finance/frontend/index.css -o public/benes-finance/bundle.css --watch",
     "finance:build": "npm run build && npm run finance:css",
-    "finance:dev": "tsx projects/benes-finance/backend/server.ts"
+    "finance:dev": "tsx projects/benes-finance/backend/server.ts",
+    "finance:test:e2e": "playwright test --config=playwright.finance.config.ts"
   },
   "dependencies": {
     "@types/better-sqlite3": "^7.6.13",
@@ -47,6 +48,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
+    "@types/node": "^25.9.1",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.59.4",

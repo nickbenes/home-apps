@@ -1,19 +1,26 @@
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, CreditCard, Repeat2, List, CalendarDays } from 'lucide-react';
+import { LayoutDashboard, CreditCard, Repeat2, List, CalendarDays, TrendingDown, Zap, Activity, BarChart3, Wand2, LineChart, ScrollText } from 'lucide-react';
 
 const NAV = [
   { to: '/dashboard',    label: 'Dashboard',    icon: LayoutDashboard },
   { to: '/accounts',     label: 'Accounts',     icon: CreditCard },
   { to: '/recurring',    label: 'Recurring',    icon: Repeat2 },
   { to: '/transactions', label: 'Transactions', icon: List },
+  { to: '/rules',        label: 'Rules',        icon: Wand2 },
   { to: '/schedule',     label: 'Schedule',     icon: CalendarDays },
+  { to: '/budget',       label: 'Budget',       icon: BarChart3 },
+  { to: '/cashflow',     label: 'Cash Flow',    icon: Activity },
+  { to: '/debt',         label: 'Debt',         icon: TrendingDown },
+  { to: '/projections',  label: 'Projections',  icon: LineChart },
+  { to: '/cascade',      label: 'Cascade',      icon: Zap },
+  { to: '/audit',        label: 'Audit',        icon: ScrollText },
 ];
 
 export default function Layout() {
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="bg-white border-b border-gray-200 px-6 py-0 flex items-center gap-8 h-12 shrink-0">
+      <header className="sticky top-0 z-10 bg-white border-b border-gray-200 px-6 py-0 flex items-center gap-8 h-12 shrink-0">
         <span className="font-semibold text-gray-900 text-sm tracking-wide">Benes Finance</span>
         <nav className="flex items-center gap-1 h-full">
           {NAV.map(({ to, label, icon: Icon }) => (
