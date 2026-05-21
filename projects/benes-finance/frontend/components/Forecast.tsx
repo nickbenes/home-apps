@@ -21,9 +21,10 @@ interface FormState {
   item_date: string;
   account_id: string;
   notes: string;
+  is_extra_debt_payment: boolean;
 }
 
-const EMPTY_FORM: FormState = { name: '', amount: '', item_date: todayStr(), account_id: '', notes: '' };
+const EMPTY_FORM: FormState = { name: '', amount: '', item_date: todayStr(), account_id: '', notes: '', is_extra_debt_payment: false };
 
 function ItemForm({
   initial,
@@ -45,6 +46,11 @@ function ItemForm({
 
   const set = (k: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm(f => ({ ...f, [k]: e.target.value }));
+
+  function handleAccountChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const val = e.target.value;
+    setForm(f => ({ ...f, account_id: val, is_extra_debt_payment: val ? f.is_extra_debt_payment : false }));
+  }
 
   return (
     <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
@@ -69,7 +75,7 @@ function ItemForm({
         <div>
           <label className="block text-xs text-gray-500 mb-1">Account (optional)</label>
           <select className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
-            value={form.account_id} onChange={set('account_id')}>
+            value={form.account_id} onChange={handleAccountChange}>
             <option value="">— none —</option>
             {accounts.map(a => (
               <option key={a.account_id} value={a.account_id}>{a.creditor}</option>
@@ -77,6 +83,18 @@ function ItemForm({
           </select>
         </div>
       </div>
+      {form.account_id && (
+        <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={form.is_extra_debt_payment}
+            onChange={e => setForm(f => ({ ...f, is_extra_debt_payment: e.target.checked }))}
+            className="rounded"
+          />
+          Apply to debt payoff
+          <span className="text-xs text-gray-400">(updates payoff dates on Debt &amp; Projections pages)</span>
+        </label>
+      )}
       <div>
         <label className="block text-xs text-gray-500 mb-1">Notes</label>
         <textarea rows={2}
@@ -143,6 +161,7 @@ export default function Forecast() {
         item_date: form.item_date,
         account_id: form.account_id || null,
         notes: form.notes.trim() || null,
+        is_extra_debt_payment: form.is_extra_debt_payment ? 1 : 0,
       });
       setItems(prev => [...prev, created].sort((a, b) => a.item_date.localeCompare(b.item_date)));
       setShowCreate(false);
@@ -162,6 +181,7 @@ export default function Forecast() {
         item_date: form.item_date,
         account_id: form.account_id || null,
         notes: form.notes.trim() || null,
+        is_extra_debt_payment: form.is_extra_debt_payment ? 1 : 0,
       });
       setItems(prev => prev.map(i => i.forecast_item_id === id ? updated : i)
         .sort((a, b) => a.item_date.localeCompare(b.item_date)));
@@ -190,6 +210,7 @@ export default function Forecast() {
       item_date: item.item_date,
       account_id: item.account_id ?? '',
       notes: item.notes ?? '',
+      is_extra_debt_payment: item.is_extra_debt_payment === 1,
     };
   }
 
@@ -335,6 +356,11 @@ function ItemSection({
                   <span className="text-sm text-gray-800">{item.name}</span>
                   {item.creditor && (
                     <span className="ml-2 text-xs text-gray-400">{item.creditor}</span>
+                  )}
+                  {item.is_extra_debt_payment === 1 && (
+                    <span className="ml-1.5 text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-medium">
+                      debt payoff
+                    </span>
                   )}
                   {item.notes && (
                     <p className="text-xs text-gray-400 mt-0.5 truncate">{item.notes}</p>

@@ -513,7 +513,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
   });
 
   router.post('/forecast', (req, res) => {
-    const { name, amount, item_date, account_id, notes } = req.body;
+    const { name, amount, item_date, account_id, notes, is_extra_debt_payment } = req.body;
     if (!name || amount == null || !item_date) {
       return res.status(400).json({ error: 'name, amount, and item_date are required' });
     }
@@ -522,16 +522,16 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     }
     const id = randomUUID();
     db.prepare(`
-      INSERT INTO forecast_items (forecast_item_id, name, amount, item_date, account_id, notes)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).run(id, name, amount, item_date, account_id ?? null, notes ?? null);
+      INSERT INTO forecast_items (forecast_item_id, name, amount, item_date, account_id, notes, is_extra_debt_payment)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(id, name, amount, item_date, account_id ?? null, notes ?? null, is_extra_debt_payment ? 1 : 0);
     res.status(201).json(
       db.prepare('SELECT fi.*, a.creditor FROM forecast_items fi LEFT JOIN accounts a ON fi.account_id = a.account_id WHERE fi.forecast_item_id = ?').get(id)
     );
   });
 
   router.patch('/forecast/:id', (req, res) => {
-    const ALLOWED = ['name', 'amount', 'item_date', 'account_id', 'notes', 'is_active'] as const;
+    const ALLOWED = ['name', 'amount', 'item_date', 'account_id', 'notes', 'is_active', 'is_extra_debt_payment'] as const;
     const entries = Object.entries(req.body).filter(([k]) => (ALLOWED as readonly string[]).includes(k));
     if (!entries.length) return res.status(400).json({ error: `Allowed: ${ALLOWED.join(', ')}` });
     const item = db.prepare('SELECT 1 FROM forecast_items WHERE forecast_item_id = ?').get(req.params.id);
@@ -771,18 +771,40 @@ export function createRouter(db: BetterSqlite3.Database): Router {
       monthly_payment: number | null;
     }[];
 
+    const extraPaymentsAll = db.prepare(`
+      SELECT account_id, amount, item_date
+      FROM forecast_items
+      WHERE is_extra_debt_payment = 1
+        AND is_active = 1
+        AND account_id IS NOT NULL
+        AND amount < 0
+        AND item_date >= date('now')
+    `).all() as { account_id: string; amount: number; item_date: string }[];
+
+    const extraByAccount = new Map<string, { amount: number; item_date: string }[]>();
+    for (const ep of extraPaymentsAll) {
+      if (!extraByAccount.has(ep.account_id)) extraByAccount.set(ep.account_id, []);
+      extraByAccount.get(ep.account_id)!.push(ep);
+    }
+
     const today = new Date();
     const result = rows.map(r => {
+      const extra_payments = extraByAccount.get(r.account_id) ?? [];
+      const extra_total = extra_payments.reduce((s, ep) => s + Math.abs(ep.amount), 0);
+      const adj_balance = Math.max(0, r.current_balance - extra_total);
+
       const rate = r.interest_rate_pct != null ? r.interest_rate_pct / 100 / 12 : null;
       const monthly_interest = rate != null ? r.current_balance * rate : null;
       const pmt = r.monthly_payment ?? 0;
 
       let months_to_payoff: number | null = null;
-      if (pmt > 0) {
+      if (adj_balance === 0) {
+        months_to_payoff = 0;
+      } else if (pmt > 0) {
         if (rate == null || rate === 0) {
-          months_to_payoff = r.current_balance / pmt;
-        } else if (pmt > r.current_balance * rate) {
-          months_to_payoff = -Math.log(1 - rate * r.current_balance / pmt) / Math.log(1 + rate);
+          months_to_payoff = adj_balance / pmt;
+        } else if (pmt > adj_balance * rate) {
+          months_to_payoff = -Math.log(1 - rate * adj_balance / pmt) / Math.log(1 + rate);
         }
       }
 
@@ -793,7 +815,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
         payoff_date = d.toISOString().slice(0, 7); // YYYY-MM
       }
 
-      return { ...r, monthly_interest, months_to_payoff, payoff_date };
+      return { ...r, monthly_interest, months_to_payoff, payoff_date, extra_payments };
     });
 
     res.json(result);

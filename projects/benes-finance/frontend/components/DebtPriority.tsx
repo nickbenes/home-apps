@@ -157,10 +157,20 @@ export default function DebtPriority() {
                     {item.monthly_interest != null ? formatCurrency(item.monthly_interest) : '—'}
                   </td>
                   <td className="px-4 py-2.5 text-right text-gray-700">
-                    {item.payoff_date_est
-                      ? <span title="Manually set estimate">{item.payoff_date_est}</span>
-                      : formatPayoffDate(item.payoff_date)
-                    }
+                    <div className="flex items-center justify-end gap-1.5">
+                      {item.payoff_date_est
+                        ? <span title="Manually set estimate">{item.payoff_date_est}</span>
+                        : formatPayoffDate(item.payoff_date)
+                      }
+                      {item.extra_payments?.length > 0 && (
+                        <span
+                          className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-medium"
+                          title={`Includes ${item.extra_payments.length} extra payment${item.extra_payments.length > 1 ? 's' : ''} totaling ${formatCurrency(item.extra_payments.reduce((s, p) => s + Math.abs(p.amount), 0))}`}
+                        >
+                          +extra
+                        </span>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

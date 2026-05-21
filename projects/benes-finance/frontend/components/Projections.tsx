@@ -16,10 +16,20 @@ function buildSchedule(
   balance: number,
   ratePct: number | null,
   monthlyPayment: number,
+  extraPayments: { amount: number; item_date: string }[] = [],
 ): ScheduleRow[] {
-  if (balance <= 0 || monthlyPayment <= 0) return [];
+  if (balance <= 0) return [];
+  const extra_total = extraPayments.reduce((s, ep) => s + Math.abs(ep.amount), 0);
+  if (monthlyPayment <= 0 && extra_total <= 0) return [];
+  const adj_balance = Math.max(0, balance - extra_total);
   const r = ratePct != null ? ratePct / 100 / 12 : 0;
-  if (r > 0 && monthlyPayment <= balance * r) return []; // payment can't cover interest
+  if (r > 0 && monthlyPayment > 0 && adj_balance > 0 && monthlyPayment <= adj_balance * r) return [];
+
+  const extraByMonth = new Map<string, number>();
+  for (const ep of extraPayments) {
+    const ym = ep.item_date.slice(0, 7);
+    extraByMonth.set(ym, (extraByMonth.get(ym) ?? 0) + Math.abs(ep.amount));
+  }
 
   const rows: ScheduleRow[] = [];
   let bal = balance;
@@ -30,7 +40,9 @@ function buildSchedule(
     const d = new Date(now.getFullYear(), now.getMonth() + m, 1);
     const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     const interest  = r > 0 ? bal * r : 0;
-    const payment   = Math.min(monthlyPayment, bal + interest); // don't overpay on last month
+    const scheduled = Math.min(monthlyPayment, bal + interest);
+    const extra     = extraByMonth.get(dateStr) ?? 0;
+    const payment   = Math.min(scheduled + extra, bal + interest);
     const principal = payment - interest;
     bal = Math.max(0, bal - principal);
     rows.push({ month: m, date: dateStr, payment, interest, principal, balance: bal });
@@ -66,16 +78,20 @@ function BalanceChart({ initialBalance, schedule }: { initialBalance: number; sc
 function AccountRow({ item }: { item: DebtPriorityItem }) {
   const [expanded, setExpanded] = useState(false);
 
+  const extraPayments = item.extra_payments ?? [];
+  const extraTotal    = extraPayments.reduce((s, ep) => s + Math.abs(ep.amount), 0);
+  const adjBalance    = Math.max(0, item.current_balance - extraTotal);
+
   const schedule = useMemo(
-    () => expanded ? buildSchedule(item.current_balance, item.interest_rate_pct, item.monthly_payment ?? 0) : [],
-    [expanded, item.current_balance, item.interest_rate_pct, item.monthly_payment],
+    () => expanded ? buildSchedule(item.current_balance, item.interest_rate_pct, item.monthly_payment ?? 0, extraPayments) : [],
+    [expanded, item.current_balance, item.interest_rate_pct, item.monthly_payment, extraPayments],
   );
 
   const noPayment   = (item.monthly_payment ?? 0) === 0;
   const rateMonthly = item.interest_rate_pct != null ? item.interest_rate_pct / 100 / 12 : 0;
   const paymentTooLow = !noPayment && rateMonthly > 0 &&
-    (item.monthly_payment ?? 0) <= item.current_balance * rateMonthly;
-  const noPayoff = noPayment || paymentTooLow;
+    (item.monthly_payment ?? 0) <= adjBalance * rateMonthly;
+  const noPayoff = adjBalance > 0 && (noPayment || paymentTooLow);
 
   const totalInterest = schedule.reduce((s, r) => s + r.interest, 0);
   const totalPaid     = schedule.reduce((s, r) => s + r.payment,  0);
@@ -136,6 +152,12 @@ function AccountRow({ item }: { item: DebtPriorityItem }) {
                   <span className="text-gray-400">
                     Interest is {totalPaid > 0 ? `${((totalInterest / totalPaid) * 100).toFixed(0)}%` : '—'} of total payments
                   </span>
+                  {extraPayments.length > 0 && (
+                    <span className="text-green-700">
+                      Extra payments: <strong className="font-mono">{formatCurrency(extraTotal)}</strong>
+                      <span className="text-green-500 ml-1">({extraPayments.length} scheduled)</span>
+                    </span>
+                  )}
                 </div>
 
                 {/* Balance chart */}
