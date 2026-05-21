@@ -107,13 +107,40 @@ export interface Mapping {
 }
 
 export interface ScheduledPayment {
-  recurring_item_id: string;
+  item_type: 'recurring' | 'forecast';
+  recurring_item_id: string | null;
+  forecast_item_id: string | null;
   name: string;
   due_date: string;
   amount: number;
   frequency: string;
   account_id: string | null;
   creditor: string | null;
+}
+
+export interface ForecastItem {
+  forecast_item_id: string;
+  name: string;
+  amount: number;
+  item_date: string;
+  account_id: string | null;
+  creditor: string | null;
+  notes: string | null;
+  is_active: number;
+  created_at: string;
+}
+
+export interface FeatureRequest {
+  request_id: string;
+  title: string;
+  description: string | null;
+  submitted_by: string | null;
+  status: 'open' | 'in_progress' | 'done' | 'declined';
+  github_issue_number: number | null;
+  github_issue_status: string | null;
+  github_issue_url: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface DebtPriorityItem {
@@ -264,6 +291,23 @@ export const api = {
       if (filters.offset)         qs.set('offset',         String(filters.offset));
       return get<AuditEntry[]>(`/audit?${qs}`);
     },
+  },
+  forecast: {
+    list:   (activeOnly = true) => get<ForecastItem[]>(`/forecast${activeOnly ? '' : '?active=false'}`),
+    create: (body: Pick<ForecastItem, 'name' | 'amount' | 'item_date'> & { account_id?: string | null; notes?: string | null }) =>
+              post<ForecastItem>('/forecast', body),
+    update: (id: string, body: Partial<Pick<ForecastItem, 'name' | 'amount' | 'item_date' | 'account_id' | 'notes' | 'is_active'>>) =>
+              patch<ForecastItem>(`/forecast/${id}`, body),
+    delete: (id: string) => del(`/forecast/${id}`),
+  },
+  featureRequests: {
+    list:   () => get<FeatureRequest[]>('/feature-requests'),
+    create: (body: { title: string; description?: string; submitted_by?: string }) =>
+              post<FeatureRequest>('/feature-requests', body),
+    update: (id: string, body: Partial<Pick<FeatureRequest, 'title' | 'description' | 'submitted_by' | 'status' | 'github_issue_number'>>) =>
+              patch<FeatureRequest>(`/feature-requests/${id}`, body),
+    delete: (id: string) => del(`/feature-requests/${id}`),
+    sync:   () => post<{ synced: number; updated: number }>('/feature-requests/sync', {}),
   },
   debtPriority: () => get<DebtPriorityItem[]>('/debt-priority'),
   summary: () => get<Summary>('/summary'),

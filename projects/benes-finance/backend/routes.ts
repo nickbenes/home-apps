@@ -452,7 +452,9 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     for (const item of items) {
       for (const due_date of projectDates(item, today, end)) {
         result.push({
+          item_type: 'recurring' as const,
           recurring_item_id: item.recurring_item_id,
+          forecast_item_id: null,
           name: item.name,
           due_date,
           amount: item.amount,
@@ -463,8 +465,165 @@ export function createRouter(db: BetterSqlite3.Database): Router {
       }
     }
 
+    // Include active forecast items within the window
+    const forecasts = db.prepare(`
+      SELECT fi.*, a.creditor
+      FROM forecast_items fi
+      LEFT JOIN accounts a ON fi.account_id = a.account_id
+      WHERE fi.is_active = 1 AND fi.item_date >= ? AND fi.item_date <= ?
+    `).all(today, end) as any[];
+
+    for (const fi of forecasts) {
+      result.push({
+        item_type: 'forecast' as const,
+        recurring_item_id: null,
+        forecast_item_id: fi.forecast_item_id,
+        name: fi.name,
+        due_date: fi.item_date,
+        amount: fi.amount,
+        frequency: 'one_time',
+        account_id: fi.account_id ?? null,
+        creditor: fi.creditor ?? null,
+      });
+    }
+
     (result as any[]).sort((a, b) => a.due_date.localeCompare(b.due_date));
     res.json(result);
+  });
+
+  // ── Forecast items ───────────────────────────────────────────────────────────
+
+  router.get('/forecast', (req, res) => {
+    const activeOnly = req.query.active !== 'false';
+    const rows = activeOnly
+      ? db.prepare(`
+          SELECT fi.*, a.creditor
+          FROM forecast_items fi
+          LEFT JOIN accounts a ON fi.account_id = a.account_id
+          WHERE fi.is_active = 1
+          ORDER BY fi.item_date
+        `).all()
+      : db.prepare(`
+          SELECT fi.*, a.creditor
+          FROM forecast_items fi
+          LEFT JOIN accounts a ON fi.account_id = a.account_id
+          ORDER BY fi.item_date
+        `).all();
+    res.json(rows);
+  });
+
+  router.post('/forecast', (req, res) => {
+    const { name, amount, item_date, account_id, notes } = req.body;
+    if (!name || amount == null || !item_date) {
+      return res.status(400).json({ error: 'name, amount, and item_date are required' });
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(item_date)) {
+      return res.status(400).json({ error: 'item_date must be YYYY-MM-DD' });
+    }
+    const id = randomUUID();
+    db.prepare(`
+      INSERT INTO forecast_items (forecast_item_id, name, amount, item_date, account_id, notes)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(id, name, amount, item_date, account_id ?? null, notes ?? null);
+    res.status(201).json(
+      db.prepare('SELECT fi.*, a.creditor FROM forecast_items fi LEFT JOIN accounts a ON fi.account_id = a.account_id WHERE fi.forecast_item_id = ?').get(id)
+    );
+  });
+
+  router.patch('/forecast/:id', (req, res) => {
+    const ALLOWED = ['name', 'amount', 'item_date', 'account_id', 'notes', 'is_active'] as const;
+    const entries = Object.entries(req.body).filter(([k]) => (ALLOWED as readonly string[]).includes(k));
+    if (!entries.length) return res.status(400).json({ error: `Allowed: ${ALLOWED.join(', ')}` });
+    const item = db.prepare('SELECT 1 FROM forecast_items WHERE forecast_item_id = ?').get(req.params.id);
+    if (!item) return res.status(404).json({ error: 'Forecast item not found' });
+    const sets = entries.map(([k]) => `${k} = ?`).join(', ');
+    db.prepare(
+      `UPDATE forecast_items SET ${sets}, updated_at = datetime('now') WHERE forecast_item_id = ?`
+    ).run([...entries.map(([, v]) => v), req.params.id]);
+    res.json(
+      db.prepare('SELECT fi.*, a.creditor FROM forecast_items fi LEFT JOIN accounts a ON fi.account_id = a.account_id WHERE fi.forecast_item_id = ?').get(req.params.id)
+    );
+  });
+
+  router.delete('/forecast/:id', (req, res) => {
+    const item = db.prepare('SELECT 1 FROM forecast_items WHERE forecast_item_id = ?').get(req.params.id);
+    if (!item) return res.status(404).json({ error: 'Forecast item not found' });
+    db.prepare('DELETE FROM forecast_items WHERE forecast_item_id = ?').run(req.params.id);
+    res.status(204).send();
+  });
+
+  // ── Feature requests ─────────────────────────────────────────────────────────
+
+  router.get('/feature-requests', (_req, res) => {
+    res.json(db.prepare('SELECT * FROM feature_requests ORDER BY created_at DESC').all());
+  });
+
+  router.post('/feature-requests', (req, res) => {
+    const { title, description, submitted_by } = req.body;
+    if (!title?.trim()) return res.status(400).json({ error: 'title is required' });
+    const id = randomUUID();
+    db.prepare(`
+      INSERT INTO feature_requests (request_id, title, description, submitted_by)
+      VALUES (?, ?, ?, ?)
+    `).run(id, title.trim(), description ?? null, submitted_by ?? null);
+    res.status(201).json(db.prepare('SELECT * FROM feature_requests WHERE request_id = ?').get(id));
+  });
+
+  router.patch('/feature-requests/:id', (req, res) => {
+    const ALLOWED = ['title', 'description', 'submitted_by', 'status', 'github_issue_number'] as const;
+    const entries = Object.entries(req.body).filter(([k]) => (ALLOWED as readonly string[]).includes(k));
+    if (!entries.length) return res.status(400).json({ error: `Allowed: ${ALLOWED.join(', ')}` });
+    const row = db.prepare('SELECT 1 FROM feature_requests WHERE request_id = ?').get(req.params.id);
+    if (!row) return res.status(404).json({ error: 'Request not found' });
+    const sets = entries.map(([k]) => `${k} = ?`).join(', ');
+    db.prepare(
+      `UPDATE feature_requests SET ${sets}, updated_at = datetime('now') WHERE request_id = ?`
+    ).run([...entries.map(([, v]) => v), req.params.id]);
+    res.json(db.prepare('SELECT * FROM feature_requests WHERE request_id = ?').get(req.params.id));
+  });
+
+  router.delete('/feature-requests/:id', (req, res) => {
+    const row = db.prepare('SELECT 1 FROM feature_requests WHERE request_id = ?').get(req.params.id);
+    if (!row) return res.status(404).json({ error: 'Request not found' });
+    db.prepare('DELETE FROM feature_requests WHERE request_id = ?').run(req.params.id);
+    res.status(204).send();
+  });
+
+  // Sync github_issue_status for all requests that have a github_issue_number.
+  // Requires GITHUB_TOKEN env var; optional GITHUB_REPO (default: nickbenes/bills-tracker).
+  router.post('/feature-requests/sync', async (_req, res) => {
+    const token = process.env.GITHUB_TOKEN;
+    if (!token) {
+      return res.status(501).json({ error: 'GITHUB_TOKEN env var not set — sync unavailable' });
+    }
+    const repo = process.env.GITHUB_REPO ?? 'nickbenes/bills-tracker';
+
+    const rows = db.prepare(
+      'SELECT request_id, github_issue_number FROM feature_requests WHERE github_issue_number IS NOT NULL'
+    ).all() as { request_id: string; github_issue_number: number }[];
+
+    let updated = 0;
+    for (const r of rows) {
+      try {
+        const ghRes = await fetch(
+          `https://api.github.com/repos/${repo}/issues/${r.github_issue_number}`,
+          { headers: { Authorization: `Bearer ${token}`, 'User-Agent': 'benes-finance' } }
+        );
+        if (!ghRes.ok) continue;
+        const data = await ghRes.json() as { state: string; html_url: string };
+        db.prepare(`
+          UPDATE feature_requests
+          SET github_issue_status = ?, github_issue_url = ?,
+              status = CASE WHEN ? = 'closed' AND status NOT IN ('declined') THEN 'done' ELSE status END,
+              updated_at = datetime('now')
+          WHERE request_id = ?
+        `).run(data.state, data.html_url, data.state, r.request_id);
+        updated++;
+      } catch {
+        // skip individual failures
+      }
+    }
+    res.json({ synced: rows.length, updated });
   });
 
   // ── Classification rules ─────────────────────────────────────────────────────
