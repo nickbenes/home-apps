@@ -511,8 +511,8 @@ export default function RecurringItems() {
   );
 
   const rowProps = {
-    budgetItems, accounts, expandedId,
-    onToggle: toggle, onUpdate: handleUpdate, onDelete: handleDelete, onTagClick: handleTagClick,
+    budgetItems, accounts,
+    onUpdate: handleUpdate, onDelete: handleDelete, onTagClick: handleTagClick,
   };
 
   return (
@@ -584,7 +584,13 @@ export default function RecurringItems() {
             {TABLE_HEAD}
             <tbody>
               {filteredActive.map(item => (
-                <ItemRow key={item.recurring_item_id} item={item} {...rowProps} />
+                <ItemRow
+                  key={item.recurring_item_id}
+                  item={item}
+                  {...rowProps}
+                  expanded={expandedId === item.recurring_item_id}
+                  onToggle={() => toggle(item.recurring_item_id)}
+                />
               ))}
               {filteredActive.length === 0 && !showCreate && (
                 <tr>
@@ -615,7 +621,13 @@ export default function RecurringItems() {
             </thead>
             <tbody>
               {inactive.map(item => (
-                <ItemRow key={item.recurring_item_id} item={item} {...rowProps} />
+                <ItemRow
+                  key={item.recurring_item_id}
+                  item={item}
+                  {...rowProps}
+                  expanded={expandedId === item.recurring_item_id}
+                  onToggle={() => toggle(item.recurring_item_id)}
+                />
               ))}
             </tbody>
           </table>
