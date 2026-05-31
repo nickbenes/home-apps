@@ -913,5 +913,54 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     });
   });
 
+  // ── Coverage (entity linkage audit) ──────────────────────────────────────────
+
+  router.get('/coverage', (_req, res) => {
+    const accounts = db.prepare(`
+      SELECT a.account_id, a.creditor, a.account_type, a.status,
+             COUNT(ri.recurring_item_id) AS recurring_count
+      FROM accounts a
+      LEFT JOIN recurring_items ri ON ri.account_id = a.account_id AND ri.is_active = 1
+      WHERE a.status NOT IN ('paid_off', 'settled', 'charged_off')
+      GROUP BY a.account_id
+      ORDER BY a.account_type, a.creditor
+    `).all();
+
+    const recurringItems = db.prepare(`
+      SELECT ri.recurring_item_id, ri.name, ri.amount, ri.frequency, ri.effective_monthly,
+             ri.budget_item_id, bi.name AS budget_item_name, bc.name AS category_name
+      FROM recurring_items ri
+      LEFT JOIN budget_items bi ON bi.budget_item_id = ri.budget_item_id
+      LEFT JOIN budget_categories bc ON bc.category_id = bi.category_id
+      WHERE ri.is_active = 1
+      ORDER BY ri.name
+    `).all();
+
+    const budgetItems = db.prepare(`
+      SELECT bi.budget_item_id, bi.name, bc.name AS category_name, bc.display_order,
+             COUNT(DISTINCT ri.recurring_item_id) AS recurring_count,
+             COUNT(DISTINCT cr.rule_id) AS rule_count
+      FROM budget_items bi
+      JOIN budget_categories bc ON bc.category_id = bi.category_id
+      LEFT JOIN recurring_items ri ON ri.budget_item_id = bi.budget_item_id AND ri.is_active = 1
+      LEFT JOIN classification_rules cr ON cr.budget_item_id = bi.budget_item_id AND cr.is_active = 1
+      GROUP BY bi.budget_item_id
+      ORDER BY bc.display_order, bi.name
+    `).all();
+
+    const budgetCategories = db.prepare(`
+      SELECT bc.category_id, bc.name,
+             COUNT(DISTINCT bi.budget_item_id) AS item_count,
+             COUNT(DISTINCT cr.rule_id) AS rule_count
+      FROM budget_categories bc
+      LEFT JOIN budget_items bi ON bi.category_id = bc.category_id
+      LEFT JOIN classification_rules cr ON cr.budget_item_id = bi.budget_item_id AND cr.is_active = 1
+      GROUP BY bc.category_id
+      ORDER BY bc.display_order
+    `).all();
+
+    res.json({ accounts, recurringItems, budgetItems, budgetCategories });
+  });
+
   return router;
 }

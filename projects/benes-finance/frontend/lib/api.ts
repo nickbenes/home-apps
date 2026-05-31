@@ -225,6 +225,47 @@ export interface Summary {
   unmatched_transaction_count: number;
 }
 
+export interface CoverageAccount {
+  account_id: string;
+  creditor: string;
+  account_type: string;
+  status: string;
+  recurring_count: number;
+}
+
+export interface CoverageRecurringItem {
+  recurring_item_id: string;
+  name: string;
+  amount: number;
+  frequency: string;
+  effective_monthly: number;
+  budget_item_id: string | null;
+  budget_item_name: string | null;
+  category_name: string | null;
+}
+
+export interface CoverageBudgetItem {
+  budget_item_id: string;
+  name: string;
+  category_name: string;
+  recurring_count: number;
+  rule_count: number;
+}
+
+export interface CoverageBudgetCategory {
+  category_id: string;
+  name: string;
+  item_count: number;
+  rule_count: number;
+}
+
+export interface Coverage {
+  accounts: CoverageAccount[];
+  recurringItems: CoverageRecurringItem[];
+  budgetItems: CoverageBudgetItem[];
+  budgetCategories: CoverageBudgetCategory[];
+}
+
 // ── API calls ────────────────────────────────────────────────────────────────
 
 export interface TransactionFilters {
@@ -313,4 +354,5 @@ export const api = {
   },
   debtPriority: () => get<DebtPriorityItem[]>('/debt-priority'),
   summary: () => get<Summary>('/summary'),
+  coverage: () => get<Coverage>('/coverage'),
 };

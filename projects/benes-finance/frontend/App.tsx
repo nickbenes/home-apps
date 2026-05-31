@@ -17,6 +17,7 @@ import IncomeScenarios from './components/IncomeScenarios';
 import Forecast from './components/Forecast';
 import FeatureRequests from './components/FeatureRequests';
 import Tags from './components/Tags';
+import Coverage from './components/Coverage';
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="transactions" element={<Transactions />} />
           <Route path="recurring" element={<RecurringItems />} />
           <Route path="tags" element={<Tags />} />
+          <Route path="coverage" element={<Coverage />} />
           <Route path="rules" element={<Rules />} />
           <Route path="schedule" element={<ScheduledPayments />} />
           <Route path="forecast" element={<Forecast />} />
