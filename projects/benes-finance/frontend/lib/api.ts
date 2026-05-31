@@ -309,7 +309,7 @@ export const api = {
     update: (id: string, body: Partial<Pick<FeatureRequest, 'title' | 'description' | 'submitted_by' | 'status' | 'github_issue_number'>>) =>
               patch<FeatureRequest>(`/feature-requests/${id}`, body),
     delete: (id: string) => del(`/feature-requests/${id}`),
-    sync:   () => post<{ synced: number; updated: number }>('/feature-requests/sync', {}),
+    sync:   () => post<{ synced: number; updated: number; imported: number }>('/feature-requests/sync', {}),
   },
   debtPriority: () => get<DebtPriorityItem[]>('/debt-priority'),
   summary: () => get<Summary>('/summary'),

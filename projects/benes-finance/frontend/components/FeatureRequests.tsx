@@ -105,7 +105,11 @@ export default function FeatureRequests() {
     setSyncMsg(null);
     try {
       const result = await api.featureRequests.sync();
-      setSyncMsg(`Synced ${result.synced} linked issues, updated ${result.updated}.`);
+      const parts = [];
+      if (result.updated > 0) parts.push(`updated ${result.updated} linked issue${result.updated !== 1 ? 's' : ''}`);
+      if (result.imported > 0) parts.push(`imported ${result.imported} new issue${result.imported !== 1 ? 's' : ''} from GitHub`);
+      if (parts.length === 0) parts.push('nothing new');
+      setSyncMsg(`Sync complete — ${parts.join(', ')}.`);
       const refreshed = await api.featureRequests.list();
       setRequests(refreshed);
     } catch (e: any) {

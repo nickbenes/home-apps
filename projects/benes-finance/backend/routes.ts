@@ -558,7 +558,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     res.json(db.prepare('SELECT * FROM feature_requests ORDER BY created_at DESC').all());
   });
 
-  router.post('/feature-requests', (req, res) => {
+  router.post('/feature-requests', async (req, res) => {
     const { title, description, submitted_by } = req.body;
     if (!title?.trim()) return res.status(400).json({ error: 'title is required' });
     const id = randomUUID();
@@ -566,6 +566,35 @@ export function createRouter(db: BetterSqlite3.Database): Router {
       INSERT INTO feature_requests (request_id, title, description, submitted_by)
       VALUES (?, ?, ?, ?)
     `).run(id, title.trim(), description ?? null, submitted_by ?? null);
+
+    // Best-effort: create a matching GitHub issue and link it back.
+    const token = process.env.GITHUB_TOKEN;
+    if (token) {
+      try {
+        const repo = process.env.GITHUB_REPO ?? 'nickbenes/bills-tracker';
+        const ghBody: Record<string, string> = { title: title.trim() };
+        if (description?.trim()) ghBody.body = description.trim();
+        const ghRes = await fetch(`https://api.github.com/repos/${repo}/issues`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'User-Agent': 'benes-finance',
+          },
+          body: JSON.stringify(ghBody),
+        });
+        if (ghRes.ok) {
+          const data = await ghRes.json() as { number: number; html_url: string; state: string };
+          db.prepare(`
+            UPDATE feature_requests
+            SET github_issue_number = ?, github_issue_url = ?, github_issue_status = ?,
+                updated_at = datetime('now')
+            WHERE request_id = ?
+          `).run(data.number, data.html_url, data.state, id);
+        }
+      } catch { /* skip — issue creation is best-effort */ }
+    }
+
     res.status(201).json(db.prepare('SELECT * FROM feature_requests WHERE request_id = ?').get(id));
   });
 
@@ -589,7 +618,9 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     res.status(204).send();
   });
 
-  // Sync github_issue_status for all requests that have a github_issue_number.
+  // Sync GitHub issues ↔ feature_requests:
+  //   1. Update github_issue_status for all rows already linked to an issue number.
+  //   2. Import any GitHub issues that have no matching row yet (matched by issue number).
   // Requires GITHUB_TOKEN env var; optional GITHUB_REPO (default: nickbenes/bills-tracker).
   router.post('/feature-requests/sync', async (_req, res) => {
     const token = process.env.GITHUB_TOKEN;
@@ -597,17 +628,19 @@ export function createRouter(db: BetterSqlite3.Database): Router {
       return res.status(501).json({ error: 'GITHUB_TOKEN env var not set — sync unavailable' });
     }
     const repo = process.env.GITHUB_REPO ?? 'nickbenes/bills-tracker';
+    const ghHeaders = { Authorization: `Bearer ${token}`, 'User-Agent': 'benes-finance' };
 
-    const rows = db.prepare(
+    // Step 1: update status on already-linked rows.
+    const linked = db.prepare(
       'SELECT request_id, github_issue_number FROM feature_requests WHERE github_issue_number IS NOT NULL'
     ).all() as { request_id: string; github_issue_number: number }[];
 
     let updated = 0;
-    for (const r of rows) {
+    for (const r of linked) {
       try {
         const ghRes = await fetch(
           `https://api.github.com/repos/${repo}/issues/${r.github_issue_number}`,
-          { headers: { Authorization: `Bearer ${token}`, 'User-Agent': 'benes-finance' } }
+          { headers: ghHeaders }
         );
         if (!ghRes.ok) continue;
         const data = await ghRes.json() as { state: string; html_url: string };
@@ -619,11 +652,46 @@ export function createRouter(db: BetterSqlite3.Database): Router {
           WHERE request_id = ?
         `).run(data.state, data.html_url, data.state, r.request_id);
         updated++;
-      } catch {
-        // skip individual failures
-      }
+      } catch { /* skip individual failures */ }
     }
-    res.json({ synced: rows.length, updated });
+
+    // Step 2: fetch all GitHub issues (both states) and import any not yet in the DB.
+    let imported = 0;
+    try {
+      const existingNums = new Set(
+        (db.prepare('SELECT github_issue_number FROM feature_requests WHERE github_issue_number IS NOT NULL').all() as { github_issue_number: number }[])
+          .map(r => r.github_issue_number)
+      );
+
+      // Fetch up to 200 issues (2 pages). Pull requests are excluded via the issues API.
+      type GhIssue = { number: number; title: string; body: string | null; html_url: string; state: string; pull_request?: unknown };
+      const issues: GhIssue[] = [];
+      for (const page of [1, 2]) {
+        const r = await fetch(
+          `https://api.github.com/repos/${repo}/issues?state=all&per_page=100&page=${page}`,
+          { headers: ghHeaders }
+        );
+        if (!r.ok) break;
+        const batch = await r.json() as GhIssue[];
+        issues.push(...batch.filter(i => !i.pull_request));
+        if (batch.length < 100) break;
+      }
+
+      for (const issue of issues) {
+        if (existingNums.has(issue.number)) continue;
+        const newId = randomUUID();
+        db.prepare(`
+          INSERT INTO feature_requests
+            (request_id, title, description, github_issue_number, github_issue_url, github_issue_status, submitted_by,
+             status)
+          VALUES (?, ?, ?, ?, ?, ?, 'GitHub',
+            CASE WHEN ? = 'closed' THEN 'done' ELSE 'open' END)
+        `).run(newId, issue.title, issue.body ?? null, issue.number, issue.html_url, issue.state, issue.state);
+        imported++;
+      }
+    } catch { /* skip import failures */ }
+
+    res.json({ synced: linked.length, updated, imported });
   });
 
   // ── Classification rules ─────────────────────────────────────────────────────
