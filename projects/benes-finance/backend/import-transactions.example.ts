@@ -9,9 +9,10 @@
 //   2. Ensures source bank accounts exist in the accounts table (INSERT OR IGNORE)
 //   3. Generates a deterministic transaction_id for each row (for deduplication)
 //   4. Inserts new transactions; skips rows that already exist
-//   5. Auto-classifies imported transactions using CATEGORY_MAP (RocketMoney category → budget item)
-//   6. Runs the classification rules engine on any remaining unclassified transactions
-//   7. Reports: inserted / classified / skipped-duplicate / skipped-category counts
+//   5. Tags every inserted transaction with RocketMoney:<category> (e.g. RocketMoney:Coffee)
+//   6. Auto-classifies inserted transactions using CATEGORY_MAP (RocketMoney category → budget item)
+//   7. Runs the classification rules engine on any remaining unclassified transactions
+//   8. Reports: inserted / tagged / classified / skipped counts
 
 import { getDb } from './db.js';
 import { applyRules } from './classify.js';
@@ -27,8 +28,6 @@ const db = getDb();
 // Maps RocketMoney source accounts to account_ids in our accounts table.
 // Key format: "${Account Name}|${Account Number}" — matches the CSV fields exactly.
 // Accounts listed here are created in the accounts table on first import (INSERT OR IGNORE).
-// account_type 'income_source' is used for all source bank accounts until a
-// dedicated checking/savings type is added to the schema.
 
 const ACCOUNT_MAP: Record<string, { account_id: string; creditor: string }> = {
   // 'My Checking|1234':       { account_id: 'bank_checking_1234', creditor: 'My Bank' },
@@ -38,37 +37,51 @@ const ACCOUNT_MAP: Record<string, { account_id: string; creditor: string }> = {
 };
 
 // ── RocketMoney category → budget_item_id ────────────────────────────────────
-// Maps RocketMoney's "Category" column to budget_item_ids in our DB.
-// Transactions whose RocketMoney category is listed here get auto-classified on
-// import with confidence 'auto_medium' (broad category-level match).
-// Leave empty {} to skip this step and rely solely on the rules engine.
+// Conservative: only map categories that clearly correspond to one budget item.
+// Ambiguous categories (Loan Payment, Bills & Utilities, Shopping) are better
+// left to the rules engine, which can match by merchant name.
 //
-// To find your budget_item_ids, run:  SELECT budget_item_id, name FROM budget_items;
-//
-// Common RocketMoney categories (add/adjust to match your export):
+// To find your budget_item_ids: SELECT budget_item_id, name FROM budget_items;
 const CATEGORY_MAP: Record<string, string> = {
-  // 'Food & Drink':          'groceries',
-  // 'Restaurants':           'restaurants',
-  // 'Groceries':             'groceries',
-  // 'Shopping':              'shopping',
-  // 'Entertainment':         'entertainment',
-  // 'Bills & Utilities':     'utilities',
-  // 'Gas & Fuel':            'gas',
-  // 'Auto & Transport':      'auto',
-  // 'Health & Fitness':      'health',
-  // 'Personal Care':         'personal_care',
-  // 'Pets':                  'pets',
-  // 'Travel':                'travel',
-  // 'Subscriptions':         'subscriptions',
+  // 'Coffee':               'coffee',
+  // 'Amazon':               'amazon',
+  // "Farmers' Market":      'farmers_mkt',
+  // 'Door Dash':            'doordash',
+  // 'Pets':                 'pets',
+  // 'Medical':              'doc_dent',
+  // 'Health & Wellness':    'supplements',
+  // 'Charitable Donations': 'giving',
+  // 'Groceries':            'food_clothes',
+  // 'Dining & Drinks':      'food_clothes',
+  // 'Fast Food & Pizza':    'drive_thru',
+  // 'Personal Care':        'barber',
+  // 'Entertainment & Rec.': 'apple_games',
+  // 'Software & Tech':      'apple_games',
+  // 'Auto & Transport':     'gas_auto',
+  // 'Education':            'school_lunches',
+  // 'Income':               'trinet',
 };
 
 // ── Skip rules ───────────────────────────────────────────────────────────────
-// Rows in these RocketMoney categories are skipped — they're inter-account moves,
-// not real cashflow. Adjust if you want to import them.
+// Rows in these RocketMoney categories are not imported — they're inter-account
+// moves or noise, not real cashflow. Adjust to taste.
 const SKIP_CATEGORIES = new Set([
   'Internal Transfers',
   'Savings Transfer',
+  'Credit Card Payment',
+  'Cash & Checks',
+  'Personal Borrowing',
+  'Uncategorized',
 ]);
+
+// Normalises a RocketMoney category string into a tag-safe value.
+// e.g. "Farmers' Market" → "Farmers_Market", "Bills & Utilities" → "Bills_and_Utilities"
+function normalizeCategory(cat: string): string {
+  return cat.trim()
+    .replace(/&/g, 'and')
+    .replace(/[^a-zA-Z0-9_\s]/g, '')
+    .replace(/\s+/g, '_');
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -142,83 +155,89 @@ function importRows(rows: Record<string, string>[], batchId: string): void {
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'csv_import', ?)
   `);
 
-  let inserted = 0;
-  let skippedDupe = 0;
-  let skippedCategory = 0;
-  let skippedNoAccount = 0;
-  const insertedIds: string[] = [];
+  let inserted = 0, skippedDupe = 0, skippedCategory = 0, skippedNoAccount = 0;
+  const insertedRows: { txId: string; category: string; amount: number }[] = [];
 
+  // ── Pass 1: insert transactions ───────────────────────────────────────────
   db.transaction(() => {
     for (const row of rows) {
-      if (SKIP_CATEGORIES.has(row['Category'])) {
-        skippedCategory++;
-        continue;
-      }
+      if (SKIP_CATEGORIES.has(row['Category'])) { skippedCategory++; continue; }
 
       const acct = lookupAccount(row);
       if (!acct) {
         skippedNoAccount++;
-        console.warn(`  ⚠ No ACCOUNT_MAP entry for: "${row['Account Name']}|${row['Account Number']}" — skipping row`);
+        console.warn(`  ⚠ No ACCOUNT_MAP entry for: "${row['Account Name']}|${row['Account Number']}" — add to ACCOUNT_MAP`);
         continue;
       }
 
-      const txId = makeTransactionId(row);
+      const txId   = makeTransactionId(row);
       // RocketMoney: positive = spending/debit, negative = income/credit
       // Our schema: negative = outflow, positive = income — negate
       const amount = -parseFloat(row['Amount']);
-      const txType = amount < 0 ? 'debit' : 'credit';
-
       const result = insert.run(
-        txId,
-        acct.account_id,
-        row['Original Date'] || row['Date'],  // transaction_date
-        row['Date'],                            // posted_date
+        txId, acct.account_id,
+        row['Original Date'] || row['Date'], row['Date'],
         amount,
-        row['Description'] || row['Name'],     // merchant_text (raw)
-        row['Custom Name'] || row['Name'],     // merchant_normalized (cleaned)
-        txType,
+        row['Description'] || row['Name'],
+        row['Custom Name']  || row['Name'],
+        amount < 0 ? 'debit' : 'credit',
         batchId,
       );
 
       if (result.changes > 0) {
         inserted++;
-        insertedIds.push(txId);
+        insertedRows.push({ txId, category: row['Category'] ?? '', amount });
       } else {
         skippedDupe++;
       }
     }
   })();
 
-  // ── Pass 1: classify by RocketMoney category ────────────────────────────────
-  let classifiedByCategory = 0;
-  if (Object.keys(CATEGORY_MAP).length > 0 && insertedIds.length > 0) {
-    const insertMapping = db.prepare(`
-      INSERT OR IGNORE INTO transaction_budget_item_mappings
-        (mapping_id, transaction_id, budget_item_id, allocated_amount, confidence, classified_by)
-      VALUES (?, ?, ?, ?, 'auto_medium', 'import')
-    `);
-    db.transaction(() => {
-      for (let i = 0; i < rows.length; i++) {
-        const txId = makeTransactionId(rows[i]);
-        if (!insertedIds.includes(txId)) continue; // only newly inserted
-        const budgetItemId = CATEGORY_MAP[rows[i]['Category']];
-        if (!budgetItemId) continue;
-        const amount = -parseFloat(rows[i]['Amount']);
-        const result = insertMapping.run(randomUUID(), txId, budgetItemId, amount);
-        if (result.changes > 0) classifiedByCategory++;
-      }
-    })();
-  }
+  const insertedIds = insertedRows.map(r => r.txId);
 
-  // ── Pass 2: run rules engine on remaining unclassified ──────────────────────
+  // ── Pass 2: tag every new transaction with its RocketMoney category ────────
+  // Produces tags like RocketMoney:Coffee, RocketMoney:Groceries, etc.
+  const insertTag = db.prepare(`
+    INSERT OR IGNORE INTO tags (tag_id, entity_type, entity_id, tag_name)
+    VALUES (?, 'transaction', ?, ?)
+  `);
+  let tagged = 0;
+  db.transaction(() => {
+    for (const { txId, category } of insertedRows) {
+      if (!category) continue;
+      const norm = normalizeCategory(category);
+      if (!norm) continue;
+      const result = insertTag.run(randomUUID(), txId, `RocketMoney:${norm}`);
+      if (result.changes > 0) tagged++;
+    }
+  })();
+
+  // ── Pass 3: classify by RocketMoney category map ───────────────────────────
+  const insertMapping = db.prepare(`
+    INSERT OR IGNORE INTO transaction_budget_item_mappings
+      (mapping_id, transaction_id, budget_item_id, allocated_amount, confidence, classified_by)
+    VALUES (?, ?, ?, ?, 'auto_medium', 'import')
+  `);
+  let classifiedByCategory = 0;
+  db.transaction(() => {
+    for (const { txId, category, amount } of insertedRows) {
+      const budgetItemId = CATEGORY_MAP[category];
+      if (!budgetItemId) continue;
+      const result = insertMapping.run(randomUUID(), txId, budgetItemId, amount);
+      if (result.changes > 0) classifiedByCategory++;
+    }
+  })();
+
+  // ── Pass 4: rules engine on remaining unclassified ─────────────────────────
   const { classified: classifiedByRules } = applyRules(db, insertedIds);
 
-  console.log(`  Inserted:            ${inserted}`);
+  console.log(`  Inserted:                   ${inserted}`);
+  console.log(`  Tagged (RocketMoney:*):     ${tagged}`);
   console.log(`  Classified (category map):  ${classifiedByCategory}`);
   console.log(`  Classified (rules engine):  ${classifiedByRules}`);
-  console.log(`  Skipped (duplicate): ${skippedDupe}`);
-  console.log(`  Skipped (category):  ${skippedCategory}`);
-  if (skippedNoAccount) console.warn(`  Skipped (no account map): ${skippedNoAccount} — add to ACCOUNT_MAP`);
+  console.log(`  Skipped (duplicate):        ${skippedDupe}`);
+  console.log(`  Skipped (category filter):  ${skippedCategory}`);
+  if (skippedNoAccount) console.warn(`  Skipped (no account map):   ${skippedNoAccount}`);
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
