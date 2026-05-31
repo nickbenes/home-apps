@@ -1,52 +1,68 @@
 import { test, expect } from '@playwright/test';
 
+// Unique suffix per run prevents stale-data collisions when the local DB
+// retains items from interrupted previous runs.
+const RUN_ID = Date.now();
+const NAME_A = `E2E Alpha ${RUN_ID}`;
+const NAME_B = `E2E Beta  ${RUN_ID}`;
+
+let idA: string;
+let idB: string;
+
+test.beforeAll(async ({ request }) => {
+  const [rA, rB] = await Promise.all([
+    request.post('/api/recurring', { data: { name: NAME_A, amount: -55.00, frequency: 'monthly' } }),
+    request.post('/api/recurring', { data: { name: NAME_B, amount: -22.00, frequency: 'monthly' } }),
+  ]);
+  idA = (await rA.json()).recurring_item_id;
+  idB = (await rB.json()).recurring_item_id;
+});
+
+test.afterAll(async ({ request }) => {
+  await Promise.all([
+    idA ? request.delete(`/api/recurring/${idA}`) : Promise.resolve(),
+    idB ? request.delete(`/api/recurring/${idB}`) : Promise.resolve(),
+  ]);
+});
+
 test.describe('Recurring Items — inline expand/edit', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/recurring');
-    // Wait for at least one data row (not a loading/empty state)
-    await expect(page.locator('table tbody tr').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator(`tr:has-text("${NAME_A}")`).first()).toBeVisible({ timeout: 10_000 });
   });
 
   test('clicking a row expands the inline edit form', async ({ page }) => {
-    const firstRow = page.locator('table tbody tr').first();
-    await firstRow.click();
+    await page.locator(`tr:has-text("${NAME_A}")`).first().click();
 
-    // The edit form renders as a sibling row with a name input
-    const nameInput = page.locator('input[placeholder="Name"]');
-    await expect(nameInput).toBeVisible();
+    await expect(page.locator('input[placeholder="Name"]')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Save' })).toBeVisible();
   });
 
   test('clicking the same row again collapses the form', async ({ page }) => {
-    const firstRow = page.locator('table tbody tr').first();
+    const row = page.locator(`tr:has-text("${NAME_A}")`).first();
 
-    await firstRow.click();
+    await row.click();
     await expect(page.locator('input[placeholder="Name"]')).toBeVisible();
 
-    await firstRow.click();
+    await row.click();
     await expect(page.locator('input[placeholder="Name"]')).not.toBeVisible();
   });
 
   test('edit form pre-fills with existing item values', async ({ page }) => {
-    const firstRow = page.locator('table tbody tr').first();
-    const itemName = await firstRow.locator('td').first().textContent();
+    await page.locator(`tr:has-text("${NAME_A}")`).first().click();
 
-    await firstRow.click();
-
-    const nameInput = page.locator('input[placeholder="Name"]');
-    await expect(nameInput).toHaveValue(itemName?.trim() ?? '');
+    await expect(page.locator('input[placeholder="Name"]')).toHaveValue(NAME_A);
   });
 
-  test('expanding one row collapses a previously expanded row', async ({ page }) => {
-    const rows = page.locator('table tbody tr');
-    const count = await rows.count();
-    test.skip(count < 2, 'need at least 2 rows');
+  test('expanding one row collapses the previously expanded row', async ({ page }) => {
+    const rowA = page.locator(`tr:has-text("${NAME_A}")`).first();
+    const rowB = page.locator(`tr:has-text("${NAME_B}")`).first();
 
-    await rows.nth(0).click();
+    await rowA.click();
     await expect(page.locator('input[placeholder="Name"]')).toBeVisible();
 
-    await rows.nth(1).click();
-    // Should be exactly one name input (the new expanded row, not the old one)
+    await rowB.click();
+    // Exactly one name input visible — the new one, not the old
     await expect(page.locator('input[placeholder="Name"]')).toHaveCount(1);
   });
 });
