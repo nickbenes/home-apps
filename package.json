@@ -20,6 +20,7 @@
     "smoke:e2e": "npx playwright test projects/bills/test/e2e/bills.spec.ts --reporter=list",
     "db:migrate": "tsx projects/benes-finance/backend/migrate.ts",
     "db:seed": "tsx projects/benes-finance/backend/seed.ts",
+    "db:tag": "tsx projects/benes-finance/backend/tag-from-csv.ts",
     "db:reset": "node -e \"require('fs').rmSync('projects/benes-finance/data/benes-finance.db', {force:true})\" && npm run db:migrate && npm run db:seed",
     "db:import": "tsx projects/benes-finance/backend/import-transactions.ts",
     "finance:css": "tailwindcss -i projects/benes-finance/frontend/index.css -o public/benes-finance/bundle.css",
