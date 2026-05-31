@@ -136,6 +136,13 @@ export default function FeatureRequests() {
           <p className="text-sm text-gray-500 mt-0.5">Submit and track feature ideas — no GitHub account needed.</p>
         </div>
         <div className="ml-auto flex items-center gap-2">
+          <a
+            href="https://github.com/nickbenes/bills-tracker/issues"
+            target="_blank" rel="noreferrer"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+          >
+            <ExternalLink size={13} /> GitHub Issues
+          </a>
           <button onClick={handleSync} disabled={syncing}
             className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50">
             <RefreshCw size={13} className={syncing ? 'animate-spin' : ''} /> Sync GitHub
