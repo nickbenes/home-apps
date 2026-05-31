@@ -38,13 +38,43 @@ export interface Account {
   creditor: string;
   account_type: string;
   status: string;
+  original_amount: number | null;
   current_balance: number | null;
   balance_date: string | null;
   interest_rate_pct: number | null;
   account_number: string | null;
   portal_url: string | null;
   payoff_date_est: string | null;
+  phone: string | null;
+  email: string | null;
   notes: string | null;
+}
+
+export interface AccountDetailRecurringItem {
+  recurring_item_id: string;
+  name: string;
+  amount: number;
+  effective_monthly: number;
+  frequency: string;
+  is_active: number;
+  budget_item_id: string | null;
+  budget_item_name: string | null;
+  category_name: string | null;
+  notes: string | null;
+}
+
+export interface AccountDetailBudgetItem {
+  budget_item_id: string;
+  name: string;
+  category_name: string;
+}
+
+export interface AccountDetail {
+  account: Account;
+  tags: string[];
+  recurringItems: AccountDetailRecurringItem[];
+  budgetItems: AccountDetailBudgetItem[];
+  forecastItems: ForecastItem[];
 }
 
 export interface BudgetItem {
@@ -278,9 +308,12 @@ export interface TransactionFilters {
 
 export const api = {
   accounts: {
-    list: () => get<Account[]>('/accounts'),
-    update: (id: string, body: Partial<Pick<Account, 'current_balance' | 'balance_date' | 'interest_rate_pct' | 'status' | 'notes'>>) =>
+    list:   ()        => get<Account[]>('/accounts'),
+    detail: (id: string) => get<AccountDetail>(`/accounts/${id}/detail`),
+    update: (id: string, body: Partial<Omit<Account, 'account_id' | 'created_at' | 'updated_at'>>) =>
       patch<Account>(`/accounts/${id}`, body),
+    addTag:    (id: string, tag: string)  => post<string[]>(`/accounts/${id}/tags`, { tag }),
+    removeTag: (id: string, tag: string)  => del(`/accounts/${id}/tags/${encodeURIComponent(tag)}`),
   },
   budget: {
     items:    ()            => get<BudgetItem[]>('/budget/items'),
