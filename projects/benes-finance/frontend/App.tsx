@@ -18,6 +18,7 @@ import Forecast from './components/Forecast';
 import FeatureRequests from './components/FeatureRequests';
 import Tags from './components/Tags';
 import Coverage from './components/Coverage';
+import AccountDetail from './components/AccountDetail';
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="accounts" element={<Accounts />} />
+          <Route path="accounts/:id" element={<AccountDetail />} />
           <Route path="transactions" element={<Transactions />} />
           <Route path="recurring" element={<RecurringItems />} />
           <Route path="tags" element={<Tags />} />

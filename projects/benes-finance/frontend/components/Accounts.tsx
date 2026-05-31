@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ExternalLink, X, ChevronUp, ChevronDown, ChevronsUpDown, Download } from 'lucide-react';
 import { api, Account, RecurringItem } from '../lib/api';
 import { formatCurrency, formatDate, STATUS_LABEL, STATUS_COLOR, STATUS_SORT, TYPE_LABEL } from '../lib/format';
@@ -270,7 +271,7 @@ function AccountTable({ title, accounts, paymentMap, onUpdate }: {
   paymentMap: Record<string, RecurringItem[]>;
   onUpdate: (updated: Account) => void;
 }) {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const navigate = useNavigate();
   const [sortKey, setSortKey] = useState<SortKey>('status');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
 
@@ -300,11 +301,6 @@ function AccountTable({ title, accounts, paymentMap, onUpdate }: {
     }
   });
 
-  function handleSave(updated: Account) {
-    onUpdate(updated);
-    setExpandedId(null);
-  }
-
   const colProps = { current: sortKey, dir: sortDir, onSort: handleSort };
 
   return (
@@ -328,14 +324,12 @@ function AccountTable({ title, accounts, paymentMap, onUpdate }: {
           </thead>
           <tbody>
             {sorted.map(acct => {
-              const isExpanded = expandedId === acct.account_id;
-              const items = paymentMap[acct.account_id] ?? [];
               const monthly = effectiveMonthly(acct);
               return (
                 <React.Fragment key={acct.account_id}>
                   <tr
-                    onClick={() => setExpandedId(isExpanded ? null : acct.account_id)}
-                    className={`border-b border-gray-50 last:border-0 cursor-pointer hover:bg-gray-50 ${isExpanded ? 'bg-amber-50' : ''}`}
+                    onClick={() => navigate(`/accounts/${acct.account_id}`)}
+                    className="border-b border-gray-50 last:border-0 cursor-pointer hover:bg-gray-50"
                   >
                     <td className="px-4 py-2.5 font-medium text-gray-800">
                       <div className="flex items-center gap-1.5">
@@ -370,18 +364,6 @@ function AccountTable({ title, accounts, paymentMap, onUpdate }: {
                     </td>
                     <td className="px-4 py-2.5 text-gray-400 text-xs max-w-xs truncate">{acct.notes ?? ''}</td>
                   </tr>
-                  {isExpanded && (
-                    <tr className="border-b border-amber-100">
-                      <td colSpan={8} className="p-0">
-                        <EditPanel
-                          acct={acct}
-                          paymentItems={items}
-                          onSave={handleSave}
-                          onCancel={() => setExpandedId(null)}
-                        />
-                      </td>
-                    </tr>
-                  )}
                 </React.Fragment>
               );
             })}

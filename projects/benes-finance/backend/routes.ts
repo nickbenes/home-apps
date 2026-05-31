@@ -78,9 +78,50 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     res.json(row);
   });
 
+  router.get('/accounts/:id/detail', (req, res) => {
+    const account = db.prepare('SELECT * FROM accounts WHERE account_id = ?').get(req.params.id);
+    if (!account) return res.status(404).json({ error: 'Account not found' });
+
+    const tags = (db.prepare(
+      `SELECT tag_name FROM tags WHERE entity_type = 'account' AND entity_id = ? ORDER BY tag_name`
+    ).all(req.params.id) as { tag_name: string }[]).map(r => r.tag_name);
+
+    const recurringItems = db.prepare(`
+      SELECT ri.*, bi.name AS budget_item_name, bc.name AS category_name
+      FROM recurring_items ri
+      LEFT JOIN budget_items bi ON ri.budget_item_id = bi.budget_item_id
+      LEFT JOIN budget_categories bc ON bi.category_id = bc.category_id
+      WHERE ri.account_id = ?
+      ORDER BY ri.is_active DESC, ri.name
+    `).all(req.params.id);
+
+    const budgetItems = db.prepare(`
+      SELECT DISTINCT bi.budget_item_id, bi.name, bc.name AS category_name
+      FROM recurring_items ri
+      JOIN budget_items bi ON ri.budget_item_id = bi.budget_item_id
+      JOIN budget_categories bc ON bi.category_id = bc.category_id
+      WHERE ri.account_id = ? AND ri.budget_item_id IS NOT NULL
+      ORDER BY bc.name, bi.name
+    `).all(req.params.id);
+
+    const forecastItems = db.prepare(`
+      SELECT fi.*
+      FROM forecast_items fi
+      WHERE fi.account_id = ? AND fi.is_active = 1
+      ORDER BY fi.item_date
+    `).all(req.params.id);
+
+    res.json({ account, tags, recurringItems, budgetItems, forecastItems });
+  });
+
   // Only updates fields present in the request body; supports explicit null to clear a field.
   router.patch('/accounts/:id', (req, res) => {
-    const ALLOWED = ['current_balance', 'balance_date', 'interest_rate_pct', 'status', 'notes'] as const;
+    const ALLOWED = [
+      'creditor', 'account_type', 'status',
+      'current_balance', 'balance_date', 'interest_rate_pct',
+      'original_amount', 'account_number', 'portal_url', 'payoff_date_est',
+      'phone', 'email', 'notes',
+    ] as const;
     const entries = Object.entries(req.body).filter(([k]) => (ALLOWED as readonly string[]).includes(k));
     if (!entries.length) {
       return res.status(400).json({ error: `No valid fields. Allowed: ${ALLOWED.join(', ')}` });
@@ -92,6 +133,31 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     ).run(vals);
     if (result.changes === 0) return res.status(404).json({ error: 'Account not found' });
     res.json(db.prepare('SELECT * FROM accounts WHERE account_id = ?').get(req.params.id));
+  });
+
+  router.post('/accounts/:id/tags', (req, res) => {
+    const { tag } = req.body as { tag?: string };
+    if (!tag?.trim()) return res.status(400).json({ error: 'tag is required' });
+    if (!db.prepare('SELECT 1 FROM accounts WHERE account_id = ?').get(req.params.id)) {
+      return res.status(404).json({ error: 'Account not found' });
+    }
+    db.prepare(
+      `INSERT OR IGNORE INTO tags (tag_id, entity_type, entity_id, tag_name) VALUES (?, 'account', ?, ?)`
+    ).run(randomUUID(), req.params.id, tag.trim());
+    const tags = (db.prepare(
+      `SELECT tag_name FROM tags WHERE entity_type = 'account' AND entity_id = ? ORDER BY tag_name`
+    ).all(req.params.id) as { tag_name: string }[]).map(r => r.tag_name);
+    res.json(tags);
+  });
+
+  router.delete('/accounts/:id/tags/:tag', (req, res) => {
+    db.prepare(
+      `DELETE FROM tags WHERE entity_type = 'account' AND entity_id = ? AND tag_name = ?`
+    ).run(req.params.id, decodeURIComponent(req.params.tag));
+    const tags = (db.prepare(
+      `SELECT tag_name FROM tags WHERE entity_type = 'account' AND entity_id = ? ORDER BY tag_name`
+    ).all(req.params.id) as { tag_name: string }[]).map(r => r.tag_name);
+    res.json(tags);
   });
 
   // ── Budget ──────────────────────────────────────────────────────────────────
