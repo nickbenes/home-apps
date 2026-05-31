@@ -74,7 +74,7 @@ describe('Benes Finance API', () => {
     test('400 when body has no valid fields', async () => {
       const res = await request(app)
         .patch('/api/accounts/test_loan')
-        .send({ creditor: 'Hacked', account_type: 'mortgage' });
+        .send({ unknown_field: 'x', another_bad_field: 42 });
       expect(res.statusCode).toBe(400);
     });
 
