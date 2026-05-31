@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Plus, X, Tag } from 'lucide-react';
+import { Plus, X, Tag, Download } from 'lucide-react';
 import { api, RecurringItem, BudgetItem, Account } from '../lib/api';
 import { formatCurrency, formatDate, FREQUENCY_LABEL } from '../lib/format';
+import { downloadCsv } from '../lib/csv';
 
 const FREQUENCIES = ['weekly', 'biweekly', 'monthly', 'every_4_weeks', 'annually', 'one_time'] as const;
 
@@ -474,6 +475,30 @@ export default function RecurringItems() {
     setGroupPrefix(null);
   }
 
+  function handleExport() {
+    const date = new Date().toISOString().slice(0, 10);
+    const rows = items.map(item => {
+      const budget = budgetItems.find(b => b.budget_item_id === item.budget_item_id);
+      return [
+        item.name,
+        item.amount.toFixed(2),
+        FREQUENCY_LABEL[item.frequency] ?? item.frequency,
+        item.effective_monthly.toFixed(2),
+        budget?.name ?? '',
+        item.projected_start_date ?? '',
+        item.projected_stop_date ?? '',
+        item.is_active ? 'active' : 'inactive',
+        item.tags.join(', '),
+        item.notes ?? '',
+      ];
+    });
+    downloadCsv(
+      `recurring-items-${date}.csv`,
+      ['Name', 'Amount', 'Frequency', 'Monthly Effective', 'Budget Item', 'Start', 'Stop', 'Status', 'Tags', 'Notes'],
+      rows,
+    );
+  }
+
   if (error) return <p className="text-red-600 text-sm">{error}</p>;
 
   const active   = items.filter(i => i.is_active);
@@ -533,12 +558,22 @@ export default function RecurringItems() {
           </select>
         )}
 
-        <button
-          onClick={() => { setShowCreate(true); setExpandedId(null); }}
-          className="ml-auto flex items-center gap-1.5 bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700"
-        >
-          <Plus size={14} /> Add Item
-        </button>
+        <div className="ml-auto flex items-center gap-2">
+          {items.length > 0 && (
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50"
+            >
+              <Download size={12} /> CSV
+            </button>
+          )}
+          <button
+            onClick={() => { setShowCreate(true); setExpandedId(null); }}
+            className="flex items-center gap-1.5 bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700"
+          >
+            <Plus size={14} /> Add Item
+          </button>
+        </div>
       </div>
 
       {/* Tag filter bar */}

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { ExternalLink, X, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
+import { ExternalLink, X, ChevronUp, ChevronDown, ChevronsUpDown, Download } from 'lucide-react';
 import { api, Account, RecurringItem } from '../lib/api';
 import { formatCurrency, formatDate, STATUS_LABEL, STATUS_COLOR, STATUS_SORT, TYPE_LABEL } from '../lib/format';
+import { downloadCsv } from '../lib/csv';
 
 const STATUSES = Object.keys(STATUS_LABEL) as string[];
 
@@ -217,6 +218,30 @@ export default function Accounts() {
     .filter(a => !['paid_off', 'settled', 'charged_off'].includes(a.status))
     .reduce((sum, a) => sum + (a.current_balance ?? 0), 0);
 
+  function handleExport() {
+    const date = new Date().toISOString().slice(0, 10);
+    const rows = accounts.map(a => {
+      const monthly = Math.abs(
+        (paymentMap[a.account_id] ?? []).reduce((s, i) => s + i.effective_monthly, 0)
+      );
+      return [
+        a.creditor,
+        TYPE_LABEL[a.account_type] ?? a.account_type,
+        STATUS_LABEL[a.status] ?? a.status,
+        a.current_balance?.toFixed(2) ?? '',
+        a.balance_date ?? '',
+        a.interest_rate_pct ?? '',
+        monthly > 0 ? monthly.toFixed(2) : '',
+        a.notes ?? '',
+      ];
+    });
+    downloadCsv(
+      `accounts-${date}.csv`,
+      ['Creditor', 'Type', 'Status', 'Balance', 'Balance Date', 'APR %', 'Monthly Payment', 'Notes'],
+      rows,
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-baseline gap-4">
@@ -224,6 +249,12 @@ export default function Accounts() {
         <span className="text-sm text-gray-500">
           Total active debt: <span className="font-mono text-red-600">{formatCurrency(totalDebt)}</span>
         </span>
+        <button
+          onClick={handleExport}
+          className="ml-auto flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50"
+        >
+          <Download size={12} /> CSV
+        </button>
       </div>
       <AccountTable title="Debt Accounts"  accounts={debts}   paymentMap={paymentMap} onUpdate={handleUpdate} />
       {sources.length > 0 && (
