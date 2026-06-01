@@ -477,5 +477,126 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     res.status(204).end();
   });
 
+  // ── Menu plans ────────────────────────────────────────────────────────────
+
+  router.get('/menu-plans', (_req, res) => {
+    res.json(db.prepare('SELECT * FROM menu_plans ORDER BY week_start DESC').all());
+  });
+
+  router.post('/menu-plans', (req, res) => {
+    const { name, week_start } = req.body;
+    if (!name || !week_start) return res.status(400).json({ error: 'name and week_start required' });
+    const id = makeId(name);
+    db.prepare('INSERT INTO menu_plans (id, name, week_start) VALUES (?, ?, ?)').run(id, name.trim(), week_start);
+    res.status(201).json(db.prepare('SELECT * FROM menu_plans WHERE id = ?').get(id));
+  });
+
+  const SLOTS_WITH_RECIPE = `
+    SELECT ms.*, r.title AS recipe_title, r.servings AS recipe_servings
+    FROM menu_plan_slots ms
+    LEFT JOIN recipes r ON r.id = ms.recipe_id
+    WHERE ms.menu_plan_id = ?
+    ORDER BY ms.day_of_week, ms.meal_slot
+  `;
+
+  router.get('/menu-plans/:id', (req, res) => {
+    const plan = db.prepare('SELECT * FROM menu_plans WHERE id = ?').get(req.params.id);
+    if (!plan) return res.status(404).json({ error: 'Menu plan not found' });
+    const slots = db.prepare(SLOTS_WITH_RECIPE).all(req.params.id);
+    res.json({ ...(plan as object), slots });
+  });
+
+  router.delete('/menu-plans/:id', (req, res) => {
+    const plan = db.prepare('SELECT id FROM menu_plans WHERE id = ?').get(req.params.id);
+    if (!plan) return res.status(404).json({ error: 'Menu plan not found' });
+    db.prepare('DELETE FROM menu_plans WHERE id = ?').run(req.params.id);
+    res.status(204).end();
+  });
+
+  // Upsert a single slot — relies on the UNIQUE(menu_plan_id, day_of_week, meal_slot)
+  // constraint added in migration 002.
+  router.put('/menu-plans/:id/slots', (req, res) => {
+    const plan = db.prepare('SELECT id FROM menu_plans WHERE id = ?').get(req.params.id);
+    if (!plan) return res.status(404).json({ error: 'Menu plan not found' });
+
+    const { day_of_week, meal_slot, recipe_id, notes } = req.body;
+    if (day_of_week == null || !meal_slot) {
+      return res.status(400).json({ error: 'day_of_week and meal_slot required' });
+    }
+    if (recipe_id) {
+      const recipe = db.prepare('SELECT id FROM recipes WHERE id = ?').get(recipe_id);
+      if (!recipe) return res.status(400).json({ error: 'Unknown recipe_id' });
+    }
+
+    db.prepare(`
+      INSERT INTO menu_plan_slots (menu_plan_id, day_of_week, meal_slot, recipe_id, notes)
+      VALUES (?, ?, ?, ?, ?)
+      ON CONFLICT(menu_plan_id, day_of_week, meal_slot) DO UPDATE SET
+        recipe_id = excluded.recipe_id,
+        notes     = excluded.notes
+    `).run(req.params.id, day_of_week, meal_slot, recipe_id ?? null, notes ?? null);
+
+    const slot = db.prepare(`
+      SELECT ms.*, r.title AS recipe_title, r.servings AS recipe_servings
+      FROM menu_plan_slots ms
+      LEFT JOIN recipes r ON r.id = ms.recipe_id
+      WHERE ms.menu_plan_id = ? AND ms.day_of_week = ? AND ms.meal_slot = ?
+    `).get(req.params.id, day_of_week, meal_slot);
+    res.json(slot);
+  });
+
+  router.delete('/menu-plans/:id/slots/:slotId', (req, res) => {
+    const slot = db.prepare(
+      'SELECT id FROM menu_plan_slots WHERE id = ? AND menu_plan_id = ?'
+    ).get(req.params.slotId, req.params.id);
+    if (!slot) return res.status(404).json({ error: 'Slot not found' });
+    db.prepare('DELETE FROM menu_plan_slots WHERE id = ?').run(req.params.slotId);
+    res.status(204).end();
+  });
+
+  // Fill empty dinner slots with recipes from the library, avoiding repeats within the week.
+  router.post('/menu-plans/:id/suggest', (req, res) => {
+    const plan = db.prepare('SELECT id FROM menu_plans WHERE id = ?').get(req.params.id);
+    if (!plan) return res.status(404).json({ error: 'Menu plan not found' });
+
+    const allRecipes = db.prepare('SELECT id FROM recipes').all() as { id: string }[];
+    if (!allRecipes.length) {
+      return res.status(422).json({ error: 'No recipes in library to suggest from' });
+    }
+
+    const alreadyUsed = new Set(
+      (db.prepare(`
+        SELECT recipe_id FROM menu_plan_slots
+        WHERE menu_plan_id = ? AND meal_slot = 'dinner' AND recipe_id IS NOT NULL
+      `).all(req.params.id) as { recipe_id: string }[]).map(r => r.recipe_id)
+    );
+
+    const existingDays = new Set(
+      (db.prepare(`
+        SELECT day_of_week FROM menu_plan_slots
+        WHERE menu_plan_id = ? AND meal_slot = 'dinner'
+      `).all(req.params.id) as { day_of_week: number }[]).map(r => r.day_of_week)
+    );
+
+    // Pool = recipes not yet used this week; fall back to full library if exhausted
+    const pool = allRecipes.filter(r => !alreadyUsed.has(r.id));
+
+    for (const day of [0,1,2,3,4,5,6]) {
+      if (existingDays.has(day)) continue;
+      const available = pool.length > 0 ? pool : allRecipes;
+      const pick = available[Math.floor(Math.random() * available.length)];
+      db.prepare(`
+        INSERT INTO menu_plan_slots (menu_plan_id, day_of_week, meal_slot, recipe_id)
+        VALUES (?, ?, 'dinner', ?)
+        ON CONFLICT(menu_plan_id, day_of_week, meal_slot) DO NOTHING
+      `).run(req.params.id, day, pick.id);
+      const poolIdx = pool.indexOf(pick);
+      if (poolIdx >= 0) pool.splice(poolIdx, 1);
+    }
+
+    const slots = db.prepare(SLOTS_WITH_RECIPE).all(req.params.id);
+    res.json({ ...db.prepare('SELECT * FROM menu_plans WHERE id = ?').get(req.params.id), slots });
+  });
+
   return router;
 }
