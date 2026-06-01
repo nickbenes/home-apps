@@ -32,7 +32,7 @@
       "use strict";
       (function() {
         function defineDeprecationWarning(methodName, info) {
-          Object.defineProperty(Component.prototype, methodName, {
+          Object.defineProperty(Component4.prototype, methodName, {
             get: function() {
               console.warn(
                 "%s(...) is deprecated in plain JavaScript React classes. %s",
@@ -57,7 +57,7 @@
             publicInstance
           ), didWarnStateUpdateForUnmountedComponent[warningKey] = true);
         }
-        function Component(props, context, updater) {
+        function Component4(props, context, updater) {
           this.props = props;
           this.context = context;
           this.refs = emptyObject;
@@ -241,9 +241,9 @@
           return newKey;
         }
         function validateChildKeys(node) {
-          isValidElement(node) ? node._store && (node._store.validated = 1) : "object" === typeof node && null !== node && node.$$typeof === REACT_LAZY_TYPE && ("fulfilled" === node._payload.status ? isValidElement(node._payload.value) && node._payload.value._store && (node._payload.value._store.validated = 1) : node._store && (node._store.validated = 1));
+          isValidElement2(node) ? node._store && (node._store.validated = 1) : "object" === typeof node && null !== node && node.$$typeof === REACT_LAZY_TYPE && ("fulfilled" === node._payload.status ? isValidElement2(node._payload.value) && node._payload.value._store && (node._payload.value._store.validated = 1) : node._store && (node._store.validated = 1));
         }
-        function isValidElement(object) {
+        function isValidElement2(object) {
           return "object" === typeof object && null !== object && object.$$typeof === REACT_ELEMENT_TYPE;
         }
         function escape(key) {
@@ -312,13 +312,13 @@
             var childKey = "" === nameSoFar ? "." + getElementKey(invokeCallback, 0) : nameSoFar;
             isArrayImpl(callback) ? (escapedPrefix = "", null != childKey && (escapedPrefix = childKey.replace(userProvidedKeyEscapeRegex, "$&/") + "/"), mapIntoArray(callback, array, escapedPrefix, "", function(c) {
               return c;
-            })) : null != callback && (isValidElement(callback) && (null != callback.key && (invokeCallback && invokeCallback.key === callback.key || checkKeyStringCoercion(callback.key)), escapedPrefix = cloneAndReplaceKey(
+            })) : null != callback && (isValidElement2(callback) && (null != callback.key && (invokeCallback && invokeCallback.key === callback.key || checkKeyStringCoercion(callback.key)), escapedPrefix = cloneAndReplaceKey(
               callback,
               escapedPrefix + (null == callback.key || invokeCallback && invokeCallback.key === callback.key ? "" : ("" + callback.key).replace(
                 userProvidedKeyEscapeRegex,
                 "$&/"
               ) + "/") + childKey
-            ), "" !== nameSoFar && null != invokeCallback && isValidElement(invokeCallback) && null == invokeCallback.key && invokeCallback._store && !invokeCallback._store.validated && (escapedPrefix._store.validated = 2), callback = escapedPrefix), array.push(callback));
+            ), "" !== nameSoFar && null != invokeCallback && isValidElement2(invokeCallback) && null == invokeCallback.key && invokeCallback._store && !invokeCallback._store.validated && (escapedPrefix._store.validated = 2), callback = escapedPrefix), array.push(callback));
             return 1;
           }
           invokeCallback = 0;
@@ -510,15 +510,15 @@
           }
         }, assign = Object.assign, emptyObject = {};
         Object.freeze(emptyObject);
-        Component.prototype.isReactComponent = {};
-        Component.prototype.setState = function(partialState, callback) {
+        Component4.prototype.isReactComponent = {};
+        Component4.prototype.setState = function(partialState, callback) {
           if ("object" !== typeof partialState && "function" !== typeof partialState && null != partialState)
             throw Error(
               "takes an object of state variables to update or a function which returns an object of state variables."
             );
           this.updater.enqueueSetState(this, partialState, callback, "setState");
         };
-        Component.prototype.forceUpdate = function(callback) {
+        Component4.prototype.forceUpdate = function(callback) {
           this.updater.enqueueForceUpdate(this, callback, "forceUpdate");
         };
         var deprecatedAPIs = {
@@ -533,10 +533,10 @@
         };
         for (fnName in deprecatedAPIs)
           deprecatedAPIs.hasOwnProperty(fnName) && defineDeprecationWarning(fnName, deprecatedAPIs[fnName]);
-        ComponentDummy.prototype = Component.prototype;
+        ComponentDummy.prototype = Component4.prototype;
         deprecatedAPIs = PureComponent.prototype = new ComponentDummy();
         deprecatedAPIs.constructor = PureComponent;
-        assign(deprecatedAPIs, Component.prototype);
+        assign(deprecatedAPIs, Component4.prototype);
         deprecatedAPIs.isPureReactComponent = true;
         var isArrayImpl = Array.isArray, REACT_CLIENT_REFERENCE = /* @__PURE__ */ Symbol.for("react.client.reference"), ReactSharedInternals = {
           H: null,
@@ -615,7 +615,7 @@
             }) || [];
           },
           only: function(children) {
-            if (!isValidElement(children))
+            if (!isValidElement2(children))
               throw Error(
                 "React.Children.only expected to receive a single React element child."
               );
@@ -624,7 +624,7 @@
         };
         exports.Activity = REACT_ACTIVITY_TYPE;
         exports.Children = fnName;
-        exports.Component = Component;
+        exports.Component = Component4;
         exports.Fragment = REACT_FRAGMENT_TYPE;
         exports.Profiler = REACT_PROFILER_TYPE;
         exports.PureComponent = PureComponent;
@@ -849,7 +849,7 @@
           });
           return elementType;
         };
-        exports.isValidElement = isValidElement;
+        exports.isValidElement = isValidElement2;
         exports.lazy = function(ctor) {
           ctor = { _status: -1, _result: ctor };
           var lazyType = {
@@ -1330,7 +1330,7 @@
           return dispatcher;
         }
         "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-        var React2 = require_react(), Internals = {
+        var React34 = require_react(), Internals = {
           d: {
             f: noop,
             r: function() {
@@ -1348,16 +1348,16 @@
           },
           p: 0,
           findDOMNode: null
-        }, REACT_PORTAL_TYPE = /* @__PURE__ */ Symbol.for("react.portal"), ReactSharedInternals = React2.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
+        }, REACT_PORTAL_TYPE = /* @__PURE__ */ Symbol.for("react.portal"), ReactSharedInternals = React34.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE;
         "function" === typeof Map && null != Map.prototype && "function" === typeof Map.prototype.forEach && "function" === typeof Set && null != Set.prototype && "function" === typeof Set.prototype.clear && "function" === typeof Set.prototype.forEach || console.error(
           "React depends on Map and Set built-in types. Make sure that you load a polyfill in older browsers. https://reactjs.org/link/react-polyfills"
         );
         exports.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = Internals;
-        exports.createPortal = function(children, container2) {
+        exports.createPortal = function(children, container) {
           var key = 2 < arguments.length && void 0 !== arguments[2] ? arguments[2] : null;
-          if (!container2 || 1 !== container2.nodeType && 9 !== container2.nodeType && 11 !== container2.nodeType)
+          if (!container || 1 !== container.nodeType && 9 !== container.nodeType && 11 !== container.nodeType)
             throw Error("Target container is not a DOM element.");
-          return createPortal$1(children, container2, null, key);
+          return createPortal$1(children, container, null, key);
         };
         exports.flushSync = function(fn) {
           var previousTransition = ReactSharedInternals.T, previousUpdatePriority = Internals.p;
@@ -2765,11 +2765,11 @@
             valueField
           );
           if (!node.hasOwnProperty(valueField) && "undefined" !== typeof descriptor && "function" === typeof descriptor.get && "function" === typeof descriptor.set) {
-            var get = descriptor.get, set = descriptor.set;
+            var get2 = descriptor.get, set = descriptor.set;
             Object.defineProperty(node, valueField, {
               configurable: true,
               get: function() {
-                return get.call(this);
+                return get2.call(this);
               },
               set: function(value) {
                 checkFormFieldValueStringCoercion(value);
@@ -2883,7 +2883,7 @@
           "number" === type && getActiveElement(node.ownerDocument) === node || node.defaultValue === "" + value || (node.defaultValue = "" + value);
         }
         function validateOptionProps(element, props) {
-          null == props.value && ("object" === typeof props.children && null !== props.children ? React2.Children.forEach(props.children, function(child) {
+          null == props.value && ("object" === typeof props.children && null !== props.children ? React34.Children.forEach(props.children, function(child) {
             null == child || "string" === typeof child || "number" === typeof child || "bigint" === typeof child || didWarnInvalidChild || (didWarnInvalidChild = true, console.error(
               "Cannot infer the option value of complex children. Pass a `value` prop or use a plain string as children to <option>."
             ));
@@ -4883,9 +4883,9 @@
           this._debugHookTypes = null;
           hasBadMapPolyfill || "function" !== typeof Object.preventExtensions || Object.preventExtensions(this);
         }
-        function shouldConstruct(Component) {
-          Component = Component.prototype;
-          return !(!Component || !Component.isReactComponent);
+        function shouldConstruct(Component4) {
+          Component4 = Component4.prototype;
+          return !(!Component4 || !Component4.isReactComponent);
         }
         function createWorkInProgress(current2, pendingProps) {
           var workInProgress2 = current2.alternate;
@@ -6894,13 +6894,13 @@
             if (!objectIs(nextDeps[i], prevDeps[i])) return false;
           return true;
         }
-        function renderWithHooks(current2, workInProgress2, Component, props, secondArg, nextRenderLanes) {
+        function renderWithHooks(current2, workInProgress2, Component4, props, secondArg, nextRenderLanes) {
           renderLanes = nextRenderLanes;
           currentlyRenderingFiber = workInProgress2;
           hookTypesDev = null !== current2 ? current2._debugHookTypes : null;
           hookTypesUpdateIndexDev = -1;
           ignorePreviousDependencies = null !== current2 && current2.type !== workInProgress2.type;
-          if ("[object AsyncFunction]" === Object.prototype.toString.call(Component) || "[object AsyncGeneratorFunction]" === Object.prototype.toString.call(Component))
+          if ("[object AsyncFunction]" === Object.prototype.toString.call(Component4) || "[object AsyncGeneratorFunction]" === Object.prototype.toString.call(Component4))
             nextRenderLanes = getComponentNameFromFiber(currentlyRenderingFiber), didWarnAboutAsyncClientComponent.has(nextRenderLanes) || (didWarnAboutAsyncClientComponent.add(nextRenderLanes), console.error(
               "%s is an async Client Component. Only Server Components can be async at the moment. This error is often caused by accidentally adding `'use client'` to a module that was originally written for the server.",
               null === nextRenderLanes ? "An unknown Component" : "<" + nextRenderLanes + ">"
@@ -6910,11 +6910,11 @@
           workInProgress2.lanes = 0;
           ReactSharedInternals.H = null !== current2 && null !== current2.memoizedState ? HooksDispatcherOnUpdateInDEV : null !== hookTypesDev ? HooksDispatcherOnMountWithHookTypesInDEV : HooksDispatcherOnMountInDEV;
           shouldDoubleInvokeUserFnsInHooksDEV = nextRenderLanes = (workInProgress2.mode & StrictLegacyMode) !== NoMode;
-          var children = callComponentInDEV(Component, props, secondArg);
+          var children = callComponentInDEV(Component4, props, secondArg);
           shouldDoubleInvokeUserFnsInHooksDEV = false;
           didScheduleRenderPhaseUpdateDuringThisPass && (children = renderWithHooksAgain(
             workInProgress2,
-            Component,
+            Component4,
             props,
             secondArg
           ));
@@ -6923,7 +6923,7 @@
             try {
               children = renderWithHooksAgain(
                 workInProgress2,
-                Component,
+                Component4,
                 props,
                 secondArg
               );
@@ -6962,7 +6962,7 @@
             "`use` was called from inside a try/catch block. This is not allowed and can lead to unexpected behavior. To handle errors triggered by `use`, wrap your component in a error boundary."
           )));
         }
-        function renderWithHooksAgain(workInProgress2, Component, props, secondArg) {
+        function renderWithHooksAgain(workInProgress2, Component4, props, secondArg) {
           currentlyRenderingFiber = workInProgress2;
           var numberOfReRenders = 0;
           do {
@@ -6985,7 +6985,7 @@
             }
             hookTypesUpdateIndexDev = -1;
             ReactSharedInternals.H = HooksDispatcherOnRerenderInDEV;
-            children = callComponentInDEV(Component, props, secondArg);
+            children = callComponentInDEV(Component4, props, secondArg);
           } while (didScheduleRenderPhaseUpdateDuringThisPass);
           return children;
         }
@@ -7718,7 +7718,7 @@
         function mountLayoutEffect(create, deps) {
           var fiberFlags = 4194308;
           (currentlyRenderingFiber.mode & StrictEffectsMode) !== NoMode && (fiberFlags |= 134217728);
-          return mountEffectImpl(fiberFlags, Layout, create, deps);
+          return mountEffectImpl(fiberFlags, Layout2, create, deps);
         }
         function imperativeHandleEffect(create, ref) {
           if ("function" === typeof ref) {
@@ -7746,7 +7746,7 @@
           (currentlyRenderingFiber.mode & StrictEffectsMode) !== NoMode && (fiberFlags |= 134217728);
           mountEffectImpl(
             fiberFlags,
-            Layout,
+            Layout2,
             imperativeHandleEffect.bind(null, create, ref),
             deps
           );
@@ -7759,7 +7759,7 @@
           deps = null !== deps && void 0 !== deps ? deps.concat([ref]) : null;
           updateEffectImpl(
             4,
-            Layout,
+            Layout2,
             imperativeHandleEffect.bind(null, create, ref),
             deps
           );
@@ -7858,7 +7858,7 @@
         function releaseAsyncTransition() {
           ReactSharedInternals.asyncTransitions--;
         }
-        function startTransition(fiber, queue, pendingState, finishedState, callback) {
+        function startTransition3(fiber, queue, pendingState, finishedState, callback) {
           var previousPriority = ReactDOMSharedInternals.p;
           ReactDOMSharedInternals.p = 0 !== previousPriority && previousPriority < ContinuousEventPriority ? previousPriority : ContinuousEventPriority;
           var prevTransition = ReactSharedInternals.T, currentTransition = {};
@@ -7911,7 +7911,7 @@
             );
           var queue = ensureFormComponentIsStateful(formFiber).queue;
           startHostActionTimer(formFiber);
-          startTransition(
+          startTransition3(
             formFiber,
             queue,
             pendingState,
@@ -7972,7 +7972,7 @@
         }
         function mountTransition() {
           var stateHook = mountStateImpl(false);
-          stateHook = startTransition.bind(
+          stateHook = startTransition3.bind(
             null,
             currentlyRenderingFiber,
             stateHook.queue,
@@ -8206,17 +8206,17 @@
             null
           ));
         }
-        function resolveClassComponentProps(Component, baseProps) {
+        function resolveClassComponentProps(Component4, baseProps) {
           var newProps = baseProps;
           if ("ref" in baseProps) {
             newProps = {};
             for (var propName in baseProps)
               "ref" !== propName && (newProps[propName] = baseProps[propName]);
           }
-          if (Component = Component.defaultProps) {
+          if (Component4 = Component4.defaultProps) {
             newProps === baseProps && (newProps = assign({}, newProps));
-            for (var _propName in Component)
-              void 0 === newProps[_propName] && (newProps[_propName] = Component[_propName]);
+            for (var _propName in Component4)
+              void 0 === newProps[_propName] && (newProps[_propName] = Component4[_propName]);
           }
           return newProps;
         }
@@ -8445,8 +8445,8 @@
             renderLanes2
           );
         }
-        function updateForwardRef(current2, workInProgress2, Component, nextProps, renderLanes2) {
-          Component = Component.render;
+        function updateForwardRef(current2, workInProgress2, Component4, nextProps, renderLanes2) {
+          Component4 = Component4.render;
           var ref = workInProgress2.ref;
           if ("ref" in nextProps) {
             var propsWithoutRef = {};
@@ -8457,7 +8457,7 @@
           nextProps = renderWithHooks(
             current2,
             workInProgress2,
-            Component,
+            Component4,
             propsWithoutRef,
             ref,
             renderLanes2
@@ -8470,19 +8470,19 @@
           reconcileChildren(current2, workInProgress2, nextProps, renderLanes2);
           return workInProgress2.child;
         }
-        function updateMemoComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateMemoComponent(current2, workInProgress2, Component4, nextProps, renderLanes2) {
           if (null === current2) {
-            var type = Component.type;
-            if ("function" === typeof type && !shouldConstruct(type) && void 0 === type.defaultProps && null === Component.compare)
-              return Component = resolveFunctionForHotReloading(type), workInProgress2.tag = 15, workInProgress2.type = Component, validateFunctionComponentInDev(workInProgress2, type), updateSimpleMemoComponent(
+            var type = Component4.type;
+            if ("function" === typeof type && !shouldConstruct(type) && void 0 === type.defaultProps && null === Component4.compare)
+              return Component4 = resolveFunctionForHotReloading(type), workInProgress2.tag = 15, workInProgress2.type = Component4, validateFunctionComponentInDev(workInProgress2, type), updateSimpleMemoComponent(
                 current2,
                 workInProgress2,
-                Component,
+                Component4,
                 nextProps,
                 renderLanes2
               );
             current2 = createFiberFromTypeAndProps(
-              Component.type,
+              Component4.type,
               null,
               nextProps,
               workInProgress2,
@@ -8496,9 +8496,9 @@
           type = current2.child;
           if (!checkScheduledUpdateOrContext(current2, renderLanes2)) {
             var prevProps = type.memoizedProps;
-            Component = Component.compare;
-            Component = null !== Component ? Component : shallowEqual;
-            if (Component(prevProps, nextProps) && current2.ref === workInProgress2.ref)
+            Component4 = Component4.compare;
+            Component4 = null !== Component4 ? Component4 : shallowEqual;
+            if (Component4(prevProps, nextProps) && current2.ref === workInProgress2.ref)
               return bailoutOnAlreadyFinishedWork(
                 current2,
                 workInProgress2,
@@ -8511,7 +8511,7 @@
           current2.return = workInProgress2;
           return workInProgress2.child = current2;
         }
-        function updateSimpleMemoComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateSimpleMemoComponent(current2, workInProgress2, Component4, nextProps, renderLanes2) {
           if (null !== current2) {
             var prevProps = current2.memoizedProps;
             if (shallowEqual(prevProps, nextProps) && current2.ref === workInProgress2.ref && workInProgress2.type === current2.type)
@@ -8523,7 +8523,7 @@
           return updateFunctionComponent(
             current2,
             workInProgress2,
-            Component,
+            Component4,
             nextProps,
             renderLanes2
           );
@@ -8713,9 +8713,9 @@
               workInProgress2.flags |= 4194816;
           }
         }
-        function updateFunctionComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
-          if (Component.prototype && "function" === typeof Component.prototype.render) {
-            var componentName2 = getComponentNameFromType(Component) || "Unknown";
+        function updateFunctionComponent(current2, workInProgress2, Component4, nextProps, renderLanes2) {
+          if (Component4.prototype && "function" === typeof Component4.prototype.render) {
+            var componentName2 = getComponentNameFromType(Component4) || "Unknown";
             didWarnAboutBadClass[componentName2] || (console.error(
               "The <%s /> component appears to have a render method, but doesn't extend React.Component. This is likely to cause errors. Change %s to extend React.Component instead.",
               componentName2,
@@ -8726,15 +8726,15 @@
             workInProgress2,
             null
           );
-          null === current2 && (validateFunctionComponentInDev(workInProgress2, workInProgress2.type), Component.contextTypes && (componentName2 = getComponentNameFromType(Component) || "Unknown", didWarnAboutContextTypes[componentName2] || (didWarnAboutContextTypes[componentName2] = true, console.error(
+          null === current2 && (validateFunctionComponentInDev(workInProgress2, workInProgress2.type), Component4.contextTypes && (componentName2 = getComponentNameFromType(Component4) || "Unknown", didWarnAboutContextTypes[componentName2] || (didWarnAboutContextTypes[componentName2] = true, console.error(
             "%s uses the legacy contextTypes API which was removed in React 19. Use React.createContext() with React.useContext() instead. (https://react.dev/link/legacy-context)",
             componentName2
           ))));
           prepareToReadContext(workInProgress2);
-          Component = renderWithHooks(
+          Component4 = renderWithHooks(
             current2,
             workInProgress2,
-            Component,
+            Component4,
             nextProps,
             void 0,
             renderLanes2
@@ -8744,30 +8744,30 @@
             return bailoutHooks(current2, workInProgress2, renderLanes2), bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
           isHydrating && nextProps && pushMaterializedTreeId(workInProgress2);
           workInProgress2.flags |= 1;
-          reconcileChildren(current2, workInProgress2, Component, renderLanes2);
+          reconcileChildren(current2, workInProgress2, Component4, renderLanes2);
           return workInProgress2.child;
         }
-        function replayFunctionComponent(current2, workInProgress2, nextProps, Component, secondArg, renderLanes2) {
+        function replayFunctionComponent(current2, workInProgress2, nextProps, Component4, secondArg, renderLanes2) {
           prepareToReadContext(workInProgress2);
           hookTypesUpdateIndexDev = -1;
           ignorePreviousDependencies = null !== current2 && current2.type !== workInProgress2.type;
           workInProgress2.updateQueue = null;
           nextProps = renderWithHooksAgain(
             workInProgress2,
-            Component,
+            Component4,
             nextProps,
             secondArg
           );
           finishRenderingHooks(current2, workInProgress2);
-          Component = checkDidRenderIdHook();
+          Component4 = checkDidRenderIdHook();
           if (null !== current2 && !didReceiveUpdate)
             return bailoutHooks(current2, workInProgress2, renderLanes2), bailoutOnAlreadyFinishedWork(current2, workInProgress2, renderLanes2);
-          isHydrating && Component && pushMaterializedTreeId(workInProgress2);
+          isHydrating && Component4 && pushMaterializedTreeId(workInProgress2);
           workInProgress2.flags |= 1;
           reconcileChildren(current2, workInProgress2, nextProps, renderLanes2);
           return workInProgress2.child;
         }
-        function updateClassComponent(current2, workInProgress2, Component, nextProps, renderLanes2) {
+        function updateClassComponent(current2, workInProgress2, Component4, nextProps, renderLanes2) {
           switch (shouldErrorImpl(workInProgress2)) {
             case false:
               var _instance = workInProgress2.stateNode, state = new workInProgress2.type(
@@ -8799,18 +8799,18 @@
           prepareToReadContext(workInProgress2);
           if (null === workInProgress2.stateNode) {
             state = emptyContextObject;
-            _instance = Component.contextType;
-            "contextType" in Component && null !== _instance && (void 0 === _instance || _instance.$$typeof !== REACT_CONTEXT_TYPE) && !didWarnAboutInvalidateContextType.has(Component) && (didWarnAboutInvalidateContextType.add(Component), lane = void 0 === _instance ? " However, it is set to undefined. This can be caused by a typo or by mixing up named and default imports. This can also happen due to a circular dependency, so try moving the createContext() call to a separate file." : "object" !== typeof _instance ? " However, it is set to a " + typeof _instance + "." : _instance.$$typeof === REACT_CONSUMER_TYPE ? " Did you accidentally pass the Context.Consumer instead?" : " However, it is set to an object with keys {" + Object.keys(_instance).join(", ") + "}.", console.error(
+            _instance = Component4.contextType;
+            "contextType" in Component4 && null !== _instance && (void 0 === _instance || _instance.$$typeof !== REACT_CONTEXT_TYPE) && !didWarnAboutInvalidateContextType.has(Component4) && (didWarnAboutInvalidateContextType.add(Component4), lane = void 0 === _instance ? " However, it is set to undefined. This can be caused by a typo or by mixing up named and default imports. This can also happen due to a circular dependency, so try moving the createContext() call to a separate file." : "object" !== typeof _instance ? " However, it is set to a " + typeof _instance + "." : _instance.$$typeof === REACT_CONSUMER_TYPE ? " Did you accidentally pass the Context.Consumer instead?" : " However, it is set to an object with keys {" + Object.keys(_instance).join(", ") + "}.", console.error(
               "%s defines an invalid contextType. contextType should point to the Context object returned by React.createContext().%s",
-              getComponentNameFromType(Component) || "Component",
+              getComponentNameFromType(Component4) || "Component",
               lane
             ));
             "object" === typeof _instance && null !== _instance && (state = readContext(_instance));
-            _instance = new Component(nextProps, state);
+            _instance = new Component4(nextProps, state);
             if (workInProgress2.mode & StrictLegacyMode) {
               setIsStrictModeForDevtools(true);
               try {
-                _instance = new Component(nextProps, state);
+                _instance = new Component4(nextProps, state);
               } finally {
                 setIsStrictModeForDevtools(false);
               }
@@ -8820,20 +8820,20 @@
             workInProgress2.stateNode = _instance;
             _instance._reactInternals = workInProgress2;
             _instance._reactInternalInstance = fakeInternalInstance;
-            "function" === typeof Component.getDerivedStateFromProps && null === state && (state = getComponentNameFromType(Component) || "Component", didWarnAboutUninitializedState.has(state) || (didWarnAboutUninitializedState.add(state), console.error(
+            "function" === typeof Component4.getDerivedStateFromProps && null === state && (state = getComponentNameFromType(Component4) || "Component", didWarnAboutUninitializedState.has(state) || (didWarnAboutUninitializedState.add(state), console.error(
               "`%s` uses `getDerivedStateFromProps` but its initial state is %s. This is not recommended. Instead, define the initial state by assigning an object to `this.state` in the constructor of `%s`. This ensures that `getDerivedStateFromProps` arguments have a consistent shape.",
               state,
               null === _instance.state ? "null" : "undefined",
               state
             )));
-            if ("function" === typeof Component.getDerivedStateFromProps || "function" === typeof _instance.getSnapshotBeforeUpdate) {
+            if ("function" === typeof Component4.getDerivedStateFromProps || "function" === typeof _instance.getSnapshotBeforeUpdate) {
               var foundWillUpdateName = lane = state = null;
               "function" === typeof _instance.componentWillMount && true !== _instance.componentWillMount.__suppressDeprecationWarning ? state = "componentWillMount" : "function" === typeof _instance.UNSAFE_componentWillMount && (state = "UNSAFE_componentWillMount");
               "function" === typeof _instance.componentWillReceiveProps && true !== _instance.componentWillReceiveProps.__suppressDeprecationWarning ? lane = "componentWillReceiveProps" : "function" === typeof _instance.UNSAFE_componentWillReceiveProps && (lane = "UNSAFE_componentWillReceiveProps");
               "function" === typeof _instance.componentWillUpdate && true !== _instance.componentWillUpdate.__suppressDeprecationWarning ? foundWillUpdateName = "componentWillUpdate" : "function" === typeof _instance.UNSAFE_componentWillUpdate && (foundWillUpdateName = "UNSAFE_componentWillUpdate");
               if (null !== state || null !== lane || null !== foundWillUpdateName) {
-                _instance = getComponentNameFromType(Component) || "Component";
-                var newApiName = "function" === typeof Component.getDerivedStateFromProps ? "getDerivedStateFromProps()" : "getSnapshotBeforeUpdate()";
+                _instance = getComponentNameFromType(Component4) || "Component";
+                var newApiName = "function" === typeof Component4.getDerivedStateFromProps ? "getDerivedStateFromProps()" : "getSnapshotBeforeUpdate()";
                 didWarnAboutLegacyLifecyclesAndDerivedState.has(_instance) || (didWarnAboutLegacyLifecyclesAndDerivedState.add(_instance), console.error(
                   "Unsafe legacy lifecycles will not be called for components using new component APIs.\n\n%s uses %s but also contains the following legacy lifecycles:%s%s%s\n\nThe above lifecycles should be removed. Learn more about this warning here:\nhttps://react.dev/link/unsafe-component-lifecycles",
                   _instance,
@@ -8845,8 +8845,8 @@
               }
             }
             _instance = workInProgress2.stateNode;
-            state = getComponentNameFromType(Component) || "Component";
-            _instance.render || (Component.prototype && "function" === typeof Component.prototype.render ? console.error(
+            state = getComponentNameFromType(Component4) || "Component";
+            _instance.render || (Component4.prototype && "function" === typeof Component4.prototype.render ? console.error(
               "No `render` method found on the %s instance: did you accidentally return an object from the constructor?",
               state
             ) : console.error(
@@ -8865,11 +8865,11 @@
               "contextType was defined as an instance property on %s. Use a static property to define contextType instead.",
               state
             );
-            Component.childContextTypes && !didWarnAboutChildContextTypes.has(Component) && (didWarnAboutChildContextTypes.add(Component), console.error(
+            Component4.childContextTypes && !didWarnAboutChildContextTypes.has(Component4) && (didWarnAboutChildContextTypes.add(Component4), console.error(
               "%s uses the legacy childContextTypes API which was removed in React 19. Use React.createContext() instead. (https://react.dev/link/legacy-context)",
               state
             ));
-            Component.contextTypes && !didWarnAboutContextTypes$1.has(Component) && (didWarnAboutContextTypes$1.add(Component), console.error(
+            Component4.contextTypes && !didWarnAboutContextTypes$1.has(Component4) && (didWarnAboutContextTypes$1.add(Component4), console.error(
               "%s uses the legacy contextTypes API which was removed in React 19. Use React.createContext() with static contextType instead. (https://react.dev/link/legacy-context)",
               state
             ));
@@ -8877,9 +8877,9 @@
               "%s has a method called componentShouldUpdate(). Did you mean shouldComponentUpdate()? The name is phrased as a question because the function is expected to return a value.",
               state
             );
-            Component.prototype && Component.prototype.isPureReactComponent && "undefined" !== typeof _instance.shouldComponentUpdate && console.error(
+            Component4.prototype && Component4.prototype.isPureReactComponent && "undefined" !== typeof _instance.shouldComponentUpdate && console.error(
               "%s has a method called shouldComponentUpdate(). shouldComponentUpdate should not be used when extending React.PureComponent. Please extend React.Component if shouldComponentUpdate is used.",
-              getComponentNameFromType(Component) || "A pure component"
+              getComponentNameFromType(Component4) || "A pure component"
             );
             "function" === typeof _instance.componentDidUnmount && console.error(
               "%s has a method called componentDidUnmount(). But there is no such lifecycle method. Did you mean componentWillUnmount()?",
@@ -8907,9 +8907,9 @@
               state,
               state
             );
-            "function" !== typeof _instance.getSnapshotBeforeUpdate || "function" === typeof _instance.componentDidUpdate || didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate.has(Component) || (didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate.add(Component), console.error(
+            "function" !== typeof _instance.getSnapshotBeforeUpdate || "function" === typeof _instance.componentDidUpdate || didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate.has(Component4) || (didWarnAboutGetSnapshotBeforeUpdateWithoutDidUpdate.add(Component4), console.error(
               "%s: getSnapshotBeforeUpdate() should be used with componentDidUpdate(). This component defines getSnapshotBeforeUpdate() only.",
-              getComponentNameFromType(Component)
+              getComponentNameFromType(Component4)
             ));
             "function" === typeof _instance.getDerivedStateFromProps && console.error(
               "%s: getDerivedStateFromProps() is defined as an instance method and will be ignored. Instead, declare it as a static method.",
@@ -8919,12 +8919,12 @@
               "%s: getDerivedStateFromError() is defined as an instance method and will be ignored. Instead, declare it as a static method.",
               state
             );
-            "function" === typeof Component.getSnapshotBeforeUpdate && console.error(
+            "function" === typeof Component4.getSnapshotBeforeUpdate && console.error(
               "%s: getSnapshotBeforeUpdate() is defined as a static method and will be ignored. Instead, declare it as an instance method.",
               state
             );
             (lane = _instance.state) && ("object" !== typeof lane || isArrayImpl(lane)) && console.error("%s.state: must be set to an object or null", state);
-            "function" === typeof _instance.getChildContext && "object" !== typeof Component.childContextTypes && console.error(
+            "function" === typeof _instance.getChildContext && "object" !== typeof Component4.childContextTypes && console.error(
               "%s.getChildContext(): childContextTypes must be defined in order to use getChildContext().",
               state
             );
@@ -8933,9 +8933,9 @@
             _instance.state = workInProgress2.memoizedState;
             _instance.refs = {};
             initializeUpdateQueue(workInProgress2);
-            state = Component.contextType;
+            state = Component4.contextType;
             _instance.context = "object" === typeof state && null !== state ? readContext(state) : emptyContextObject;
-            _instance.state === nextProps && (state = getComponentNameFromType(Component) || "Component", didWarnAboutDirectlyAssigningPropsToState.has(state) || (didWarnAboutDirectlyAssigningPropsToState.add(state), console.error(
+            _instance.state === nextProps && (state = getComponentNameFromType(Component4) || "Component", didWarnAboutDirectlyAssigningPropsToState.has(state) || (didWarnAboutDirectlyAssigningPropsToState.add(state), console.error(
               "%s: It is not recommended to assign props directly to state because updates to props won't be reflected in state. In most cases, it is better to use props directly.",
               state
             )));
@@ -8948,14 +8948,14 @@
               _instance
             );
             _instance.state = workInProgress2.memoizedState;
-            state = Component.getDerivedStateFromProps;
+            state = Component4.getDerivedStateFromProps;
             "function" === typeof state && (applyDerivedStateFromProps(
               workInProgress2,
-              Component,
+              Component4,
               state,
               nextProps
             ), _instance.state = workInProgress2.memoizedState);
-            "function" === typeof Component.getDerivedStateFromProps || "function" === typeof _instance.getSnapshotBeforeUpdate || "function" !== typeof _instance.UNSAFE_componentWillMount && "function" !== typeof _instance.componentWillMount || (state = _instance.state, "function" === typeof _instance.componentWillMount && _instance.componentWillMount(), "function" === typeof _instance.UNSAFE_componentWillMount && _instance.UNSAFE_componentWillMount(), state !== _instance.state && (console.error(
+            "function" === typeof Component4.getDerivedStateFromProps || "function" === typeof _instance.getSnapshotBeforeUpdate || "function" !== typeof _instance.UNSAFE_componentWillMount && "function" !== typeof _instance.componentWillMount || (state = _instance.state, "function" === typeof _instance.componentWillMount && _instance.componentWillMount(), "function" === typeof _instance.UNSAFE_componentWillMount && _instance.UNSAFE_componentWillMount(), state !== _instance.state && (console.error(
               "%s.componentWillMount(): Assigning directly to this.state is deprecated (except inside a component's constructor). Use setState instead.",
               getComponentNameFromFiber(workInProgress2) || "Component"
             ), classComponentUpdater.enqueueReplaceState(
@@ -8969,13 +8969,13 @@
           } else if (null === current2) {
             _instance = workInProgress2.stateNode;
             var unresolvedOldProps = workInProgress2.memoizedProps;
-            lane = resolveClassComponentProps(Component, unresolvedOldProps);
+            lane = resolveClassComponentProps(Component4, unresolvedOldProps);
             _instance.props = lane;
             var oldContext = _instance.context;
-            foundWillUpdateName = Component.contextType;
+            foundWillUpdateName = Component4.contextType;
             state = emptyContextObject;
             "object" === typeof foundWillUpdateName && null !== foundWillUpdateName && (state = readContext(foundWillUpdateName));
-            newApiName = Component.getDerivedStateFromProps;
+            newApiName = Component4.getDerivedStateFromProps;
             foundWillUpdateName = "function" === typeof newApiName || "function" === typeof _instance.getSnapshotBeforeUpdate;
             unresolvedOldProps = workInProgress2.pendingProps !== unresolvedOldProps;
             foundWillUpdateName || "function" !== typeof _instance.UNSAFE_componentWillReceiveProps && "function" !== typeof _instance.componentWillReceiveProps || (unresolvedOldProps || oldContext !== state) && callComponentWillReceiveProps(
@@ -8992,12 +8992,12 @@
             oldContext = workInProgress2.memoizedState;
             unresolvedOldProps || oldState !== oldContext || hasForceUpdate ? ("function" === typeof newApiName && (applyDerivedStateFromProps(
               workInProgress2,
-              Component,
+              Component4,
               newApiName,
               nextProps
             ), oldContext = workInProgress2.memoizedState), (lane = hasForceUpdate || checkShouldComponentUpdate(
               workInProgress2,
-              Component,
+              Component4,
               lane,
               nextProps,
               oldState,
@@ -9008,14 +9008,14 @@
             _instance = workInProgress2.stateNode;
             cloneUpdateQueue(current2, workInProgress2);
             state = workInProgress2.memoizedProps;
-            foundWillUpdateName = resolveClassComponentProps(Component, state);
+            foundWillUpdateName = resolveClassComponentProps(Component4, state);
             _instance.props = foundWillUpdateName;
             newApiName = workInProgress2.pendingProps;
             oldState = _instance.context;
-            oldContext = Component.contextType;
+            oldContext = Component4.contextType;
             lane = emptyContextObject;
             "object" === typeof oldContext && null !== oldContext && (lane = readContext(oldContext));
-            unresolvedOldProps = Component.getDerivedStateFromProps;
+            unresolvedOldProps = Component4.getDerivedStateFromProps;
             (oldContext = "function" === typeof unresolvedOldProps || "function" === typeof _instance.getSnapshotBeforeUpdate) || "function" !== typeof _instance.UNSAFE_componentWillReceiveProps && "function" !== typeof _instance.componentWillReceiveProps || (state !== newApiName || oldState !== lane) && callComponentWillReceiveProps(
               workInProgress2,
               _instance,
@@ -9030,12 +9030,12 @@
             var newState = workInProgress2.memoizedState;
             state !== newApiName || oldState !== newState || hasForceUpdate || null !== current2 && null !== current2.dependencies && checkIfContextChanged(current2.dependencies) ? ("function" === typeof unresolvedOldProps && (applyDerivedStateFromProps(
               workInProgress2,
-              Component,
+              Component4,
               unresolvedOldProps,
               nextProps
             ), newState = workInProgress2.memoizedState), (foundWillUpdateName = hasForceUpdate || checkShouldComponentUpdate(
               workInProgress2,
-              Component,
+              Component4,
               foundWillUpdateName,
               nextProps,
               oldState,
@@ -9053,9 +9053,9 @@
           if (lane || state) {
             lane = workInProgress2.stateNode;
             setCurrentFiber(workInProgress2);
-            if (state && "function" !== typeof Component.getDerivedStateFromError)
-              Component = null, profilerStartTime = -1;
-            else if (Component = callRenderInDEV(lane), workInProgress2.mode & StrictLegacyMode) {
+            if (state && "function" !== typeof Component4.getDerivedStateFromError)
+              Component4 = null, profilerStartTime = -1;
+            else if (Component4 = callRenderInDEV(lane), workInProgress2.mode & StrictLegacyMode) {
               setIsStrictModeForDevtools(true);
               try {
                 callRenderInDEV(lane);
@@ -9072,9 +9072,9 @@
             ), workInProgress2.child = reconcileChildFibers(
               workInProgress2,
               null,
-              Component,
+              Component4,
               renderLanes2
-            )) : reconcileChildren(current2, workInProgress2, Component, renderLanes2);
+            )) : reconcileChildren(current2, workInProgress2, Component4, renderLanes2);
             workInProgress2.memoizedState = lane.state;
             current2 = workInProgress2.child;
           } else
@@ -9096,19 +9096,19 @@
           reconcileChildren(current2, workInProgress2, nextChildren, renderLanes2);
           return workInProgress2.child;
         }
-        function validateFunctionComponentInDev(workInProgress2, Component) {
-          Component && Component.childContextTypes && console.error(
+        function validateFunctionComponentInDev(workInProgress2, Component4) {
+          Component4 && Component4.childContextTypes && console.error(
             "childContextTypes cannot be defined on a function component.\n  %s.childContextTypes = ...",
-            Component.displayName || Component.name || "Component"
+            Component4.displayName || Component4.name || "Component"
           );
-          "function" === typeof Component.getDerivedStateFromProps && (workInProgress2 = getComponentNameFromType(Component) || "Unknown", didWarnAboutGetDerivedStateOnFunctionComponent[workInProgress2] || (console.error(
+          "function" === typeof Component4.getDerivedStateFromProps && (workInProgress2 = getComponentNameFromType(Component4) || "Unknown", didWarnAboutGetDerivedStateOnFunctionComponent[workInProgress2] || (console.error(
             "%s: Function components do not support getDerivedStateFromProps.",
             workInProgress2
           ), didWarnAboutGetDerivedStateOnFunctionComponent[workInProgress2] = true));
-          "object" === typeof Component.contextType && null !== Component.contextType && (Component = getComponentNameFromType(Component) || "Unknown", didWarnAboutContextTypeOnFunctionComponent[Component] || (console.error(
+          "object" === typeof Component4.contextType && null !== Component4.contextType && (Component4 = getComponentNameFromType(Component4) || "Unknown", didWarnAboutContextTypeOnFunctionComponent[Component4] || (console.error(
             "%s: Function components do not support contextType.",
-            Component
-          ), didWarnAboutContextTypeOnFunctionComponent[Component] = true));
+            Component4
+          ), didWarnAboutContextTypeOnFunctionComponent[Component4] = true));
         }
         function mountSuspenseOffscreenState(renderLanes2) {
           return { baseLanes: renderLanes2, cachePool: getSuspendedCache() };
@@ -10673,7 +10673,7 @@
                   updateQueue
                 ), (flags & Insertion) !== NoFlags && (isRunningInsertionEffect = false), void 0 !== lastEffect && "function" !== typeof lastEffect)) {
                   var hookName = void 0;
-                  hookName = 0 !== (updateQueue.tag & Layout) ? "useLayoutEffect" : 0 !== (updateQueue.tag & Insertion) ? "useInsertionEffect" : "useEffect";
+                  hookName = 0 !== (updateQueue.tag & Layout2) ? "useLayoutEffect" : 0 !== (updateQueue.tag & Insertion) ? "useInsertionEffect" : "useEffect";
                   var addendum = void 0;
                   addendum = null === lastEffect ? " You returned null. If your effect does not require clean up, return undefined (or nothing)." : "function" === typeof lastEffect.then ? "\n\nIt looks like you wrote " + hookName + "(async () => ...) or returned a Promise. Instead, write the async function inside your effect and call it immediately:\n\n" + hookName + "(() => {\n  async function fetchData() {\n    // You can await here\n    const response = await MyAPI.getData(someId);\n    // ...\n  }\n  fetchData();\n}, [someId]); // Or [] if effect doesn't need props or state\n\nLearn more about data fetching with Hooks: https://react.dev/link/hooks-data-fetching" : " You returned: " + lastEffect;
                   runWithFiberInDEV(
@@ -11160,7 +11160,7 @@
             case 11:
             case 15:
               recursivelyTraverseLayoutEffects(finishedRoot, finishedWork);
-              flags & 4 && commitHookLayoutEffects(finishedWork, Layout | HasEffect);
+              flags & 4 && commitHookLayoutEffects(finishedWork, Layout2 | HasEffect);
               break;
             case 1:
               recursivelyTraverseLayoutEffects(finishedRoot, finishedWork);
@@ -11491,7 +11491,7 @@
               offscreenSubtreeWasHidden || commitHookLayoutUnmountEffects(
                 deletedFiber,
                 nearestMountedAncestor,
-                Layout
+                Layout2
               );
               recursivelyTraverseDeletionEffects(
                 finishedRoot,
@@ -11670,7 +11670,7 @@
               ), commitHookEffectListMount(Insertion | HasEffect, finishedWork), commitHookLayoutUnmountEffects(
                 finishedWork,
                 finishedWork.return,
-                Layout | HasEffect
+                Layout2 | HasEffect
               ));
               break;
             case 1:
@@ -12060,7 +12060,7 @@
               commitHookLayoutUnmountEffects(
                 finishedWork,
                 finishedWork.return,
-                Layout
+                Layout2
               );
               recursivelyTraverseDisappearLayoutEffects(finishedWork);
               break;
@@ -12121,7 +12121,7 @@
                 finishedWork,
                 includeWorkInProgressEffects
               );
-              commitHookLayoutEffects(finishedWork, Layout);
+              commitHookLayoutEffects(finishedWork, Layout2);
               break;
             case 1:
               recursivelyTraverseReappearLayoutEffects(
@@ -14997,8 +14997,8 @@
               if (null === targetInst$jscomp$0) return;
               var nodeTag = targetInst$jscomp$0.tag;
               if (3 === nodeTag || 4 === nodeTag) {
-                var container2 = targetInst$jscomp$0.stateNode.containerInfo;
-                if (container2 === targetContainer) break;
+                var container = targetInst$jscomp$0.stateNode.containerInfo;
+                if (container === targetContainer) break;
                 if (4 === nodeTag)
                   for (nodeTag = targetInst$jscomp$0.return; null !== nodeTag; ) {
                     var grandTag = nodeTag.tag;
@@ -15006,15 +15006,15 @@
                       return;
                     nodeTag = nodeTag.return;
                   }
-                for (; null !== container2; ) {
-                  nodeTag = getClosestInstanceFromNode(container2);
+                for (; null !== container; ) {
+                  nodeTag = getClosestInstanceFromNode(container);
                   if (null === nodeTag) return;
                   grandTag = nodeTag.tag;
                   if (5 === grandTag || 6 === grandTag || 26 === grandTag || 27 === grandTag) {
                     targetInst$jscomp$0 = ancestorInst = nodeTag;
                     continue a;
                   }
-                  container2 = container2.parentNode;
+                  container = container.parentNode;
                 }
               }
               targetInst$jscomp$0 = targetInst$jscomp$0.return;
@@ -17153,16 +17153,16 @@
         function commitTextUpdate(textInstance, oldText, newText) {
           textInstance.nodeValue = newText;
         }
-        function warnForReactChildrenConflict(container2) {
-          if (!container2.__reactWarnedAboutChildrenConflict) {
-            var props = container2[internalPropsKey] || null;
+        function warnForReactChildrenConflict(container) {
+          if (!container.__reactWarnedAboutChildrenConflict) {
+            var props = container[internalPropsKey] || null;
             if (null !== props) {
-              var fiber = getInstanceFromNode(container2);
-              null !== fiber && ("string" === typeof props.children || "number" === typeof props.children ? (container2.__reactWarnedAboutChildrenConflict = true, runWithFiberInDEV(fiber, function() {
+              var fiber = getInstanceFromNode(container);
+              null !== fiber && ("string" === typeof props.children || "number" === typeof props.children ? (container.__reactWarnedAboutChildrenConflict = true, runWithFiberInDEV(fiber, function() {
                 console.error(
                   'Cannot use a ref on a React element as a container to `createRoot` or `createPortal` if that element also sets "children" text content using React. It should be a leaf with no children. Otherwise it\'s ambiguous which children should be used.'
                 );
-              })) : null != props.dangerouslySetInnerHTML && (container2.__reactWarnedAboutChildrenConflict = true, runWithFiberInDEV(fiber, function() {
+              })) : null != props.dangerouslySetInnerHTML && (container.__reactWarnedAboutChildrenConflict = true, runWithFiberInDEV(fiber, function() {
                 console.error(
                   'Cannot use a ref on a React element as a container to `createRoot` or `createPortal` if that element also sets "dangerouslySetInnerHTML" using React. It should be a leaf with no children. Otherwise it\'s ambiguous which children should be used.'
                 );
@@ -17176,8 +17176,8 @@
         function removeChild(parentInstance, child) {
           parentInstance.removeChild(child);
         }
-        function removeChildFromContainer(container2, child) {
-          (9 === container2.nodeType ? container2.body : "HTML" === container2.nodeName ? container2.ownerDocument.body : container2).removeChild(child);
+        function removeChildFromContainer(container, child) {
+          (9 === container.nodeType ? container.body : "HTML" === container.nodeName ? container.ownerDocument.body : container).removeChild(child);
         }
         function clearHydrationBoundary(parentInstance, hydrationInstance) {
           var node = hydrationInstance, depth = 0;
@@ -17248,8 +17248,8 @@
         function unhideTextInstance(textInstance, text) {
           textInstance.nodeValue = text;
         }
-        function clearContainerSparingly(container2) {
-          var nextNode = container2.firstChild;
+        function clearContainerSparingly(container) {
+          var nextNode = container.firstChild;
           nextNode && 10 === nextNode.nodeType && (nextNode = nextNode.nextSibling);
           for (; nextNode; ) {
             var node = nextNode;
@@ -17267,7 +17267,7 @@
               case "LINK":
                 if ("stylesheet" === node.rel.toLowerCase()) continue;
             }
-            container2.removeChild(node);
+            container.removeChild(node);
           }
         }
         function canHydrateInstance(instance, type, props, inRootOrSingleton) {
@@ -17382,13 +17382,13 @@
           hydrationInstance = hydrationInstance.nextSibling;
           for (var depth = 0; hydrationInstance; ) {
             if (8 === hydrationInstance.nodeType) {
-              var data = hydrationInstance.data;
-              if (data === SUSPENSE_END_DATA || data === ACTIVITY_END_DATA) {
+              var data2 = hydrationInstance.data;
+              if (data2 === SUSPENSE_END_DATA || data2 === ACTIVITY_END_DATA) {
                 if (0 === depth)
                   return getNextHydratable(hydrationInstance.nextSibling);
                 depth--;
               } else
-                data !== SUSPENSE_START_DATA && data !== SUSPENSE_FALLBACK_START_DATA && data !== SUSPENSE_PENDING_START_DATA && data !== SUSPENSE_QUEUED_START_DATA && data !== ACTIVITY_START_DATA || depth++;
+                data2 !== SUSPENSE_START_DATA && data2 !== SUSPENSE_FALLBACK_START_DATA && data2 !== SUSPENSE_PENDING_START_DATA && data2 !== SUSPENSE_QUEUED_START_DATA && data2 !== ACTIVITY_START_DATA || depth++;
             }
             hydrationInstance = hydrationInstance.nextSibling;
           }
@@ -17398,19 +17398,19 @@
           targetInstance = targetInstance.previousSibling;
           for (var depth = 0; targetInstance; ) {
             if (8 === targetInstance.nodeType) {
-              var data = targetInstance.data;
-              if (data === SUSPENSE_START_DATA || data === SUSPENSE_FALLBACK_START_DATA || data === SUSPENSE_PENDING_START_DATA || data === SUSPENSE_QUEUED_START_DATA || data === ACTIVITY_START_DATA) {
+              var data2 = targetInstance.data;
+              if (data2 === SUSPENSE_START_DATA || data2 === SUSPENSE_FALLBACK_START_DATA || data2 === SUSPENSE_PENDING_START_DATA || data2 === SUSPENSE_QUEUED_START_DATA || data2 === ACTIVITY_START_DATA) {
                 if (0 === depth) return targetInstance;
                 depth--;
               } else
-                data !== SUSPENSE_END_DATA && data !== ACTIVITY_END_DATA || depth++;
+                data2 !== SUSPENSE_END_DATA && data2 !== ACTIVITY_END_DATA || depth++;
             }
             targetInstance = targetInstance.previousSibling;
           }
           return null;
         }
-        function commitHydratedContainer(container2) {
-          retryIfBlockedOn(container2);
+        function commitHydratedContainer(container) {
+          retryIfBlockedOn(container);
         }
         function commitHydratedActivityInstance(activityInstance) {
           retryIfBlockedOn(activityInstance);
@@ -17480,8 +17480,8 @@
             instance.removeAttributeNode(attributes[0]);
           detachDeletedInstance(instance);
         }
-        function getHoistableRoot(container2) {
-          return "function" === typeof container2.getRootNode ? container2.getRootNode() : 9 === container2.nodeType ? container2 : container2.ownerDocument;
+        function getHoistableRoot(container) {
+          return "function" === typeof container.getRootNode ? container.getRootNode() : 9 === container.nodeType ? container : container.ownerDocument;
         }
         function preconnectAs(rel, href, crossOrigin) {
           var ownerDocument = globalDocument;
@@ -17960,10 +17960,10 @@
           parentComponent = emptyContextObject;
           return parentComponent;
         }
-        function updateContainerImpl(rootFiber, lane, element, container2, parentComponent, callback) {
+        function updateContainerImpl(rootFiber, lane, element, container, parentComponent, callback) {
           if (injectedHook && "function" === typeof injectedHook.onScheduleFiberRoot)
             try {
-              injectedHook.onScheduleFiberRoot(rendererID, container2, element);
+              injectedHook.onScheduleFiberRoot(rendererID, container, element);
             } catch (err) {
               hasLoggedError || (hasLoggedError = true, console.error(
                 "React instrumentation encountered an error: %o",
@@ -17971,19 +17971,19 @@
               ));
             }
           parentComponent = getContextForSubtree(parentComponent);
-          null === container2.context ? container2.context = parentComponent : container2.pendingContext = parentComponent;
+          null === container.context ? container.context = parentComponent : container.pendingContext = parentComponent;
           isRendering && null !== current && !didWarnAboutNestedUpdates && (didWarnAboutNestedUpdates = true, console.error(
             "Render methods should be a pure function of props and state; triggering nested component updates from render is not allowed. If necessary, trigger nested updates in componentDidUpdate.\n\nCheck the render method of %s.",
             getComponentNameFromFiber(current) || "Unknown"
           ));
-          container2 = createUpdate(lane);
-          container2.payload = { element };
+          container = createUpdate(lane);
+          container.payload = { element };
           callback = void 0 === callback ? null : callback;
           null !== callback && ("function" !== typeof callback && console.error(
             "Expected the last optional `callback` argument to be a function. Instead received: %s.",
             callback
-          ), container2.callback = callback);
-          element = enqueueUpdate(rootFiber, container2, lane);
+          ), container.callback = callback);
+          element = enqueueUpdate(rootFiber, container, lane);
           null !== element && (startUpdateTimerByLane(lane, "root.render()", null), scheduleUpdateOnFiber(element, rootFiber, lane), entangleTransitions(element, rootFiber, lane));
         }
         function markRetryLaneImpl(fiber, retryLane) {
@@ -18016,22 +18016,22 @@
         function getCurrentFiberForDevTools() {
           return current;
         }
-        function dispatchDiscreteEvent(domEventName, eventSystemFlags, container2, nativeEvent) {
+        function dispatchDiscreteEvent(domEventName, eventSystemFlags, container, nativeEvent) {
           var prevTransition = ReactSharedInternals.T;
           ReactSharedInternals.T = null;
           var previousPriority = ReactDOMSharedInternals.p;
           try {
-            ReactDOMSharedInternals.p = DiscreteEventPriority, dispatchEvent(domEventName, eventSystemFlags, container2, nativeEvent);
+            ReactDOMSharedInternals.p = DiscreteEventPriority, dispatchEvent(domEventName, eventSystemFlags, container, nativeEvent);
           } finally {
             ReactDOMSharedInternals.p = previousPriority, ReactSharedInternals.T = prevTransition;
           }
         }
-        function dispatchContinuousEvent(domEventName, eventSystemFlags, container2, nativeEvent) {
+        function dispatchContinuousEvent(domEventName, eventSystemFlags, container, nativeEvent) {
           var prevTransition = ReactSharedInternals.T;
           ReactSharedInternals.T = null;
           var previousPriority = ReactDOMSharedInternals.p;
           try {
-            ReactDOMSharedInternals.p = ContinuousEventPriority, dispatchEvent(domEventName, eventSystemFlags, container2, nativeEvent);
+            ReactDOMSharedInternals.p = ContinuousEventPriority, dispatchEvent(domEventName, eventSystemFlags, container, nativeEvent);
           } finally {
             ReactDOMSharedInternals.p = previousPriority, ReactSharedInternals.T = prevTransition;
           }
@@ -18507,22 +18507,22 @@
         function ReactDOMHydrationRoot(internalRoot) {
           this._internalRoot = internalRoot;
         }
-        function warnIfReactDOMContainerInDEV(container2) {
-          container2[internalContainerInstanceKey] && (container2._reactRootContainer ? console.error(
+        function warnIfReactDOMContainerInDEV(container) {
+          container[internalContainerInstanceKey] && (container._reactRootContainer ? console.error(
             "You are calling ReactDOMClient.createRoot() on a container that was previously passed to ReactDOM.render(). This is not supported."
           ) : console.error(
             "You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it."
           ));
         }
         "undefined" !== typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ && "function" === typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStart(Error());
-        var Scheduler = require_scheduler(), React2 = require_react(), ReactDOM = require_react_dom(), assign = Object.assign, REACT_LEGACY_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.element"), REACT_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = /* @__PURE__ */ Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = /* @__PURE__ */ Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = /* @__PURE__ */ Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = /* @__PURE__ */ Symbol.for("react.profiler"), REACT_CONSUMER_TYPE = /* @__PURE__ */ Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = /* @__PURE__ */ Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = /* @__PURE__ */ Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = /* @__PURE__ */ Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = /* @__PURE__ */ Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = /* @__PURE__ */ Symbol.for("react.memo"), REACT_LAZY_TYPE = /* @__PURE__ */ Symbol.for("react.lazy");
+        var Scheduler = require_scheduler(), React34 = require_react(), ReactDOM = require_react_dom(), assign = Object.assign, REACT_LEGACY_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.element"), REACT_ELEMENT_TYPE = /* @__PURE__ */ Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = /* @__PURE__ */ Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = /* @__PURE__ */ Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = /* @__PURE__ */ Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = /* @__PURE__ */ Symbol.for("react.profiler"), REACT_CONSUMER_TYPE = /* @__PURE__ */ Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = /* @__PURE__ */ Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = /* @__PURE__ */ Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = /* @__PURE__ */ Symbol.for("react.suspense"), REACT_SUSPENSE_LIST_TYPE = /* @__PURE__ */ Symbol.for("react.suspense_list"), REACT_MEMO_TYPE = /* @__PURE__ */ Symbol.for("react.memo"), REACT_LAZY_TYPE = /* @__PURE__ */ Symbol.for("react.lazy");
         /* @__PURE__ */ Symbol.for("react.scope");
         var REACT_ACTIVITY_TYPE = /* @__PURE__ */ Symbol.for("react.activity");
         /* @__PURE__ */ Symbol.for("react.legacy_hidden");
         /* @__PURE__ */ Symbol.for("react.tracing_marker");
         var REACT_MEMO_CACHE_SENTINEL = /* @__PURE__ */ Symbol.for("react.memo_cache_sentinel");
         /* @__PURE__ */ Symbol.for("react.view_transition");
-        var MAYBE_ITERATOR_SYMBOL = Symbol.iterator, REACT_CLIENT_REFERENCE = /* @__PURE__ */ Symbol.for("react.client.reference"), isArrayImpl = Array.isArray, ReactSharedInternals = React2.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, ReactDOMSharedInternals = ReactDOM.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, NotPending = Object.freeze({
+        var MAYBE_ITERATOR_SYMBOL = Symbol.iterator, REACT_CLIENT_REFERENCE = /* @__PURE__ */ Symbol.for("react.client.reference"), isArrayImpl = Array.isArray, ReactSharedInternals = React34.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, ReactDOMSharedInternals = ReactDOM.__DOM_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE, NotPending = Object.freeze({
           pending: false,
           data: null,
           method: null,
@@ -19761,11 +19761,11 @@
           pendingLegacyContextWarning = /* @__PURE__ */ new Map();
         };
         var callComponent = {
-          react_stack_bottom_frame: function(Component, props, secondArg) {
+          react_stack_bottom_frame: function(Component4, props, secondArg) {
             var wasRendering = isRendering;
             isRendering = true;
             try {
-              return Component(props, secondArg);
+              return Component4(props, secondArg);
             } finally {
               isRendering = wasRendering;
             }
@@ -19886,7 +19886,7 @@
         var reconcileChildFibers = createChildReconciler(true), mountChildFibers = createChildReconciler(false), UpdateState = 0, ReplaceState = 1, ForceUpdate = 2, CaptureUpdate = 3, hasForceUpdate = false;
         var didWarnUpdateInsideUpdate = false;
         var currentlyProcessingQueue = null;
-        var didReadFromEntangledAsyncAction = false, currentTreeHiddenStackCursor = createCursor(null), prevEntangledRenderLanesCursor = createCursor(0), suspenseHandlerStackCursor = createCursor(null), shellBoundary = null, SubtreeSuspenseContextMask = 1, ForceSuspenseFallback = 2, suspenseStackCursor = createCursor(0), NoFlags = 0, HasEffect = 1, Insertion = 2, Layout = 4, Passive = 8, didWarnUncachedGetSnapshot;
+        var didReadFromEntangledAsyncAction = false, currentTreeHiddenStackCursor = createCursor(null), prevEntangledRenderLanesCursor = createCursor(0), suspenseHandlerStackCursor = createCursor(null), shellBoundary = null, SubtreeSuspenseContextMask = 1, ForceSuspenseFallback = 2, suspenseStackCursor = createCursor(0), NoFlags = 0, HasEffect = 1, Insertion = 2, Layout2 = 4, Passive = 8, didWarnUncachedGetSnapshot;
         var didWarnAboutMismatchedHooksForComponent = /* @__PURE__ */ new Set();
         var didWarnAboutUseWrappedInTryCatch = /* @__PURE__ */ new Set();
         var didWarnAboutAsyncClientComponent = /* @__PURE__ */ new Set();
@@ -20217,7 +20217,7 @@
           useLayoutEffect: function(create, deps) {
             currentHookNameInDev = "useLayoutEffect";
             updateHookTypesDev();
-            return updateEffectImpl(4, Layout, create, deps);
+            return updateEffectImpl(4, Layout2, create, deps);
           },
           useMemo: function(create, deps) {
             currentHookNameInDev = "useMemo";
@@ -20347,7 +20347,7 @@
           useLayoutEffect: function(create, deps) {
             currentHookNameInDev = "useLayoutEffect";
             updateHookTypesDev();
-            return updateEffectImpl(4, Layout, create, deps);
+            return updateEffectImpl(4, Layout2, create, deps);
           },
           useMemo: function(create, deps) {
             currentHookNameInDev = "useMemo";
@@ -20642,7 +20642,7 @@
             currentHookNameInDev = "useLayoutEffect";
             warnInvalidHookAccess();
             updateHookTypesDev();
-            return updateEffectImpl(4, Layout, create, deps);
+            return updateEffectImpl(4, Layout2, create, deps);
           },
           useMemo: function(create, deps) {
             currentHookNameInDev = "useMemo";
@@ -20797,7 +20797,7 @@
             currentHookNameInDev = "useLayoutEffect";
             warnInvalidHookAccess();
             updateHookTypesDev();
-            return updateEffectImpl(4, Layout, create, deps);
+            return updateEffectImpl(4, Layout2, create, deps);
           },
           useMemo: function(create, deps) {
             currentHookNameInDev = "useMemo";
@@ -21291,13 +21291,13 @@
           args = this._internalRoot;
           if (null !== args) {
             this._internalRoot = null;
-            var container2 = args.containerInfo;
+            var container = args.containerInfo;
             (executionContext & (RenderContext | CommitContext)) !== NoContext && console.error(
               "Attempted to synchronously unmount a root while React was already rendering. React cannot finish unmounting the root until the current render has completed, which may lead to a race condition."
             );
             updateContainerImpl(args.current, 2, null, args, null, null);
             flushSyncWork$1();
-            container2[internalContainerInstanceKey] = null;
+            container[internalContainerInstanceKey] = null;
           }
         };
         ReactDOMHydrationRoot.prototype.unstable_scheduleHydration = function(target) {
@@ -21310,7 +21310,7 @@
           }
         };
         (function() {
-          var isomorphicReactPackageVersion = React2.version;
+          var isomorphicReactPackageVersion = React34.version;
           if ("19.2.6" !== isomorphicReactPackageVersion)
             throw Error(
               'Incompatible React versions: The "react" and "react-dom" packages must have the exact same version. Instead got:\n  - react:      ' + (isomorphicReactPackageVersion + "\n  - react-dom:  19.2.6\nLearn more: https://react.dev/warnings/version-mismatch")
@@ -21364,10 +21364,10 @@
             "font-weight:bold"
           );
         }
-        exports.createRoot = function(container2, options) {
-          if (!isValidContainer(container2))
+        exports.createRoot = function(container, options) {
+          if (!isValidContainer(container))
             throw Error("Target container is not a DOM element.");
-          warnIfReactDOMContainerInDEV(container2);
+          warnIfReactDOMContainerInDEV(container);
           var isStrictMode = false, identifierPrefix = "", onUncaughtError = defaultOnUncaughtError, onCaughtError = defaultOnCaughtError, onRecoverableError = defaultOnRecoverableError;
           null !== options && void 0 !== options && (options.hydrate ? console.warn(
             "hydrate through createRoot is deprecated. Use ReactDOMClient.hydrateRoot(container, <App />) instead."
@@ -21375,7 +21375,7 @@
             "You passed a JSX element to createRoot. You probably meant to call root.render instead. Example usage:\n\n  let root = createRoot(domContainer);\n  root.render(<App />);"
           ), true === options.unstable_strictMode && (isStrictMode = true), void 0 !== options.identifierPrefix && (identifierPrefix = options.identifierPrefix), void 0 !== options.onUncaughtError && (onUncaughtError = options.onUncaughtError), void 0 !== options.onCaughtError && (onCaughtError = options.onCaughtError), void 0 !== options.onRecoverableError && (onRecoverableError = options.onRecoverableError));
           options = createFiberRoot(
-            container2,
+            container,
             1,
             false,
             null,
@@ -21388,21 +21388,21 @@
             onRecoverableError,
             defaultOnDefaultTransitionIndicator
           );
-          container2[internalContainerInstanceKey] = options.current;
-          listenToAllSupportedEvents(container2);
+          container[internalContainerInstanceKey] = options.current;
+          listenToAllSupportedEvents(container);
           return new ReactDOMRoot(options);
         };
-        exports.hydrateRoot = function(container2, initialChildren, options) {
-          if (!isValidContainer(container2))
+        exports.hydrateRoot = function(container, initialChildren, options) {
+          if (!isValidContainer(container))
             throw Error("Target container is not a DOM element.");
-          warnIfReactDOMContainerInDEV(container2);
+          warnIfReactDOMContainerInDEV(container);
           void 0 === initialChildren && console.error(
             "Must provide initial children as second argument to hydrateRoot. Example usage: hydrateRoot(domContainer, <App />)"
           );
           var isStrictMode = false, identifierPrefix = "", onUncaughtError = defaultOnUncaughtError, onCaughtError = defaultOnCaughtError, onRecoverableError = defaultOnRecoverableError, formState = null;
           null !== options && void 0 !== options && (true === options.unstable_strictMode && (isStrictMode = true), void 0 !== options.identifierPrefix && (identifierPrefix = options.identifierPrefix), void 0 !== options.onUncaughtError && (onUncaughtError = options.onUncaughtError), void 0 !== options.onCaughtError && (onCaughtError = options.onCaughtError), void 0 !== options.onRecoverableError && (onRecoverableError = options.onRecoverableError), void 0 !== options.formState && (formState = options.formState));
           initialChildren = createFiberRoot(
-            container2,
+            container,
             1,
             true,
             initialChildren,
@@ -21427,8 +21427,8 @@
           initialChildren.current.lanes = options;
           markRootUpdated$1(initialChildren, options);
           ensureRootIsScheduled(initialChildren);
-          container2[internalContainerInstanceKey] = initialChildren.current;
-          listenToAllSupportedEvents(container2);
+          container[internalContainerInstanceKey] = initialChildren.current;
+          listenToAllSupportedEvents(container);
           return new ReactDOMHydrationRoot(initialChildren);
         };
         exports.version = "19.2.6";
@@ -21450,84 +21450,6898 @@
     }
   });
 
-  // projects/todos/frontend/App.tsx
-  var import_react = __toESM(require_react());
+  // projects/benes-finance/frontend/index.tsx
+  var import_react24 = __toESM(require_react());
   var import_client = __toESM(require_client());
-  function App() {
-    const [todos, setTodos] = import_react.default.useState([]);
-    const [newTodo, setNewTodo] = import_react.default.useState("");
-    import_react.default.useEffect(() => {
-      fetch("/todos/api/todos").then((res) => res.json()).then((data) => setTodos(data)).catch((err) => console.error("Error fetching todos:", err));
+
+  // projects/benes-finance/frontend/App.tsx
+  var import_react23 = __toESM(require_react());
+
+  // node_modules/react-router/dist/development/chunk-4N6VE7H7.mjs
+  var React = __toESM(require_react(), 1);
+  var React2 = __toESM(require_react(), 1);
+  var React3 = __toESM(require_react(), 1);
+  var React4 = __toESM(require_react(), 1);
+  var React9 = __toESM(require_react(), 1);
+  var React8 = __toESM(require_react(), 1);
+  var React7 = __toESM(require_react(), 1);
+  var React6 = __toESM(require_react(), 1);
+  var React5 = __toESM(require_react(), 1);
+  var React10 = __toESM(require_react(), 1);
+  var React11 = __toESM(require_react(), 1);
+  var import_meta = {};
+  var PopStateEventType = "popstate";
+  function isLocation(obj) {
+    return typeof obj === "object" && obj != null && "pathname" in obj && "search" in obj && "hash" in obj && "state" in obj && "key" in obj;
+  }
+  function createBrowserHistory(options = {}) {
+    function createBrowserLocation(window2, globalHistory) {
+      let maskedLocation = globalHistory.state?.masked;
+      let { pathname, search, hash } = maskedLocation || window2.location;
+      return createLocation(
+        "",
+        { pathname, search, hash },
+        // state defaults to `null` because `window.history.state` does
+        globalHistory.state && globalHistory.state.usr || null,
+        globalHistory.state && globalHistory.state.key || "default",
+        maskedLocation ? {
+          pathname: window2.location.pathname,
+          search: window2.location.search,
+          hash: window2.location.hash
+        } : void 0
+      );
+    }
+    function createBrowserHref(window2, to) {
+      return typeof to === "string" ? to : createPath(to);
+    }
+    return getUrlBasedHistory(
+      createBrowserLocation,
+      createBrowserHref,
+      null,
+      options
+    );
+  }
+  function invariant(value, message) {
+    if (value === false || value === null || typeof value === "undefined") {
+      throw new Error(message);
+    }
+  }
+  function warning(cond, message) {
+    if (!cond) {
+      if (typeof console !== "undefined") console.warn(message);
+      try {
+        throw new Error(message);
+      } catch (e) {
+      }
+    }
+  }
+  function createKey() {
+    return Math.random().toString(36).substring(2, 10);
+  }
+  function getHistoryState(location, index) {
+    return {
+      usr: location.state,
+      key: location.key,
+      idx: index,
+      masked: location.mask ? {
+        pathname: location.pathname,
+        search: location.search,
+        hash: location.hash
+      } : void 0
+    };
+  }
+  function createLocation(current, to, state = null, key, mask) {
+    let location = {
+      pathname: typeof current === "string" ? current : current.pathname,
+      search: "",
+      hash: "",
+      ...typeof to === "string" ? parsePath(to) : to,
+      state,
+      // TODO: This could be cleaned up.  push/replace should probably just take
+      // full Locations now and avoid the need to run through this flow at all
+      // But that's a pretty big refactor to the current test suite so going to
+      // keep as is for the time being and just let any incoming keys take precedence
+      key: to && to.key || key || createKey(),
+      mask
+    };
+    return location;
+  }
+  function createPath({
+    pathname = "/",
+    search = "",
+    hash = ""
+  }) {
+    if (search && search !== "?")
+      pathname += search.charAt(0) === "?" ? search : "?" + search;
+    if (hash && hash !== "#")
+      pathname += hash.charAt(0) === "#" ? hash : "#" + hash;
+    return pathname;
+  }
+  function parsePath(path) {
+    let parsedPath = {};
+    if (path) {
+      let hashIndex = path.indexOf("#");
+      if (hashIndex >= 0) {
+        parsedPath.hash = path.substring(hashIndex);
+        path = path.substring(0, hashIndex);
+      }
+      let searchIndex = path.indexOf("?");
+      if (searchIndex >= 0) {
+        parsedPath.search = path.substring(searchIndex);
+        path = path.substring(0, searchIndex);
+      }
+      if (path) {
+        parsedPath.pathname = path;
+      }
+    }
+    return parsedPath;
+  }
+  function getUrlBasedHistory(getLocation, createHref2, validateLocation, options = {}) {
+    let { window: window2 = document.defaultView, v5Compat = false } = options;
+    let globalHistory = window2.history;
+    let action = "POP";
+    let listener = null;
+    let index = getIndex();
+    if (index == null) {
+      index = 0;
+      globalHistory.replaceState({ ...globalHistory.state, idx: index }, "");
+    }
+    function getIndex() {
+      let state = globalHistory.state || { idx: null };
+      return state.idx;
+    }
+    function handlePop() {
+      action = "POP";
+      let nextIndex = getIndex();
+      let delta = nextIndex == null ? null : nextIndex - index;
+      index = nextIndex;
+      if (listener) {
+        listener({ action, location: history.location, delta });
+      }
+    }
+    function push(to, state) {
+      action = "PUSH";
+      let location = isLocation(to) ? to : createLocation(history.location, to, state);
+      if (validateLocation) validateLocation(location, to);
+      index = getIndex() + 1;
+      let historyState = getHistoryState(location, index);
+      let url = history.createHref(location.mask || location);
+      try {
+        globalHistory.pushState(historyState, "", url);
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "DataCloneError") {
+          throw error;
+        }
+        window2.location.assign(url);
+      }
+      if (v5Compat && listener) {
+        listener({ action, location: history.location, delta: 1 });
+      }
+    }
+    function replace2(to, state) {
+      action = "REPLACE";
+      let location = isLocation(to) ? to : createLocation(history.location, to, state);
+      if (validateLocation) validateLocation(location, to);
+      index = getIndex();
+      let historyState = getHistoryState(location, index);
+      let url = history.createHref(location.mask || location);
+      globalHistory.replaceState(historyState, "", url);
+      if (v5Compat && listener) {
+        listener({ action, location: history.location, delta: 0 });
+      }
+    }
+    function createURL(to) {
+      return createBrowserURLImpl(to);
+    }
+    let history = {
+      get action() {
+        return action;
+      },
+      get location() {
+        return getLocation(window2, globalHistory);
+      },
+      listen(fn) {
+        if (listener) {
+          throw new Error("A history only accepts one active listener");
+        }
+        window2.addEventListener(PopStateEventType, handlePop);
+        listener = fn;
+        return () => {
+          window2.removeEventListener(PopStateEventType, handlePop);
+          listener = null;
+        };
+      },
+      createHref(to) {
+        return createHref2(window2, to);
+      },
+      createURL,
+      encodeLocation(to) {
+        let url = createURL(to);
+        return {
+          pathname: url.pathname,
+          search: url.search,
+          hash: url.hash
+        };
+      },
+      push,
+      replace: replace2,
+      go(n) {
+        return globalHistory.go(n);
+      }
+    };
+    return history;
+  }
+  function createBrowserURLImpl(to, isAbsolute = false) {
+    let base = "http://localhost";
+    if (typeof window !== "undefined") {
+      base = window.location.origin !== "null" ? window.location.origin : window.location.href;
+    }
+    invariant(base, "No window.location.(origin|href) available to create URL");
+    let href = typeof to === "string" ? to : createPath(to);
+    href = href.replace(/ $/, "%20");
+    if (!isAbsolute && href.startsWith("//")) {
+      href = base + href;
+    }
+    return new URL(href, base);
+  }
+  var _map;
+  _map = /* @__PURE__ */ new WeakMap();
+  function matchRoutes(routes, locationArg, basename = "/") {
+    return matchRoutesImpl(routes, locationArg, basename, false);
+  }
+  function matchRoutesImpl(routes, locationArg, basename, allowPartial, precomputedBranches) {
+    let location = typeof locationArg === "string" ? parsePath(locationArg) : locationArg;
+    let pathname = stripBasename(location.pathname || "/", basename);
+    if (pathname == null) {
+      return null;
+    }
+    let branches = precomputedBranches ?? flattenAndRankRoutes(routes);
+    let matches = null;
+    let decoded = decodePath(pathname);
+    for (let i = 0; matches == null && i < branches.length; ++i) {
+      matches = matchRouteBranch(
+        branches[i],
+        decoded,
+        allowPartial
+      );
+    }
+    return matches;
+  }
+  function convertRouteMatchToUiMatch(match, loaderData) {
+    let { route, pathname, params } = match;
+    return {
+      id: route.id,
+      pathname,
+      params,
+      data: loaderData[route.id],
+      loaderData: loaderData[route.id],
+      handle: route.handle
+    };
+  }
+  function flattenAndRankRoutes(routes) {
+    let branches = flattenRoutes(routes);
+    rankRouteBranches(branches);
+    return branches;
+  }
+  function flattenRoutes(routes, branches = [], parentsMeta = [], parentPath = "", _hasParentOptionalSegments = false) {
+    let flattenRoute = (route, index, hasParentOptionalSegments = _hasParentOptionalSegments, relativePath) => {
+      let meta = {
+        relativePath: relativePath === void 0 ? route.path || "" : relativePath,
+        caseSensitive: route.caseSensitive === true,
+        childrenIndex: index,
+        route
+      };
+      if (meta.relativePath.startsWith("/")) {
+        if (!meta.relativePath.startsWith(parentPath) && hasParentOptionalSegments) {
+          return;
+        }
+        invariant(
+          meta.relativePath.startsWith(parentPath),
+          `Absolute route path "${meta.relativePath}" nested under path "${parentPath}" is not valid. An absolute child route path must start with the combined path of all its parent routes.`
+        );
+        meta.relativePath = meta.relativePath.slice(parentPath.length);
+      }
+      let path = joinPaths([parentPath, meta.relativePath]);
+      let routesMeta = parentsMeta.concat(meta);
+      if (route.children && route.children.length > 0) {
+        invariant(
+          // Our types know better, but runtime JS may not!
+          // @ts-expect-error
+          route.index !== true,
+          `Index routes must not have child routes. Please remove all child routes from route path "${path}".`
+        );
+        flattenRoutes(
+          route.children,
+          branches,
+          routesMeta,
+          path,
+          hasParentOptionalSegments
+        );
+      }
+      if (route.path == null && !route.index) {
+        return;
+      }
+      branches.push({
+        path,
+        score: computeScore(path, route.index),
+        routesMeta
+      });
+    };
+    routes.forEach((route, index) => {
+      if (route.path === "" || !route.path?.includes("?")) {
+        flattenRoute(route, index);
+      } else {
+        for (let exploded of explodeOptionalSegments(route.path)) {
+          flattenRoute(route, index, true, exploded);
+        }
+      }
+    });
+    return branches;
+  }
+  function explodeOptionalSegments(path) {
+    let segments = path.split("/");
+    if (segments.length === 0) return [];
+    let [first, ...rest] = segments;
+    let isOptional = first.endsWith("?");
+    let required = first.replace(/\?$/, "");
+    if (rest.length === 0) {
+      return isOptional ? [required, ""] : [required];
+    }
+    let restExploded = explodeOptionalSegments(rest.join("/"));
+    let result = [];
+    result.push(
+      ...restExploded.map(
+        (subpath) => subpath === "" ? required : [required, subpath].join("/")
+      )
+    );
+    if (isOptional) {
+      result.push(...restExploded);
+    }
+    return result.map(
+      (exploded) => path.startsWith("/") && exploded === "" ? "/" : exploded
+    );
+  }
+  function rankRouteBranches(branches) {
+    branches.sort(
+      (a, b) => a.score !== b.score ? b.score - a.score : compareIndexes(
+        a.routesMeta.map((meta) => meta.childrenIndex),
+        b.routesMeta.map((meta) => meta.childrenIndex)
+      )
+    );
+  }
+  var paramRe = /^:[\w-]+$/;
+  var dynamicSegmentValue = 3;
+  var indexRouteValue = 2;
+  var emptySegmentValue = 1;
+  var staticSegmentValue = 10;
+  var splatPenalty = -2;
+  var isSplat = (s) => s === "*";
+  function computeScore(path, index) {
+    let segments = path.split("/");
+    let initialScore = segments.length;
+    if (segments.some(isSplat)) {
+      initialScore += splatPenalty;
+    }
+    if (index) {
+      initialScore += indexRouteValue;
+    }
+    return segments.filter((s) => !isSplat(s)).reduce(
+      (score, segment) => score + (paramRe.test(segment) ? dynamicSegmentValue : segment === "" ? emptySegmentValue : staticSegmentValue),
+      initialScore
+    );
+  }
+  function compareIndexes(a, b) {
+    let siblings = a.length === b.length && a.slice(0, -1).every((n, i) => n === b[i]);
+    return siblings ? (
+      // If two routes are siblings, we should try to match the earlier sibling
+      // first. This allows people to have fine-grained control over the matching
+      // behavior by simply putting routes with identical paths in the order they
+      // want them tried.
+      a[a.length - 1] - b[b.length - 1]
+    ) : (
+      // Otherwise, it doesn't really make sense to rank non-siblings by index,
+      // so they sort equally.
+      0
+    );
+  }
+  function matchRouteBranch(branch, pathname, allowPartial = false) {
+    let { routesMeta } = branch;
+    let matchedParams = {};
+    let matchedPathname = "/";
+    let matches = [];
+    for (let i = 0; i < routesMeta.length; ++i) {
+      let meta = routesMeta[i];
+      let end = i === routesMeta.length - 1;
+      let remainingPathname = matchedPathname === "/" ? pathname : pathname.slice(matchedPathname.length) || "/";
+      let match = matchPath(
+        { path: meta.relativePath, caseSensitive: meta.caseSensitive, end },
+        remainingPathname
+      );
+      let route = meta.route;
+      if (!match && end && allowPartial && !routesMeta[routesMeta.length - 1].route.index) {
+        match = matchPath(
+          {
+            path: meta.relativePath,
+            caseSensitive: meta.caseSensitive,
+            end: false
+          },
+          remainingPathname
+        );
+      }
+      if (!match) {
+        return null;
+      }
+      Object.assign(matchedParams, match.params);
+      matches.push({
+        // TODO: Can this as be avoided?
+        params: matchedParams,
+        pathname: joinPaths([matchedPathname, match.pathname]),
+        pathnameBase: normalizePathname(
+          joinPaths([matchedPathname, match.pathnameBase])
+        ),
+        route
+      });
+      if (match.pathnameBase !== "/") {
+        matchedPathname = joinPaths([matchedPathname, match.pathnameBase]);
+      }
+    }
+    return matches;
+  }
+  function matchPath(pattern, pathname) {
+    if (typeof pattern === "string") {
+      pattern = { path: pattern, caseSensitive: false, end: true };
+    }
+    let [matcher, compiledParams] = compilePath(
+      pattern.path,
+      pattern.caseSensitive,
+      pattern.end
+    );
+    let match = pathname.match(matcher);
+    if (!match) return null;
+    let matchedPathname = match[0];
+    let pathnameBase = matchedPathname.replace(/(.)\/+$/, "$1");
+    let captureGroups = match.slice(1);
+    let params = compiledParams.reduce(
+      (memo2, { paramName, isOptional }, index) => {
+        if (paramName === "*") {
+          let splatValue = captureGroups[index] || "";
+          pathnameBase = matchedPathname.slice(0, matchedPathname.length - splatValue.length).replace(/(.)\/+$/, "$1");
+        }
+        const value = captureGroups[index];
+        if (isOptional && !value) {
+          memo2[paramName] = void 0;
+        } else {
+          memo2[paramName] = (value || "").replace(/%2F/g, "/");
+        }
+        return memo2;
+      },
+      {}
+    );
+    return {
+      params,
+      pathname: matchedPathname,
+      pathnameBase,
+      pattern
+    };
+  }
+  function compilePath(path, caseSensitive = false, end = true) {
+    warning(
+      path === "*" || !path.endsWith("*") || path.endsWith("/*"),
+      `Route path "${path}" will be treated as if it were "${path.replace(/\*$/, "/*")}" because the \`*\` character must always follow a \`/\` in the pattern. To get rid of this warning, please change the route path to "${path.replace(/\*$/, "/*")}".`
+    );
+    let params = [];
+    let regexpSource = "^" + path.replace(/\/*\*?$/, "").replace(/^\/*/, "/").replace(/[\\.*+^${}|()[\]]/g, "\\$&").replace(
+      /\/:([\w-]+)(\?)?/g,
+      (match, paramName, isOptional, index, str) => {
+        params.push({ paramName, isOptional: isOptional != null });
+        if (isOptional) {
+          let nextChar = str.charAt(index + match.length);
+          if (nextChar && nextChar !== "/") {
+            return "/([^\\/]*)";
+          }
+          return "(?:/([^\\/]*))?";
+        }
+        return "/([^\\/]+)";
+      }
+    ).replace(/\/([\w-]+)\?(\/|$)/g, "(/$1)?$2");
+    if (path.endsWith("*")) {
+      params.push({ paramName: "*" });
+      regexpSource += path === "*" || path === "/*" ? "(.*)$" : "(?:\\/(.+)|\\/*)$";
+    } else if (end) {
+      regexpSource += "\\/*$";
+    } else if (path !== "" && path !== "/") {
+      regexpSource += "(?:(?=\\/|$))";
+    } else {
+    }
+    let matcher = new RegExp(regexpSource, caseSensitive ? void 0 : "i");
+    return [matcher, params];
+  }
+  function decodePath(value) {
+    try {
+      return value.split("/").map((v) => decodeURIComponent(v).replace(/\//g, "%2F")).join("/");
+    } catch (error) {
+      warning(
+        false,
+        `The URL path "${value}" could not be decoded because it is a malformed URL segment. This is probably due to a bad percent encoding (${error}).`
+      );
+      return value;
+    }
+  }
+  function stripBasename(pathname, basename) {
+    if (basename === "/") return pathname;
+    if (!pathname.toLowerCase().startsWith(basename.toLowerCase())) {
+      return null;
+    }
+    let startIndex = basename.endsWith("/") ? basename.length - 1 : basename.length;
+    let nextChar = pathname.charAt(startIndex);
+    if (nextChar && nextChar !== "/") {
+      return null;
+    }
+    return pathname.slice(startIndex) || "/";
+  }
+  var ABSOLUTE_URL_REGEX = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
+  function resolvePath(to, fromPathname = "/") {
+    let {
+      pathname: toPathname,
+      search = "",
+      hash = ""
+    } = typeof to === "string" ? parsePath(to) : to;
+    let pathname;
+    if (toPathname) {
+      toPathname = removeDoubleSlashes(toPathname);
+      if (toPathname.startsWith("/")) {
+        pathname = resolvePathname(toPathname.substring(1), "/");
+      } else {
+        pathname = resolvePathname(toPathname, fromPathname);
+      }
+    } else {
+      pathname = fromPathname;
+    }
+    return {
+      pathname,
+      search: normalizeSearch(search),
+      hash: normalizeHash(hash)
+    };
+  }
+  function resolvePathname(relativePath, fromPathname) {
+    let segments = removeTrailingSlash(fromPathname).split("/");
+    let relativeSegments = relativePath.split("/");
+    relativeSegments.forEach((segment) => {
+      if (segment === "..") {
+        if (segments.length > 1) segments.pop();
+      } else if (segment !== ".") {
+        segments.push(segment);
+      }
+    });
+    return segments.length > 1 ? segments.join("/") : "/";
+  }
+  function getInvalidPathError(char, field, dest, path) {
+    return `Cannot include a '${char}' character in a manually specified \`to.${field}\` field [${JSON.stringify(
+      path
+    )}].  Please separate it out to the \`to.${dest}\` field. Alternatively you may provide the full path as a string in <Link to="..."> and the router will parse it for you.`;
+  }
+  function getPathContributingMatches(matches) {
+    return matches.filter(
+      (match, index) => index === 0 || match.route.path && match.route.path.length > 0
+    );
+  }
+  function getResolveToMatches(matches) {
+    let pathMatches = getPathContributingMatches(matches);
+    return pathMatches.map(
+      (match, idx) => idx === pathMatches.length - 1 ? match.pathname : match.pathnameBase
+    );
+  }
+  function resolveTo(toArg, routePathnames, locationPathname, isPathRelative = false) {
+    let to;
+    if (typeof toArg === "string") {
+      to = parsePath(toArg);
+    } else {
+      to = { ...toArg };
+      invariant(
+        !to.pathname || !to.pathname.includes("?"),
+        getInvalidPathError("?", "pathname", "search", to)
+      );
+      invariant(
+        !to.pathname || !to.pathname.includes("#"),
+        getInvalidPathError("#", "pathname", "hash", to)
+      );
+      invariant(
+        !to.search || !to.search.includes("#"),
+        getInvalidPathError("#", "search", "hash", to)
+      );
+    }
+    let isEmptyPath = toArg === "" || to.pathname === "";
+    let toPathname = isEmptyPath ? "/" : to.pathname;
+    let from;
+    if (toPathname == null) {
+      from = locationPathname;
+    } else {
+      let routePathnameIndex = routePathnames.length - 1;
+      if (!isPathRelative && toPathname.startsWith("..")) {
+        let toSegments = toPathname.split("/");
+        while (toSegments[0] === "..") {
+          toSegments.shift();
+          routePathnameIndex -= 1;
+        }
+        to.pathname = toSegments.join("/");
+      }
+      from = routePathnameIndex >= 0 ? routePathnames[routePathnameIndex] : "/";
+    }
+    let path = resolvePath(to, from);
+    let hasExplicitTrailingSlash = toPathname && toPathname !== "/" && toPathname.endsWith("/");
+    let hasCurrentTrailingSlash = (isEmptyPath || toPathname === ".") && locationPathname.endsWith("/");
+    if (!path.pathname.endsWith("/") && (hasExplicitTrailingSlash || hasCurrentTrailingSlash)) {
+      path.pathname += "/";
+    }
+    return path;
+  }
+  var removeDoubleSlashes = (path) => path.replace(/\/\/+/g, "/");
+  var joinPaths = (paths) => removeDoubleSlashes(paths.join("/"));
+  var removeTrailingSlash = (path) => path.replace(/\/+$/, "");
+  var normalizePathname = (pathname) => removeTrailingSlash(pathname).replace(/^\/*/, "/");
+  var normalizeSearch = (search) => !search || search === "?" ? "" : search.startsWith("?") ? search : "?" + search;
+  var normalizeHash = (hash) => !hash || hash === "#" ? "" : hash.startsWith("#") ? hash : "#" + hash;
+  var ErrorResponseImpl = class {
+    constructor(status, statusText, data2, internal = false) {
+      this.status = status;
+      this.statusText = statusText || "";
+      this.internal = internal;
+      if (data2 instanceof Error) {
+        this.data = data2.toString();
+        this.error = data2;
+      } else {
+        this.data = data2;
+      }
+    }
+  };
+  function isRouteErrorResponse(error) {
+    return error != null && typeof error.status === "number" && typeof error.statusText === "string" && typeof error.internal === "boolean" && "data" in error;
+  }
+  function getRoutePattern(matches) {
+    let parts = matches.map((m) => m.route.path).filter(Boolean);
+    return joinPaths(parts) || "/";
+  }
+  var isBrowser = typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined";
+  function parseToInfo(_to, basename) {
+    let to = _to;
+    if (typeof to !== "string" || !ABSOLUTE_URL_REGEX.test(to)) {
+      return {
+        absoluteURL: void 0,
+        isExternal: false,
+        to
+      };
+    }
+    let absoluteURL = to;
+    let isExternal = false;
+    if (isBrowser) {
+      try {
+        let currentUrl = new URL(window.location.href);
+        let targetUrl = to.startsWith("//") ? new URL(currentUrl.protocol + to) : new URL(to);
+        let path = stripBasename(targetUrl.pathname, basename);
+        if (targetUrl.origin === currentUrl.origin && path != null) {
+          to = path + targetUrl.search + targetUrl.hash;
+        } else {
+          isExternal = true;
+        }
+      } catch (e) {
+        warning(
+          false,
+          `<Link to="${to}"> contains an invalid URL which will probably break when clicked - please update to a valid URL path.`
+        );
+      }
+    }
+    return {
+      absoluteURL,
+      isExternal,
+      to
+    };
+  }
+  var objectProtoNames = Object.getOwnPropertyNames(Object.prototype).sort().join("\0");
+  var validMutationMethodsArr = [
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE"
+  ];
+  var validMutationMethods = new Set(
+    validMutationMethodsArr
+  );
+  var validRequestMethodsArr = [
+    "GET",
+    ...validMutationMethodsArr
+  ];
+  var validRequestMethods = new Set(validRequestMethodsArr);
+  var _routes;
+  var _branches;
+  var _hmrRoutes;
+  var _hmrBranches;
+  _routes = /* @__PURE__ */ new WeakMap();
+  _branches = /* @__PURE__ */ new WeakMap();
+  _hmrRoutes = /* @__PURE__ */ new WeakMap();
+  _hmrBranches = /* @__PURE__ */ new WeakMap();
+  var DataRouterContext = React.createContext(null);
+  DataRouterContext.displayName = "DataRouter";
+  var DataRouterStateContext = React.createContext(null);
+  DataRouterStateContext.displayName = "DataRouterState";
+  var RSCRouterContext = React.createContext(false);
+  function useIsRSCRouterContext() {
+    return React.useContext(RSCRouterContext);
+  }
+  var ViewTransitionContext = React.createContext({
+    isTransitioning: false
+  });
+  ViewTransitionContext.displayName = "ViewTransition";
+  var FetchersContext = React.createContext(
+    /* @__PURE__ */ new Map()
+  );
+  FetchersContext.displayName = "Fetchers";
+  var AwaitContext = React.createContext(null);
+  AwaitContext.displayName = "Await";
+  var NavigationContext = React.createContext(
+    null
+  );
+  NavigationContext.displayName = "Navigation";
+  var LocationContext = React.createContext(
+    null
+  );
+  LocationContext.displayName = "Location";
+  var RouteContext = React.createContext({
+    outlet: null,
+    matches: [],
+    isDataRoute: false
+  });
+  RouteContext.displayName = "Route";
+  var RouteErrorContext = React.createContext(null);
+  RouteErrorContext.displayName = "RouteError";
+  var ENABLE_DEV_WARNINGS = true;
+  var ERROR_DIGEST_BASE = "REACT_ROUTER_ERROR";
+  var ERROR_DIGEST_REDIRECT = "REDIRECT";
+  var ERROR_DIGEST_ROUTE_ERROR_RESPONSE = "ROUTE_ERROR_RESPONSE";
+  function decodeRedirectErrorDigest(digest) {
+    if (digest.startsWith(`${ERROR_DIGEST_BASE}:${ERROR_DIGEST_REDIRECT}:{`)) {
+      try {
+        let parsed = JSON.parse(digest.slice(28));
+        if (typeof parsed === "object" && parsed && typeof parsed.status === "number" && typeof parsed.statusText === "string" && typeof parsed.location === "string" && typeof parsed.reloadDocument === "boolean" && typeof parsed.replace === "boolean") {
+          return parsed;
+        }
+      } catch {
+      }
+    }
+  }
+  function decodeRouteErrorResponseDigest(digest) {
+    if (digest.startsWith(
+      `${ERROR_DIGEST_BASE}:${ERROR_DIGEST_ROUTE_ERROR_RESPONSE}:{`
+    )) {
+      try {
+        let parsed = JSON.parse(digest.slice(40));
+        if (typeof parsed === "object" && parsed && typeof parsed.status === "number" && typeof parsed.statusText === "string") {
+          return new ErrorResponseImpl(
+            parsed.status,
+            parsed.statusText,
+            parsed.data
+          );
+        }
+      } catch {
+      }
+    }
+  }
+  function useHref(to, { relative } = {}) {
+    invariant(
+      useInRouterContext(),
+      // TODO: This error is probably because they somehow have 2 versions of the
+      // router loaded. We can help them understand how to avoid that.
+      `useHref() may be used only in the context of a <Router> component.`
+    );
+    let { basename, navigator: navigator2 } = React2.useContext(NavigationContext);
+    let { hash, pathname, search } = useResolvedPath(to, { relative });
+    let joinedPathname = pathname;
+    if (basename !== "/") {
+      joinedPathname = pathname === "/" ? basename : joinPaths([basename, pathname]);
+    }
+    return navigator2.createHref({ pathname: joinedPathname, search, hash });
+  }
+  function useInRouterContext() {
+    return React2.useContext(LocationContext) != null;
+  }
+  function useLocation() {
+    invariant(
+      useInRouterContext(),
+      // TODO: This error is probably because they somehow have 2 versions of the
+      // router loaded. We can help them understand how to avoid that.
+      `useLocation() may be used only in the context of a <Router> component.`
+    );
+    return React2.useContext(LocationContext).location;
+  }
+  var navigateEffectWarning = `You should call navigate() in a React.useEffect(), not when your component is first rendered.`;
+  function useIsomorphicLayoutEffect(cb) {
+    let isStatic = React2.useContext(NavigationContext).static;
+    if (!isStatic) {
+      React2.useLayoutEffect(cb);
+    }
+  }
+  function useNavigate() {
+    let { isDataRoute } = React2.useContext(RouteContext);
+    return isDataRoute ? useNavigateStable() : useNavigateUnstable();
+  }
+  function useNavigateUnstable() {
+    invariant(
+      useInRouterContext(),
+      // TODO: This error is probably because they somehow have 2 versions of the
+      // router loaded. We can help them understand how to avoid that.
+      `useNavigate() may be used only in the context of a <Router> component.`
+    );
+    let dataRouterContext = React2.useContext(DataRouterContext);
+    let { basename, navigator: navigator2 } = React2.useContext(NavigationContext);
+    let { matches } = React2.useContext(RouteContext);
+    let { pathname: locationPathname } = useLocation();
+    let routePathnamesJson = JSON.stringify(getResolveToMatches(matches));
+    let activeRef = React2.useRef(false);
+    useIsomorphicLayoutEffect(() => {
+      activeRef.current = true;
+    });
+    let navigate = React2.useCallback(
+      (to, options = {}) => {
+        warning(activeRef.current, navigateEffectWarning);
+        if (!activeRef.current) return;
+        if (typeof to === "number") {
+          navigator2.go(to);
+          return;
+        }
+        let path = resolveTo(
+          to,
+          JSON.parse(routePathnamesJson),
+          locationPathname,
+          options.relative === "path"
+        );
+        if (dataRouterContext == null && basename !== "/") {
+          path.pathname = path.pathname === "/" ? basename : joinPaths([basename, path.pathname]);
+        }
+        (!!options.replace ? navigator2.replace : navigator2.push)(
+          path,
+          options.state,
+          options
+        );
+      },
+      [
+        basename,
+        navigator2,
+        routePathnamesJson,
+        locationPathname,
+        dataRouterContext
+      ]
+    );
+    return navigate;
+  }
+  var OutletContext = React2.createContext(null);
+  function useOutlet(context) {
+    let outlet = React2.useContext(RouteContext).outlet;
+    return React2.useMemo(
+      () => outlet && /* @__PURE__ */ React2.createElement(OutletContext.Provider, { value: context }, outlet),
+      [outlet, context]
+    );
+  }
+  function useParams() {
+    let { matches } = React2.useContext(RouteContext);
+    let routeMatch = matches[matches.length - 1];
+    return routeMatch?.params ?? {};
+  }
+  function useResolvedPath(to, { relative } = {}) {
+    let { matches } = React2.useContext(RouteContext);
+    let { pathname: locationPathname } = useLocation();
+    let routePathnamesJson = JSON.stringify(getResolveToMatches(matches));
+    return React2.useMemo(
+      () => resolveTo(
+        to,
+        JSON.parse(routePathnamesJson),
+        locationPathname,
+        relative === "path"
+      ),
+      [to, routePathnamesJson, locationPathname, relative]
+    );
+  }
+  function useRoutes(routes, locationArg) {
+    return useRoutesImpl(routes, locationArg);
+  }
+  function useRoutesImpl(routes, locationArg, dataRouterOpts) {
+    invariant(
+      useInRouterContext(),
+      // TODO: This error is probably because they somehow have 2 versions of the
+      // router loaded. We can help them understand how to avoid that.
+      `useRoutes() may be used only in the context of a <Router> component.`
+    );
+    let { navigator: navigator2 } = React2.useContext(NavigationContext);
+    let { matches: parentMatches } = React2.useContext(RouteContext);
+    let routeMatch = parentMatches[parentMatches.length - 1];
+    let parentParams = routeMatch ? routeMatch.params : {};
+    let parentPathname = routeMatch ? routeMatch.pathname : "/";
+    let parentPathnameBase = routeMatch ? routeMatch.pathnameBase : "/";
+    let parentRoute = routeMatch && routeMatch.route;
+    if (ENABLE_DEV_WARNINGS) {
+      let parentPath = parentRoute && parentRoute.path || "";
+      warningOnce(
+        parentPathname,
+        !parentRoute || parentPath.endsWith("*") || parentPath.endsWith("*?"),
+        `You rendered descendant <Routes> (or called \`useRoutes()\`) at "${parentPathname}" (under <Route path="${parentPath}">) but the parent route path has no trailing "*". This means if you navigate deeper, the parent won't match anymore and therefore the child routes will never render.
+
+Please change the parent <Route path="${parentPath}"> to <Route path="${parentPath === "/" ? "*" : `${parentPath}/*`}">.`
+      );
+    }
+    let locationFromContext = useLocation();
+    let location;
+    if (locationArg) {
+      let parsedLocationArg = typeof locationArg === "string" ? parsePath(locationArg) : locationArg;
+      invariant(
+        parentPathnameBase === "/" || parsedLocationArg.pathname?.startsWith(parentPathnameBase),
+        `When overriding the location using \`<Routes location>\` or \`useRoutes(routes, location)\`, the location pathname must begin with the portion of the URL pathname that was matched by all parent routes. The current pathname base is "${parentPathnameBase}" but pathname "${parsedLocationArg.pathname}" was given in the \`location\` prop.`
+      );
+      location = parsedLocationArg;
+    } else {
+      location = locationFromContext;
+    }
+    let pathname = location.pathname || "/";
+    let remainingPathname = pathname;
+    if (parentPathnameBase !== "/") {
+      let parentSegments = parentPathnameBase.replace(/^\//, "").split("/");
+      let segments = pathname.replace(/^\//, "").split("/");
+      remainingPathname = "/" + segments.slice(parentSegments.length).join("/");
+    }
+    let matches = dataRouterOpts && dataRouterOpts.state.matches.length ? (
+      // If we're in a data router, use the matches we've already identified but ensure
+      // we have the latest route instances from the manifest in case elements have changed
+      dataRouterOpts.state.matches.map(
+        (m) => Object.assign(m, {
+          route: dataRouterOpts.manifest[m.route.id] || m.route
+        })
+      )
+    ) : matchRoutes(routes, { pathname: remainingPathname });
+    if (ENABLE_DEV_WARNINGS) {
+      warning(
+        parentRoute || matches != null,
+        `No routes matched location "${location.pathname}${location.search}${location.hash}" `
+      );
+      warning(
+        matches == null || matches[matches.length - 1].route.element !== void 0 || matches[matches.length - 1].route.Component !== void 0 || matches[matches.length - 1].route.lazy !== void 0,
+        `Matched leaf route at location "${location.pathname}${location.search}${location.hash}" does not have an element or Component. This means it will render an <Outlet /> with a null value by default resulting in an "empty" page.`
+      );
+    }
+    let renderedMatches = _renderMatches(
+      matches && matches.map(
+        (match) => Object.assign({}, match, {
+          params: Object.assign({}, parentParams, match.params),
+          pathname: joinPaths([
+            parentPathnameBase,
+            // Re-encode pathnames that were decoded inside matchRoutes.
+            // Pre-encode `%`, `?` and `#` ahead of `encodeLocation` because it uses
+            // `new URL()` internally and we need to prevent it from treating
+            // them as separators
+            navigator2.encodeLocation ? navigator2.encodeLocation(
+              match.pathname.replace(/%/g, "%25").replace(/\?/g, "%3F").replace(/#/g, "%23")
+            ).pathname : match.pathname
+          ]),
+          pathnameBase: match.pathnameBase === "/" ? parentPathnameBase : joinPaths([
+            parentPathnameBase,
+            // Re-encode pathnames that were decoded inside matchRoutes
+            // Pre-encode `%`, `?` and `#` ahead of `encodeLocation` because it uses
+            // `new URL()` internally and we need to prevent it from treating
+            // them as separators
+            navigator2.encodeLocation ? navigator2.encodeLocation(
+              match.pathnameBase.replace(/%/g, "%25").replace(/\?/g, "%3F").replace(/#/g, "%23")
+            ).pathname : match.pathnameBase
+          ])
+        })
+      ),
+      parentMatches,
+      dataRouterOpts
+    );
+    if (locationArg && renderedMatches) {
+      return /* @__PURE__ */ React2.createElement(
+        LocationContext.Provider,
+        {
+          value: {
+            location: {
+              pathname: "/",
+              search: "",
+              hash: "",
+              state: null,
+              key: "default",
+              mask: void 0,
+              ...location
+            },
+            navigationType: "POP"
+            /* Pop */
+          }
+        },
+        renderedMatches
+      );
+    }
+    return renderedMatches;
+  }
+  function DefaultErrorComponent() {
+    let error = useRouteError();
+    let message = isRouteErrorResponse(error) ? `${error.status} ${error.statusText}` : error instanceof Error ? error.message : JSON.stringify(error);
+    let stack = error instanceof Error ? error.stack : null;
+    let lightgrey = "rgba(200,200,200, 0.5)";
+    let preStyles = { padding: "0.5rem", backgroundColor: lightgrey };
+    let codeStyles = { padding: "2px 4px", backgroundColor: lightgrey };
+    let devInfo = null;
+    if (ENABLE_DEV_WARNINGS) {
+      console.error(
+        "Error handled by React Router default ErrorBoundary:",
+        error
+      );
+      devInfo = /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("p", null, "\u{1F4BF} Hey developer \u{1F44B}"), /* @__PURE__ */ React2.createElement("p", null, "You can provide a way better UX than this when your app throws errors by providing your own ", /* @__PURE__ */ React2.createElement("code", { style: codeStyles }, "ErrorBoundary"), " or", " ", /* @__PURE__ */ React2.createElement("code", { style: codeStyles }, "errorElement"), " prop on your route."));
+    }
+    return /* @__PURE__ */ React2.createElement(React2.Fragment, null, /* @__PURE__ */ React2.createElement("h2", null, "Unexpected Application Error!"), /* @__PURE__ */ React2.createElement("h3", { style: { fontStyle: "italic" } }, message), stack ? /* @__PURE__ */ React2.createElement("pre", { style: preStyles }, stack) : null, devInfo);
+  }
+  var defaultErrorElement = /* @__PURE__ */ React2.createElement(DefaultErrorComponent, null);
+  var RenderErrorBoundary = class extends React2.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        location: props.location,
+        revalidation: props.revalidation,
+        error: props.error
+      };
+    }
+    static getDerivedStateFromError(error) {
+      return { error };
+    }
+    static getDerivedStateFromProps(props, state) {
+      if (state.location !== props.location || state.revalidation !== "idle" && props.revalidation === "idle") {
+        return {
+          error: props.error,
+          location: props.location,
+          revalidation: props.revalidation
+        };
+      }
+      return {
+        error: props.error !== void 0 ? props.error : state.error,
+        location: state.location,
+        revalidation: props.revalidation || state.revalidation
+      };
+    }
+    componentDidCatch(error, errorInfo) {
+      if (this.props.onError) {
+        this.props.onError(error, errorInfo);
+      } else {
+        console.error(
+          "React Router caught the following error during render",
+          error
+        );
+      }
+    }
+    render() {
+      let error = this.state.error;
+      if (this.context && typeof error === "object" && error && "digest" in error && typeof error.digest === "string") {
+        const decoded = decodeRouteErrorResponseDigest(error.digest);
+        if (decoded) error = decoded;
+      }
+      let result = error !== void 0 ? /* @__PURE__ */ React2.createElement(RouteContext.Provider, { value: this.props.routeContext }, /* @__PURE__ */ React2.createElement(
+        RouteErrorContext.Provider,
+        {
+          value: error,
+          children: this.props.component
+        }
+      )) : this.props.children;
+      if (this.context) {
+        return /* @__PURE__ */ React2.createElement(RSCErrorHandler, { error }, result);
+      }
+      return result;
+    }
+  };
+  RenderErrorBoundary.contextType = RSCRouterContext;
+  var errorRedirectHandledMap = /* @__PURE__ */ new WeakMap();
+  function RSCErrorHandler({
+    children,
+    error
+  }) {
+    let { basename } = React2.useContext(NavigationContext);
+    if (typeof error === "object" && error && "digest" in error && typeof error.digest === "string") {
+      let redirect2 = decodeRedirectErrorDigest(error.digest);
+      if (redirect2) {
+        let existingRedirect = errorRedirectHandledMap.get(error);
+        if (existingRedirect) throw existingRedirect;
+        let parsed = parseToInfo(redirect2.location, basename);
+        if (isBrowser && !errorRedirectHandledMap.get(error)) {
+          if (parsed.isExternal || redirect2.reloadDocument) {
+            window.location.href = parsed.absoluteURL || parsed.to;
+          } else {
+            const redirectPromise = Promise.resolve().then(
+              () => window.__reactRouterDataRouter.navigate(parsed.to, {
+                replace: redirect2.replace
+              })
+            );
+            errorRedirectHandledMap.set(error, redirectPromise);
+            throw redirectPromise;
+          }
+        }
+        return /* @__PURE__ */ React2.createElement(
+          "meta",
+          {
+            httpEquiv: "refresh",
+            content: `0;url=${parsed.absoluteURL || parsed.to}`
+          }
+        );
+      }
+    }
+    return children;
+  }
+  function RenderedRoute({ routeContext, match, children }) {
+    let dataRouterContext = React2.useContext(DataRouterContext);
+    if (dataRouterContext && dataRouterContext.static && dataRouterContext.staticContext && (match.route.errorElement || match.route.ErrorBoundary)) {
+      dataRouterContext.staticContext._deepestRenderedBoundaryId = match.route.id;
+    }
+    return /* @__PURE__ */ React2.createElement(RouteContext.Provider, { value: routeContext }, children);
+  }
+  function _renderMatches(matches, parentMatches = [], dataRouterOpts) {
+    let dataRouterState = dataRouterOpts?.state;
+    if (matches == null) {
+      if (!dataRouterState) {
+        return null;
+      }
+      if (dataRouterState.errors) {
+        matches = dataRouterState.matches;
+      } else if (parentMatches.length === 0 && !dataRouterState.initialized && dataRouterState.matches.length > 0) {
+        matches = dataRouterState.matches;
+      } else {
+        return null;
+      }
+    }
+    let renderedMatches = matches;
+    let errors = dataRouterState?.errors;
+    if (errors != null) {
+      let errorIndex = renderedMatches.findIndex(
+        (m) => m.route.id && errors?.[m.route.id] !== void 0
+      );
+      invariant(
+        errorIndex >= 0,
+        `Could not find a matching route for errors on route IDs: ${Object.keys(
+          errors
+        ).join(",")}`
+      );
+      renderedMatches = renderedMatches.slice(
+        0,
+        Math.min(renderedMatches.length, errorIndex + 1)
+      );
+    }
+    let renderFallback = false;
+    let fallbackIndex = -1;
+    if (dataRouterOpts && dataRouterState) {
+      renderFallback = dataRouterState.renderFallback;
+      for (let i = 0; i < renderedMatches.length; i++) {
+        let match = renderedMatches[i];
+        if (match.route.HydrateFallback || match.route.hydrateFallbackElement) {
+          fallbackIndex = i;
+        }
+        if (match.route.id) {
+          let { loaderData, errors: errors2 } = dataRouterState;
+          let needsToRunLoader = match.route.loader && !loaderData.hasOwnProperty(match.route.id) && (!errors2 || errors2[match.route.id] === void 0);
+          if (match.route.lazy || needsToRunLoader) {
+            if (dataRouterOpts.isStatic) {
+              renderFallback = true;
+            }
+            if (fallbackIndex >= 0) {
+              renderedMatches = renderedMatches.slice(0, fallbackIndex + 1);
+            } else {
+              renderedMatches = [renderedMatches[0]];
+            }
+            break;
+          }
+        }
+      }
+    }
+    let onErrorHandler = dataRouterOpts?.onError;
+    let onError = dataRouterState && onErrorHandler ? (error, errorInfo) => {
+      onErrorHandler(error, {
+        location: dataRouterState.location,
+        params: dataRouterState.matches?.[0]?.params ?? {},
+        pattern: getRoutePattern(dataRouterState.matches),
+        errorInfo
+      });
+    } : void 0;
+    return renderedMatches.reduceRight(
+      (outlet, match, index) => {
+        let error;
+        let shouldRenderHydrateFallback = false;
+        let errorElement = null;
+        let hydrateFallbackElement = null;
+        if (dataRouterState) {
+          error = errors && match.route.id ? errors[match.route.id] : void 0;
+          errorElement = match.route.errorElement || defaultErrorElement;
+          if (renderFallback) {
+            if (fallbackIndex < 0 && index === 0) {
+              warningOnce(
+                "route-fallback",
+                false,
+                "No `HydrateFallback` element provided to render during initial hydration"
+              );
+              shouldRenderHydrateFallback = true;
+              hydrateFallbackElement = null;
+            } else if (fallbackIndex === index) {
+              shouldRenderHydrateFallback = true;
+              hydrateFallbackElement = match.route.hydrateFallbackElement || null;
+            }
+          }
+        }
+        let matches2 = parentMatches.concat(renderedMatches.slice(0, index + 1));
+        let getChildren = () => {
+          let children;
+          if (error) {
+            children = errorElement;
+          } else if (shouldRenderHydrateFallback) {
+            children = hydrateFallbackElement;
+          } else if (match.route.Component) {
+            children = /* @__PURE__ */ React2.createElement(match.route.Component, null);
+          } else if (match.route.element) {
+            children = match.route.element;
+          } else {
+            children = outlet;
+          }
+          return /* @__PURE__ */ React2.createElement(
+            RenderedRoute,
+            {
+              match,
+              routeContext: {
+                outlet,
+                matches: matches2,
+                isDataRoute: dataRouterState != null
+              },
+              children
+            }
+          );
+        };
+        return dataRouterState && (match.route.ErrorBoundary || match.route.errorElement || index === 0) ? /* @__PURE__ */ React2.createElement(
+          RenderErrorBoundary,
+          {
+            location: dataRouterState.location,
+            revalidation: dataRouterState.revalidation,
+            component: errorElement,
+            error,
+            children: getChildren(),
+            routeContext: { outlet: null, matches: matches2, isDataRoute: true },
+            onError
+          }
+        ) : getChildren();
+      },
+      null
+    );
+  }
+  function getDataRouterConsoleError(hookName) {
+    return `${hookName} must be used within a data router.  See https://reactrouter.com/en/main/routers/picking-a-router.`;
+  }
+  function useDataRouterContext(hookName) {
+    let ctx = React2.useContext(DataRouterContext);
+    invariant(ctx, getDataRouterConsoleError(hookName));
+    return ctx;
+  }
+  function useDataRouterState(hookName) {
+    let state = React2.useContext(DataRouterStateContext);
+    invariant(state, getDataRouterConsoleError(hookName));
+    return state;
+  }
+  function useRouteContext(hookName) {
+    let route = React2.useContext(RouteContext);
+    invariant(route, getDataRouterConsoleError(hookName));
+    return route;
+  }
+  function useCurrentRouteId(hookName) {
+    let route = useRouteContext(hookName);
+    let thisRoute = route.matches[route.matches.length - 1];
+    invariant(
+      thisRoute.route.id,
+      `${hookName} can only be used on routes that contain a unique "id"`
+    );
+    return thisRoute.route.id;
+  }
+  function useRouteId() {
+    return useCurrentRouteId(
+      "useRouteId"
+      /* UseRouteId */
+    );
+  }
+  function useNavigation() {
+    let state = useDataRouterState(
+      "useNavigation"
+      /* UseNavigation */
+    );
+    return React2.useMemo(() => {
+      let { matches, historyAction, ...rest } = state.navigation;
+      return rest;
+    }, [state.navigation]);
+  }
+  function useMatches() {
+    let { matches, loaderData } = useDataRouterState(
+      "useMatches"
+      /* UseMatches */
+    );
+    return React2.useMemo(
+      () => matches.map((m) => convertRouteMatchToUiMatch(m, loaderData)),
+      [matches, loaderData]
+    );
+  }
+  function useRouteError() {
+    let error = React2.useContext(RouteErrorContext);
+    let state = useDataRouterState(
+      "useRouteError"
+      /* UseRouteError */
+    );
+    let routeId = useCurrentRouteId(
+      "useRouteError"
+      /* UseRouteError */
+    );
+    if (error !== void 0) {
+      return error;
+    }
+    return state.errors?.[routeId];
+  }
+  function useNavigateStable() {
+    let { router } = useDataRouterContext(
+      "useNavigate"
+      /* UseNavigateStable */
+    );
+    let id = useCurrentRouteId(
+      "useNavigate"
+      /* UseNavigateStable */
+    );
+    let activeRef = React2.useRef(false);
+    useIsomorphicLayoutEffect(() => {
+      activeRef.current = true;
+    });
+    let navigate = React2.useCallback(
+      async (to, options = {}) => {
+        warning(activeRef.current, navigateEffectWarning);
+        if (!activeRef.current) return;
+        if (typeof to === "number") {
+          await router.navigate(to);
+        } else {
+          await router.navigate(to, { fromRouteId: id, ...options });
+        }
+      },
+      [router, id]
+    );
+    return navigate;
+  }
+  var alreadyWarned = {};
+  function warningOnce(key, cond, message) {
+    if (!cond && !alreadyWarned[key]) {
+      alreadyWarned[key] = true;
+      warning(false, message);
+    }
+  }
+  var USE_OPTIMISTIC = "useOptimistic";
+  var useOptimisticImpl = React3[USE_OPTIMISTIC];
+  var MemoizedDataRoutes = React3.memo(DataRoutes2);
+  function DataRoutes2({
+    routes,
+    manifest,
+    future,
+    state,
+    isStatic,
+    onError
+  }) {
+    return useRoutesImpl(routes, void 0, {
+      manifest,
+      state,
+      isStatic,
+      onError,
+      future
+    });
+  }
+  function Navigate({
+    to,
+    replace: replace2,
+    state,
+    relative
+  }) {
+    invariant(
+      useInRouterContext(),
+      // TODO: This error is probably because they somehow have 2 versions of
+      // the router loaded. We can help them understand how to avoid that.
+      `<Navigate> may be used only in the context of a <Router> component.`
+    );
+    let { static: isStatic } = React3.useContext(NavigationContext);
+    warning(
+      !isStatic,
+      `<Navigate> must not be used on the initial render in a <StaticRouter>. This is a no-op, but you should modify your code so the <Navigate> is only ever rendered in response to some user interaction or state change.`
+    );
+    let { matches } = React3.useContext(RouteContext);
+    let { pathname: locationPathname } = useLocation();
+    let navigate = useNavigate();
+    let path = resolveTo(
+      to,
+      getResolveToMatches(matches),
+      locationPathname,
+      relative === "path"
+    );
+    let jsonPath = JSON.stringify(path);
+    React3.useEffect(() => {
+      navigate(JSON.parse(jsonPath), { replace: replace2, state, relative });
+    }, [navigate, jsonPath, relative, replace2, state]);
+    return null;
+  }
+  function Outlet(props) {
+    return useOutlet(props.context);
+  }
+  function Route(props) {
+    invariant(
+      false,
+      `A <Route> is only ever to be used as the child of <Routes> element, never rendered directly. Please wrap your <Route> in a <Routes>.`
+    );
+  }
+  function Router({
+    basename: basenameProp = "/",
+    children = null,
+    location: locationProp,
+    navigationType = "POP",
+    navigator: navigator2,
+    static: staticProp = false,
+    useTransitions
+  }) {
+    invariant(
+      !useInRouterContext(),
+      `You cannot render a <Router> inside another <Router>. You should never have more than one in your app.`
+    );
+    let basename = basenameProp.replace(/^\/*/, "/");
+    let navigationContext = React3.useMemo(
+      () => ({
+        basename,
+        navigator: navigator2,
+        static: staticProp,
+        useTransitions,
+        future: {}
+      }),
+      [basename, navigator2, staticProp, useTransitions]
+    );
+    if (typeof locationProp === "string") {
+      locationProp = parsePath(locationProp);
+    }
+    let {
+      pathname = "/",
+      search = "",
+      hash = "",
+      state = null,
+      key = "default",
+      mask
+    } = locationProp;
+    let locationContext = React3.useMemo(() => {
+      let trailingPathname = stripBasename(pathname, basename);
+      if (trailingPathname == null) {
+        return null;
+      }
+      return {
+        location: {
+          pathname: trailingPathname,
+          search,
+          hash,
+          state,
+          key,
+          mask
+        },
+        navigationType
+      };
+    }, [basename, pathname, search, hash, state, key, navigationType, mask]);
+    warning(
+      locationContext != null,
+      `<Router basename="${basename}"> is not able to match the URL "${pathname}${search}${hash}" because it does not start with the basename, so the <Router> won't render anything.`
+    );
+    if (locationContext == null) {
+      return null;
+    }
+    return /* @__PURE__ */ React3.createElement(NavigationContext.Provider, { value: navigationContext }, /* @__PURE__ */ React3.createElement(LocationContext.Provider, { children, value: locationContext }));
+  }
+  function Routes({
+    children,
+    location
+  }) {
+    return useRoutes(createRoutesFromChildren(children), location);
+  }
+  function createRoutesFromChildren(children, parentPath = []) {
+    let routes = [];
+    React3.Children.forEach(children, (element, index) => {
+      if (!React3.isValidElement(element)) {
+        return;
+      }
+      let treePath = [...parentPath, index];
+      if (element.type === React3.Fragment) {
+        routes.push.apply(
+          routes,
+          createRoutesFromChildren(element.props.children, treePath)
+        );
+        return;
+      }
+      invariant(
+        element.type === Route,
+        `[${typeof element.type === "string" ? element.type : element.type.name}] is not a <Route> component. All component children of <Routes> must be a <Route> or <React.Fragment>`
+      );
+      invariant(
+        !element.props.index || !element.props.children,
+        "An index route cannot have child routes."
+      );
+      let route = {
+        id: element.props.id || treePath.join("-"),
+        caseSensitive: element.props.caseSensitive,
+        element: element.props.element,
+        Component: element.props.Component,
+        index: element.props.index,
+        path: element.props.path,
+        middleware: element.props.middleware,
+        loader: element.props.loader,
+        action: element.props.action,
+        hydrateFallbackElement: element.props.hydrateFallbackElement,
+        HydrateFallback: element.props.HydrateFallback,
+        errorElement: element.props.errorElement,
+        ErrorBoundary: element.props.ErrorBoundary,
+        hasErrorBoundary: element.props.hasErrorBoundary === true || element.props.ErrorBoundary != null || element.props.errorElement != null,
+        shouldRevalidate: element.props.shouldRevalidate,
+        handle: element.props.handle,
+        lazy: element.props.lazy
+      };
+      if (element.props.children) {
+        route.children = createRoutesFromChildren(
+          element.props.children,
+          treePath
+        );
+      }
+      routes.push(route);
+    });
+    return routes;
+  }
+  var defaultMethod = "get";
+  var defaultEncType = "application/x-www-form-urlencoded";
+  function isHtmlElement(object) {
+    return typeof HTMLElement !== "undefined" && object instanceof HTMLElement;
+  }
+  function isButtonElement(object) {
+    return isHtmlElement(object) && object.tagName.toLowerCase() === "button";
+  }
+  function isFormElement(object) {
+    return isHtmlElement(object) && object.tagName.toLowerCase() === "form";
+  }
+  function isInputElement(object) {
+    return isHtmlElement(object) && object.tagName.toLowerCase() === "input";
+  }
+  function isModifiedEvent(event) {
+    return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
+  }
+  function shouldProcessLinkClick(event, target) {
+    return event.button === 0 && // Ignore everything but left clicks
+    (!target || target === "_self") && // Let browser handle "target=_blank" etc.
+    !isModifiedEvent(event);
+  }
+  function createSearchParams(init = "") {
+    return new URLSearchParams(
+      typeof init === "string" || Array.isArray(init) || init instanceof URLSearchParams ? init : Object.keys(init).reduce((memo2, key) => {
+        let value = init[key];
+        return memo2.concat(
+          Array.isArray(value) ? value.map((v) => [key, v]) : [[key, value]]
+        );
+      }, [])
+    );
+  }
+  function getSearchParamsForLocation(locationSearch, defaultSearchParams) {
+    let searchParams = createSearchParams(locationSearch);
+    if (defaultSearchParams) {
+      defaultSearchParams.forEach((_, key) => {
+        if (!searchParams.has(key)) {
+          defaultSearchParams.getAll(key).forEach((value) => {
+            searchParams.append(key, value);
+          });
+        }
+      });
+    }
+    return searchParams;
+  }
+  var _formDataSupportsSubmitter = null;
+  function isFormDataSubmitterSupported() {
+    if (_formDataSupportsSubmitter === null) {
+      try {
+        new FormData(
+          document.createElement("form"),
+          // @ts-expect-error if FormData supports the submitter parameter, this will throw
+          0
+        );
+        _formDataSupportsSubmitter = false;
+      } catch (e) {
+        _formDataSupportsSubmitter = true;
+      }
+    }
+    return _formDataSupportsSubmitter;
+  }
+  var supportedFormEncTypes = /* @__PURE__ */ new Set([
+    "application/x-www-form-urlencoded",
+    "multipart/form-data",
+    "text/plain"
+  ]);
+  function getFormEncType(encType) {
+    if (encType != null && !supportedFormEncTypes.has(encType)) {
+      warning(
+        false,
+        `"${encType}" is not a valid \`encType\` for \`<Form>\`/\`<fetcher.Form>\` and will default to "${defaultEncType}"`
+      );
+      return null;
+    }
+    return encType;
+  }
+  function getFormSubmissionInfo(target, basename) {
+    let method;
+    let action;
+    let encType;
+    let formData;
+    let body;
+    if (isFormElement(target)) {
+      let attr = target.getAttribute("action");
+      action = attr ? stripBasename(attr, basename) : null;
+      method = target.getAttribute("method") || defaultMethod;
+      encType = getFormEncType(target.getAttribute("enctype")) || defaultEncType;
+      formData = new FormData(target);
+    } else if (isButtonElement(target) || isInputElement(target) && (target.type === "submit" || target.type === "image")) {
+      let form = target.form;
+      if (form == null) {
+        throw new Error(
+          `Cannot submit a <button> or <input type="submit"> without a <form>`
+        );
+      }
+      let attr = target.getAttribute("formaction") || form.getAttribute("action");
+      action = attr ? stripBasename(attr, basename) : null;
+      method = target.getAttribute("formmethod") || form.getAttribute("method") || defaultMethod;
+      encType = getFormEncType(target.getAttribute("formenctype")) || getFormEncType(form.getAttribute("enctype")) || defaultEncType;
+      formData = new FormData(form, target);
+      if (!isFormDataSubmitterSupported()) {
+        let { name, type, value } = target;
+        if (type === "image") {
+          let prefix = name ? `${name}.` : "";
+          formData.append(`${prefix}x`, "0");
+          formData.append(`${prefix}y`, "0");
+        } else if (name) {
+          formData.append(name, value);
+        }
+      }
+    } else if (isHtmlElement(target)) {
+      throw new Error(
+        `Cannot submit element that is not <form>, <button>, or <input type="submit|image">`
+      );
+    } else {
+      method = defaultMethod;
+      action = null;
+      encType = defaultEncType;
+      body = target;
+    }
+    if (formData && encType === "text/plain") {
+      body = formData;
+      formData = void 0;
+    }
+    return { action, method: method.toLowerCase(), encType, formData, body };
+  }
+  var objectProtoNames2 = Object.getOwnPropertyNames(Object.prototype).sort().join("\0");
+  var ESCAPE_LOOKUP = {
+    "&": "\\u0026",
+    ">": "\\u003e",
+    "<": "\\u003c",
+    "\u2028": "\\u2028",
+    "\u2029": "\\u2029"
+  };
+  var ESCAPE_REGEX = /[&><\u2028\u2029]/g;
+  function escapeHtml(html) {
+    return html.replace(ESCAPE_REGEX, (match) => ESCAPE_LOOKUP[match]);
+  }
+  function invariant2(value, message) {
+    if (value === false || value === null || typeof value === "undefined") {
+      throw new Error(message);
+    }
+  }
+  function singleFetchUrl(reqUrl, basename, trailingSlashAware, extension) {
+    let url = typeof reqUrl === "string" ? new URL(
+      reqUrl,
+      // This can be called during the SSR flow via PrefetchPageLinksImpl so
+      // don't assume window is available
+      typeof window === "undefined" ? "server://singlefetch/" : window.location.origin
+    ) : reqUrl;
+    if (trailingSlashAware) {
+      if (url.pathname.endsWith("/")) {
+        url.pathname = `${url.pathname}_.${extension}`;
+      } else {
+        url.pathname = `${url.pathname}.${extension}`;
+      }
+    } else {
+      if (url.pathname === "/") {
+        url.pathname = `_root.${extension}`;
+      } else if (basename && stripBasename(url.pathname, basename) === "/") {
+        url.pathname = `${removeTrailingSlash(basename)}/_root.${extension}`;
+      } else {
+        url.pathname = `${removeTrailingSlash(url.pathname)}.${extension}`;
+      }
+    }
+    return url;
+  }
+  async function loadRouteModule(route, routeModulesCache) {
+    if (route.id in routeModulesCache) {
+      return routeModulesCache[route.id];
+    }
+    try {
+      let routeModule = await import(
+        /* @vite-ignore */
+        /* webpackIgnore: true */
+        route.module
+      );
+      routeModulesCache[route.id] = routeModule;
+      return routeModule;
+    } catch (error) {
+      console.error(
+        `Error loading route module \`${route.module}\`, reloading page...`
+      );
+      console.error(error);
+      if (window.__reactRouterContext && window.__reactRouterContext.isSpaMode && // @ts-expect-error
+      import_meta.hot) {
+        throw error;
+      }
+      window.location.reload();
+      return new Promise(() => {
+      });
+    }
+  }
+  function isPageLinkDescriptor(object) {
+    return object != null && typeof object.page === "string";
+  }
+  function isHtmlLinkDescriptor(object) {
+    if (object == null) {
+      return false;
+    }
+    if (object.href == null) {
+      return object.rel === "preload" && typeof object.imageSrcSet === "string" && typeof object.imageSizes === "string";
+    }
+    return typeof object.rel === "string" && typeof object.href === "string";
+  }
+  async function getKeyedPrefetchLinks(matches, manifest, routeModules) {
+    let links = await Promise.all(
+      matches.map(async (match) => {
+        let route = manifest.routes[match.route.id];
+        if (route) {
+          let mod = await loadRouteModule(route, routeModules);
+          return mod.links ? mod.links() : [];
+        }
+        return [];
+      })
+    );
+    return dedupeLinkDescriptors(
+      links.flat(1).filter(isHtmlLinkDescriptor).filter((link) => link.rel === "stylesheet" || link.rel === "preload").map(
+        (link) => link.rel === "stylesheet" ? { ...link, rel: "prefetch", as: "style" } : { ...link, rel: "prefetch" }
+      )
+    );
+  }
+  function getNewMatchesForLinks(page, nextMatches, currentMatches, manifest, location, mode) {
+    let isNew = (match, index) => {
+      if (!currentMatches[index]) return true;
+      return match.route.id !== currentMatches[index].route.id;
+    };
+    let matchPathChanged = (match, index) => {
+      return (
+        // param change, /users/123 -> /users/456
+        currentMatches[index].pathname !== match.pathname || // splat param changed, which is not present in match.path
+        // e.g. /files/images/avatar.jpg -> files/finances.xls
+        currentMatches[index].route.path?.endsWith("*") && currentMatches[index].params["*"] !== match.params["*"]
+      );
+    };
+    if (mode === "assets") {
+      return nextMatches.filter(
+        (match, index) => isNew(match, index) || matchPathChanged(match, index)
+      );
+    }
+    if (mode === "data") {
+      return nextMatches.filter((match, index) => {
+        let manifestRoute = manifest.routes[match.route.id];
+        if (!manifestRoute || !manifestRoute.hasLoader) {
+          return false;
+        }
+        if (isNew(match, index) || matchPathChanged(match, index)) {
+          return true;
+        }
+        if (match.route.shouldRevalidate) {
+          let routeChoice = match.route.shouldRevalidate({
+            currentUrl: new URL(
+              location.pathname + location.search + location.hash,
+              window.origin
+            ),
+            currentParams: currentMatches[0]?.params || {},
+            nextUrl: new URL(page, window.origin),
+            nextParams: match.params,
+            defaultShouldRevalidate: true
+          });
+          if (typeof routeChoice === "boolean") {
+            return routeChoice;
+          }
+        }
+        return true;
+      });
+    }
+    return [];
+  }
+  function getModuleLinkHrefs(matches, manifest, { includeHydrateFallback } = {}) {
+    return dedupeHrefs(
+      matches.map((match) => {
+        let route = manifest.routes[match.route.id];
+        if (!route) return [];
+        let hrefs = [route.module];
+        if (route.clientActionModule) {
+          hrefs = hrefs.concat(route.clientActionModule);
+        }
+        if (route.clientLoaderModule) {
+          hrefs = hrefs.concat(route.clientLoaderModule);
+        }
+        if (includeHydrateFallback && route.hydrateFallbackModule) {
+          hrefs = hrefs.concat(route.hydrateFallbackModule);
+        }
+        if (route.imports) {
+          hrefs = hrefs.concat(route.imports);
+        }
+        return hrefs;
+      }).flat(1)
+    );
+  }
+  function dedupeHrefs(hrefs) {
+    return [...new Set(hrefs)];
+  }
+  function sortKeys(obj) {
+    let sorted2 = {};
+    let keys = Object.keys(obj).sort();
+    for (let key of keys) {
+      sorted2[key] = obj[key];
+    }
+    return sorted2;
+  }
+  function dedupeLinkDescriptors(descriptors, preloads) {
+    let set = /* @__PURE__ */ new Set();
+    let preloadsSet = new Set(preloads);
+    return descriptors.reduce((deduped, descriptor) => {
+      let alreadyModulePreload = preloads && !isPageLinkDescriptor(descriptor) && descriptor.as === "script" && descriptor.href && preloadsSet.has(descriptor.href);
+      if (alreadyModulePreload) {
+        return deduped;
+      }
+      let key = JSON.stringify(sortKeys(descriptor));
+      if (!set.has(key)) {
+        set.add(key);
+        deduped.push({ key, link: descriptor });
+      }
+      return deduped;
     }, []);
-    const addTodo = async () => {
-      if (!newTodo.trim()) return;
-      try {
-        const response = await fetch("/todos/api/todos", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title: newTodo, completed: false })
+  }
+  function useDataRouterContext2() {
+    let context = React8.useContext(DataRouterContext);
+    invariant2(
+      context,
+      "You must render this element inside a <DataRouterContext.Provider> element"
+    );
+    return context;
+  }
+  function useDataRouterStateContext() {
+    let context = React8.useContext(DataRouterStateContext);
+    invariant2(
+      context,
+      "You must render this element inside a <DataRouterStateContext.Provider> element"
+    );
+    return context;
+  }
+  var FrameworkContext = React8.createContext(void 0);
+  FrameworkContext.displayName = "FrameworkContext";
+  function useFrameworkContext() {
+    let context = React8.useContext(FrameworkContext);
+    invariant2(
+      context,
+      "You must render this element inside a <HydratedRouter> element"
+    );
+    return context;
+  }
+  function usePrefetchBehavior(prefetch, theirElementProps) {
+    let frameworkContext = React8.useContext(FrameworkContext);
+    let [maybePrefetch, setMaybePrefetch] = React8.useState(false);
+    let [shouldPrefetch, setShouldPrefetch] = React8.useState(false);
+    let { onFocus, onBlur, onMouseEnter, onMouseLeave, onTouchStart } = theirElementProps;
+    let ref = React8.useRef(null);
+    React8.useEffect(() => {
+      if (prefetch === "render") {
+        setShouldPrefetch(true);
+      }
+      if (prefetch === "viewport") {
+        let callback = (entries) => {
+          entries.forEach((entry) => {
+            setShouldPrefetch(entry.isIntersecting);
+          });
+        };
+        let observer = new IntersectionObserver(callback, { threshold: 0.5 });
+        if (ref.current) observer.observe(ref.current);
+        return () => {
+          observer.disconnect();
+        };
+      }
+    }, [prefetch]);
+    React8.useEffect(() => {
+      if (maybePrefetch) {
+        let id = setTimeout(() => {
+          setShouldPrefetch(true);
+        }, 100);
+        return () => {
+          clearTimeout(id);
+        };
+      }
+    }, [maybePrefetch]);
+    let setIntent = () => {
+      setMaybePrefetch(true);
+    };
+    let cancelIntent = () => {
+      setMaybePrefetch(false);
+      setShouldPrefetch(false);
+    };
+    if (!frameworkContext) {
+      return [false, ref, {}];
+    }
+    if (prefetch !== "intent") {
+      return [shouldPrefetch, ref, {}];
+    }
+    return [
+      shouldPrefetch,
+      ref,
+      {
+        onFocus: composeEventHandlers(onFocus, setIntent),
+        onBlur: composeEventHandlers(onBlur, cancelIntent),
+        onMouseEnter: composeEventHandlers(onMouseEnter, setIntent),
+        onMouseLeave: composeEventHandlers(onMouseLeave, cancelIntent),
+        onTouchStart: composeEventHandlers(onTouchStart, setIntent)
+      }
+    ];
+  }
+  function composeEventHandlers(theirHandler, ourHandler) {
+    return (event) => {
+      theirHandler && theirHandler(event);
+      if (!event.defaultPrevented) {
+        ourHandler(event);
+      }
+    };
+  }
+  function PrefetchPageLinks({ page, ...linkProps }) {
+    let rsc = useIsRSCRouterContext();
+    let { router } = useDataRouterContext2();
+    let matches = React8.useMemo(
+      () => matchRoutes(router.routes, page, router.basename),
+      [router.routes, page, router.basename]
+    );
+    if (!matches) {
+      return null;
+    }
+    if (rsc) {
+      return /* @__PURE__ */ React8.createElement(RSCPrefetchPageLinksImpl, { page, matches, ...linkProps });
+    }
+    return /* @__PURE__ */ React8.createElement(PrefetchPageLinksImpl, { page, matches, ...linkProps });
+  }
+  function useKeyedPrefetchLinks(matches) {
+    let { manifest, routeModules } = useFrameworkContext();
+    let [keyedPrefetchLinks, setKeyedPrefetchLinks] = React8.useState([]);
+    React8.useEffect(() => {
+      let interrupted = false;
+      void getKeyedPrefetchLinks(matches, manifest, routeModules).then(
+        (links) => {
+          if (!interrupted) {
+            setKeyedPrefetchLinks(links);
+          }
+        }
+      );
+      return () => {
+        interrupted = true;
+      };
+    }, [matches, manifest, routeModules]);
+    return keyedPrefetchLinks;
+  }
+  function RSCPrefetchPageLinksImpl({
+    page,
+    matches: nextMatches,
+    ...linkProps
+  }) {
+    let location = useLocation();
+    let { future } = useFrameworkContext();
+    let { basename } = useDataRouterContext2();
+    let dataHrefs = React8.useMemo(() => {
+      if (page === location.pathname + location.search + location.hash) {
+        return [];
+      }
+      let url = singleFetchUrl(
+        page,
+        basename,
+        future.unstable_trailingSlashAwareDataRequests,
+        "rsc"
+      );
+      let hasSomeRoutesWithShouldRevalidate = false;
+      let targetRoutes = [];
+      for (let match of nextMatches) {
+        if (typeof match.route.shouldRevalidate === "function") {
+          hasSomeRoutesWithShouldRevalidate = true;
+        } else {
+          targetRoutes.push(match.route.id);
+        }
+      }
+      if (hasSomeRoutesWithShouldRevalidate && targetRoutes.length > 0) {
+        url.searchParams.set("_routes", targetRoutes.join(","));
+      }
+      return [url.pathname + url.search];
+    }, [
+      basename,
+      future.unstable_trailingSlashAwareDataRequests,
+      page,
+      location,
+      nextMatches
+    ]);
+    return /* @__PURE__ */ React8.createElement(React8.Fragment, null, dataHrefs.map((href) => /* @__PURE__ */ React8.createElement("link", { key: href, rel: "prefetch", as: "fetch", href, ...linkProps })));
+  }
+  function PrefetchPageLinksImpl({
+    page,
+    matches: nextMatches,
+    ...linkProps
+  }) {
+    let location = useLocation();
+    let { future, manifest, routeModules } = useFrameworkContext();
+    let { basename } = useDataRouterContext2();
+    let { loaderData, matches } = useDataRouterStateContext();
+    let newMatchesForData = React8.useMemo(
+      () => getNewMatchesForLinks(
+        page,
+        nextMatches,
+        matches,
+        manifest,
+        location,
+        "data"
+      ),
+      [page, nextMatches, matches, manifest, location]
+    );
+    let newMatchesForAssets = React8.useMemo(
+      () => getNewMatchesForLinks(
+        page,
+        nextMatches,
+        matches,
+        manifest,
+        location,
+        "assets"
+      ),
+      [page, nextMatches, matches, manifest, location]
+    );
+    let dataHrefs = React8.useMemo(() => {
+      if (page === location.pathname + location.search + location.hash) {
+        return [];
+      }
+      let routesParams = /* @__PURE__ */ new Set();
+      let foundOptOutRoute = false;
+      nextMatches.forEach((m) => {
+        let manifestRoute = manifest.routes[m.route.id];
+        if (!manifestRoute || !manifestRoute.hasLoader) {
+          return;
+        }
+        if (!newMatchesForData.some((m2) => m2.route.id === m.route.id) && m.route.id in loaderData && routeModules[m.route.id]?.shouldRevalidate) {
+          foundOptOutRoute = true;
+        } else if (manifestRoute.hasClientLoader) {
+          foundOptOutRoute = true;
+        } else {
+          routesParams.add(m.route.id);
+        }
+      });
+      if (routesParams.size === 0) {
+        return [];
+      }
+      let url = singleFetchUrl(
+        page,
+        basename,
+        future.unstable_trailingSlashAwareDataRequests,
+        "data"
+      );
+      if (foundOptOutRoute && routesParams.size > 0) {
+        url.searchParams.set(
+          "_routes",
+          nextMatches.filter((m) => routesParams.has(m.route.id)).map((m) => m.route.id).join(",")
+        );
+      }
+      return [url.pathname + url.search];
+    }, [
+      basename,
+      future.unstable_trailingSlashAwareDataRequests,
+      loaderData,
+      location,
+      manifest,
+      newMatchesForData,
+      nextMatches,
+      page,
+      routeModules
+    ]);
+    let moduleHrefs = React8.useMemo(
+      () => getModuleLinkHrefs(newMatchesForAssets, manifest),
+      [newMatchesForAssets, manifest]
+    );
+    let keyedPrefetchLinks = useKeyedPrefetchLinks(newMatchesForAssets);
+    return /* @__PURE__ */ React8.createElement(React8.Fragment, null, dataHrefs.map((href) => /* @__PURE__ */ React8.createElement("link", { key: href, rel: "prefetch", as: "fetch", href, ...linkProps })), moduleHrefs.map((href) => /* @__PURE__ */ React8.createElement("link", { key: href, rel: "modulepreload", href, ...linkProps })), keyedPrefetchLinks.map(({ key, link }) => (
+      // these don't spread `linkProps` because they are full link descriptors
+      // already with their own props
+      /* @__PURE__ */ React8.createElement(
+        "link",
+        {
+          key,
+          nonce: linkProps.nonce,
+          ...link,
+          crossOrigin: link.crossOrigin ?? linkProps.crossOrigin
+        }
+      )
+    )));
+  }
+  function mergeRefs(...refs) {
+    return (value) => {
+      refs.forEach((ref) => {
+        if (typeof ref === "function") {
+          ref(value);
+        } else if (ref != null) {
+          ref.current = value;
+        }
+      });
+    };
+  }
+  var isBrowser2 = typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined";
+  try {
+    if (isBrowser2) {
+      window.__reactRouterVersion = // @ts-expect-error
+      "7.15.1";
+    }
+  } catch (e) {
+  }
+  function BrowserRouter({
+    basename,
+    children,
+    useTransitions,
+    window: window2
+  }) {
+    let historyRef = React10.useRef();
+    if (historyRef.current == null) {
+      historyRef.current = createBrowserHistory({ window: window2, v5Compat: true });
+    }
+    let history = historyRef.current;
+    let [state, setStateImpl] = React10.useState({
+      action: history.action,
+      location: history.location
+    });
+    let setState = React10.useCallback(
+      (newState) => {
+        if (useTransitions === false) {
+          setStateImpl(newState);
+        } else {
+          React10.startTransition(() => setStateImpl(newState));
+        }
+      },
+      [useTransitions]
+    );
+    React10.useLayoutEffect(() => history.listen(setState), [history, setState]);
+    return /* @__PURE__ */ React10.createElement(
+      Router,
+      {
+        basename,
+        children,
+        location: state.location,
+        navigationType: state.action,
+        navigator: history,
+        useTransitions
+      }
+    );
+  }
+  function HistoryRouter({
+    basename,
+    children,
+    history,
+    useTransitions
+  }) {
+    let [state, setStateImpl] = React10.useState({
+      action: history.action,
+      location: history.location
+    });
+    let setState = React10.useCallback(
+      (newState) => {
+        if (useTransitions === false) {
+          setStateImpl(newState);
+        } else {
+          React10.startTransition(() => setStateImpl(newState));
+        }
+      },
+      [useTransitions]
+    );
+    React10.useLayoutEffect(() => history.listen(setState), [history, setState]);
+    return /* @__PURE__ */ React10.createElement(
+      Router,
+      {
+        basename,
+        children,
+        location: state.location,
+        navigationType: state.action,
+        navigator: history,
+        useTransitions
+      }
+    );
+  }
+  HistoryRouter.displayName = "unstable_HistoryRouter";
+  var ABSOLUTE_URL_REGEX2 = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
+  var Link = React10.forwardRef(
+    function LinkWithRef({
+      onClick,
+      discover = "render",
+      prefetch = "none",
+      relative,
+      reloadDocument,
+      replace: replace2,
+      mask,
+      state,
+      target,
+      to,
+      preventScrollReset,
+      viewTransition,
+      defaultShouldRevalidate,
+      ...rest
+    }, forwardedRef) {
+      let { basename, navigator: navigator2, useTransitions } = React10.useContext(NavigationContext);
+      let isAbsolute = typeof to === "string" && ABSOLUTE_URL_REGEX2.test(to);
+      let parsed = parseToInfo(to, basename);
+      to = parsed.to;
+      let href = useHref(to, { relative });
+      let location = useLocation();
+      let maskedHref = null;
+      if (mask) {
+        let resolved = resolveTo(
+          mask,
+          [],
+          location.mask ? location.mask.pathname : "/",
+          true
+        );
+        if (basename !== "/") {
+          resolved.pathname = resolved.pathname === "/" ? basename : joinPaths([basename, resolved.pathname]);
+        }
+        maskedHref = navigator2.createHref(resolved);
+      }
+      let [shouldPrefetch, prefetchRef, prefetchHandlers] = usePrefetchBehavior(
+        prefetch,
+        rest
+      );
+      let internalOnClick = useLinkClickHandler(to, {
+        replace: replace2,
+        mask,
+        state,
+        target,
+        preventScrollReset,
+        relative,
+        viewTransition,
+        defaultShouldRevalidate,
+        useTransitions
+      });
+      function handleClick(event) {
+        if (onClick) onClick(event);
+        if (!event.defaultPrevented) {
+          internalOnClick(event);
+        }
+      }
+      let isSpaLink = !(parsed.isExternal || reloadDocument);
+      let link = (
+        // eslint-disable-next-line jsx-a11y/anchor-has-content
+        /* @__PURE__ */ React10.createElement(
+          "a",
+          {
+            ...rest,
+            ...prefetchHandlers,
+            href: (isSpaLink ? maskedHref : void 0) || parsed.absoluteURL || href,
+            onClick: isSpaLink ? handleClick : onClick,
+            ref: mergeRefs(forwardedRef, prefetchRef),
+            target,
+            "data-discover": !isAbsolute && discover === "render" ? "true" : void 0
+          }
+        )
+      );
+      return shouldPrefetch && !isAbsolute ? /* @__PURE__ */ React10.createElement(React10.Fragment, null, link, /* @__PURE__ */ React10.createElement(PrefetchPageLinks, { page: href })) : link;
+    }
+  );
+  Link.displayName = "Link";
+  var NavLink = React10.forwardRef(
+    function NavLinkWithRef({
+      "aria-current": ariaCurrentProp = "page",
+      caseSensitive = false,
+      className: classNameProp = "",
+      end = false,
+      style: styleProp,
+      to,
+      viewTransition,
+      children,
+      ...rest
+    }, ref) {
+      let path = useResolvedPath(to, { relative: rest.relative });
+      let location = useLocation();
+      let routerState = React10.useContext(DataRouterStateContext);
+      let { navigator: navigator2, basename } = React10.useContext(NavigationContext);
+      let isTransitioning = routerState != null && // Conditional usage is OK here because the usage of a data router is static
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      useViewTransitionState(path) && viewTransition === true;
+      let toPathname = navigator2.encodeLocation ? navigator2.encodeLocation(path).pathname : path.pathname;
+      let locationPathname = location.pathname;
+      let nextLocationPathname = routerState && routerState.navigation && routerState.navigation.location ? routerState.navigation.location.pathname : null;
+      if (!caseSensitive) {
+        locationPathname = locationPathname.toLowerCase();
+        nextLocationPathname = nextLocationPathname ? nextLocationPathname.toLowerCase() : null;
+        toPathname = toPathname.toLowerCase();
+      }
+      if (nextLocationPathname && basename) {
+        nextLocationPathname = stripBasename(nextLocationPathname, basename) || nextLocationPathname;
+      }
+      const endSlashPosition = toPathname !== "/" && toPathname.endsWith("/") ? toPathname.length - 1 : toPathname.length;
+      let isActive = locationPathname === toPathname || !end && locationPathname.startsWith(toPathname) && locationPathname.charAt(endSlashPosition) === "/";
+      let isPending = nextLocationPathname != null && (nextLocationPathname === toPathname || !end && nextLocationPathname.startsWith(toPathname) && nextLocationPathname.charAt(toPathname.length) === "/");
+      let renderProps = {
+        isActive,
+        isPending,
+        isTransitioning
+      };
+      let ariaCurrent = isActive ? ariaCurrentProp : void 0;
+      let className;
+      if (typeof classNameProp === "function") {
+        className = classNameProp(renderProps);
+      } else {
+        className = [
+          classNameProp,
+          isActive ? "active" : null,
+          isPending ? "pending" : null,
+          isTransitioning ? "transitioning" : null
+        ].filter(Boolean).join(" ");
+      }
+      let style = typeof styleProp === "function" ? styleProp(renderProps) : styleProp;
+      return /* @__PURE__ */ React10.createElement(
+        Link,
+        {
+          ...rest,
+          "aria-current": ariaCurrent,
+          className,
+          ref,
+          style,
+          to,
+          viewTransition
+        },
+        typeof children === "function" ? children(renderProps) : children
+      );
+    }
+  );
+  NavLink.displayName = "NavLink";
+  var Form = React10.forwardRef(
+    ({
+      discover = "render",
+      fetcherKey,
+      navigate,
+      reloadDocument,
+      replace: replace2,
+      state,
+      method = defaultMethod,
+      action,
+      onSubmit,
+      relative,
+      preventScrollReset,
+      viewTransition,
+      defaultShouldRevalidate,
+      ...props
+    }, forwardedRef) => {
+      let { useTransitions } = React10.useContext(NavigationContext);
+      let submit = useSubmit();
+      let formAction = useFormAction(action, { relative });
+      let formMethod = method.toLowerCase() === "get" ? "get" : "post";
+      let isAbsolute = typeof action === "string" && ABSOLUTE_URL_REGEX2.test(action);
+      let submitHandler = (event) => {
+        onSubmit && onSubmit(event);
+        if (event.defaultPrevented) return;
+        event.preventDefault();
+        let submitter = event.nativeEvent.submitter;
+        let submitMethod = submitter?.getAttribute("formmethod") || method;
+        let doSubmit = () => submit(submitter || event.currentTarget, {
+          fetcherKey,
+          method: submitMethod,
+          navigate,
+          replace: replace2,
+          state,
+          relative,
+          preventScrollReset,
+          viewTransition,
+          defaultShouldRevalidate
         });
-        const todo = await response.json();
-        setTodos([...todos, todo]);
-        setNewTodo("");
-      } catch (err) {
-        console.error("Error adding todo:", err);
+        if (useTransitions && navigate !== false) {
+          React10.startTransition(() => doSubmit());
+        } else {
+          doSubmit();
+        }
+      };
+      return /* @__PURE__ */ React10.createElement(
+        "form",
+        {
+          ref: forwardedRef,
+          method: formMethod,
+          action: formAction,
+          onSubmit: reloadDocument ? onSubmit : submitHandler,
+          ...props,
+          "data-discover": !isAbsolute && discover === "render" ? "true" : void 0
+        }
+      );
+    }
+  );
+  Form.displayName = "Form";
+  function ScrollRestoration({
+    getKey,
+    storageKey: storageKey2,
+    ...props
+  }) {
+    let remixContext = React10.useContext(FrameworkContext);
+    let { basename } = React10.useContext(NavigationContext);
+    let location = useLocation();
+    let matches = useMatches();
+    useScrollRestoration({ getKey, storageKey: storageKey2 });
+    let ssrKey = React10.useMemo(
+      () => {
+        if (!remixContext || !getKey) return null;
+        let userKey = getScrollRestorationKey(
+          location,
+          matches,
+          basename,
+          getKey
+        );
+        return userKey !== location.key ? userKey : null;
+      },
+      // Nah, we only need this the first time for the SSR render
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      []
+    );
+    if (!remixContext || remixContext.isSpaMode) {
+      return null;
+    }
+    let restoreScroll = ((storageKey22, restoreKey) => {
+      if (!window.history.state || !window.history.state.key) {
+        let key = Math.random().toString(32).slice(2);
+        window.history.replaceState({ key }, "");
       }
-    };
-    const toggleTodo = async (id, completed) => {
       try {
-        const response = await fetch(`/todos/api/todos/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ completed: !completed })
+        let positions = JSON.parse(sessionStorage.getItem(storageKey22) || "{}");
+        let storedY = positions[restoreKey || window.history.state.key];
+        if (typeof storedY === "number") {
+          window.scrollTo(0, storedY);
+        }
+      } catch (error) {
+        console.error(error);
+        sessionStorage.removeItem(storageKey22);
+      }
+    }).toString();
+    return /* @__PURE__ */ React10.createElement(
+      "script",
+      {
+        ...props,
+        suppressHydrationWarning: true,
+        dangerouslySetInnerHTML: {
+          __html: `(${restoreScroll})(${escapeHtml(
+            JSON.stringify(storageKey2 || SCROLL_RESTORATION_STORAGE_KEY)
+          )}, ${escapeHtml(JSON.stringify(ssrKey))})`
+        }
+      }
+    );
+  }
+  ScrollRestoration.displayName = "ScrollRestoration";
+  function getDataRouterConsoleError2(hookName) {
+    return `${hookName} must be used within a data router.  See https://reactrouter.com/en/main/routers/picking-a-router.`;
+  }
+  function useDataRouterContext3(hookName) {
+    let ctx = React10.useContext(DataRouterContext);
+    invariant(ctx, getDataRouterConsoleError2(hookName));
+    return ctx;
+  }
+  function useDataRouterState2(hookName) {
+    let state = React10.useContext(DataRouterStateContext);
+    invariant(state, getDataRouterConsoleError2(hookName));
+    return state;
+  }
+  function useLinkClickHandler(to, {
+    target,
+    replace: replaceProp,
+    mask,
+    state,
+    preventScrollReset,
+    relative,
+    viewTransition,
+    defaultShouldRevalidate,
+    useTransitions
+  } = {}) {
+    let navigate = useNavigate();
+    let location = useLocation();
+    let path = useResolvedPath(to, { relative });
+    return React10.useCallback(
+      (event) => {
+        if (shouldProcessLinkClick(event, target)) {
+          event.preventDefault();
+          let replace2 = replaceProp !== void 0 ? replaceProp : createPath(location) === createPath(path);
+          let doNavigate = () => navigate(to, {
+            replace: replace2,
+            mask,
+            state,
+            preventScrollReset,
+            relative,
+            viewTransition,
+            defaultShouldRevalidate
+          });
+          if (useTransitions) {
+            React10.startTransition(() => doNavigate());
+          } else {
+            doNavigate();
+          }
+        }
+      },
+      [
+        location,
+        navigate,
+        path,
+        replaceProp,
+        mask,
+        state,
+        target,
+        to,
+        preventScrollReset,
+        relative,
+        viewTransition,
+        defaultShouldRevalidate,
+        useTransitions
+      ]
+    );
+  }
+  function useSearchParams(defaultInit) {
+    warning(
+      typeof URLSearchParams !== "undefined",
+      `You cannot use the \`useSearchParams\` hook in a browser that does not support the URLSearchParams API. If you need to support Internet Explorer 11, we recommend you load a polyfill such as https://github.com/ungap/url-search-params.`
+    );
+    let defaultSearchParamsRef = React10.useRef(createSearchParams(defaultInit));
+    let hasSetSearchParamsRef = React10.useRef(false);
+    let location = useLocation();
+    let searchParams = React10.useMemo(
+      () => (
+        // Only merge in the defaults if we haven't yet called setSearchParams.
+        // Once we call that we want those to take precedence, otherwise you can't
+        // remove a param with setSearchParams({}) if it has an initial value
+        getSearchParamsForLocation(
+          location.search,
+          hasSetSearchParamsRef.current ? null : defaultSearchParamsRef.current
+        )
+      ),
+      [location.search]
+    );
+    let navigate = useNavigate();
+    let setSearchParams = React10.useCallback(
+      (nextInit, navigateOptions) => {
+        const newSearchParams = createSearchParams(
+          typeof nextInit === "function" ? nextInit(new URLSearchParams(searchParams)) : nextInit
+        );
+        hasSetSearchParamsRef.current = true;
+        navigate("?" + newSearchParams, navigateOptions);
+      },
+      [navigate, searchParams]
+    );
+    return [searchParams, setSearchParams];
+  }
+  var fetcherId = 0;
+  var getUniqueFetcherId = () => `__${String(++fetcherId)}__`;
+  function useSubmit() {
+    let { router } = useDataRouterContext3(
+      "useSubmit"
+      /* UseSubmit */
+    );
+    let { basename } = React10.useContext(NavigationContext);
+    let currentRouteId = useRouteId();
+    let routerFetch = router.fetch;
+    let routerNavigate = router.navigate;
+    return React10.useCallback(
+      async (target, options = {}) => {
+        let { action, method, encType, formData, body } = getFormSubmissionInfo(
+          target,
+          basename
+        );
+        if (options.navigate === false) {
+          let key = options.fetcherKey || getUniqueFetcherId();
+          await routerFetch(key, currentRouteId, options.action || action, {
+            defaultShouldRevalidate: options.defaultShouldRevalidate,
+            preventScrollReset: options.preventScrollReset,
+            formData,
+            body,
+            formMethod: options.method || method,
+            formEncType: options.encType || encType,
+            flushSync: options.flushSync
+          });
+        } else {
+          await routerNavigate(options.action || action, {
+            defaultShouldRevalidate: options.defaultShouldRevalidate,
+            preventScrollReset: options.preventScrollReset,
+            formData,
+            body,
+            formMethod: options.method || method,
+            formEncType: options.encType || encType,
+            replace: options.replace,
+            state: options.state,
+            fromRouteId: currentRouteId,
+            flushSync: options.flushSync,
+            viewTransition: options.viewTransition
+          });
+        }
+      },
+      [routerFetch, routerNavigate, basename, currentRouteId]
+    );
+  }
+  function useFormAction(action, { relative } = {}) {
+    let { basename } = React10.useContext(NavigationContext);
+    let routeContext = React10.useContext(RouteContext);
+    invariant(routeContext, "useFormAction must be used inside a RouteContext");
+    let [match] = routeContext.matches.slice(-1);
+    let path = { ...useResolvedPath(action ? action : ".", { relative }) };
+    let location = useLocation();
+    if (action == null) {
+      path.search = location.search;
+      let params = new URLSearchParams(path.search);
+      let indexValues = params.getAll("index");
+      let hasNakedIndexParam = indexValues.some((v) => v === "");
+      if (hasNakedIndexParam) {
+        params.delete("index");
+        indexValues.filter((v) => v).forEach((v) => params.append("index", v));
+        let qs = params.toString();
+        path.search = qs ? `?${qs}` : "";
+      }
+    }
+    if ((!action || action === ".") && match.route.index) {
+      path.search = path.search ? path.search.replace(/^\?/, "?index&") : "?index";
+    }
+    if (basename !== "/") {
+      path.pathname = path.pathname === "/" ? basename : joinPaths([basename, path.pathname]);
+    }
+    return createPath(path);
+  }
+  var SCROLL_RESTORATION_STORAGE_KEY = "react-router-scroll-positions";
+  var savedScrollPositions = {};
+  function getScrollRestorationKey(location, matches, basename, getKey) {
+    let key = null;
+    if (getKey) {
+      if (basename !== "/") {
+        key = getKey(
+          {
+            ...location,
+            pathname: stripBasename(location.pathname, basename) || location.pathname
+          },
+          matches
+        );
+      } else {
+        key = getKey(location, matches);
+      }
+    }
+    if (key == null) {
+      key = location.key;
+    }
+    return key;
+  }
+  function useScrollRestoration({
+    getKey,
+    storageKey: storageKey2
+  } = {}) {
+    let { router } = useDataRouterContext3(
+      "useScrollRestoration"
+      /* UseScrollRestoration */
+    );
+    let { restoreScrollPosition, preventScrollReset } = useDataRouterState2(
+      "useScrollRestoration"
+      /* UseScrollRestoration */
+    );
+    let { basename } = React10.useContext(NavigationContext);
+    let location = useLocation();
+    let matches = useMatches();
+    let navigation2 = useNavigation();
+    React10.useEffect(() => {
+      window.history.scrollRestoration = "manual";
+      return () => {
+        window.history.scrollRestoration = "auto";
+      };
+    }, []);
+    usePageHide(
+      React10.useCallback(() => {
+        if (navigation2.state === "idle") {
+          let key = getScrollRestorationKey(location, matches, basename, getKey);
+          savedScrollPositions[key] = window.scrollY;
+        }
+        try {
+          sessionStorage.setItem(
+            storageKey2 || SCROLL_RESTORATION_STORAGE_KEY,
+            JSON.stringify(savedScrollPositions)
+          );
+        } catch (error) {
+          warning(
+            false,
+            `Failed to save scroll positions in sessionStorage, <ScrollRestoration /> will not work properly (${error}).`
+          );
+        }
+        window.history.scrollRestoration = "auto";
+      }, [navigation2.state, getKey, basename, location, matches, storageKey2])
+    );
+    if (typeof document !== "undefined") {
+      React10.useLayoutEffect(() => {
+        try {
+          let sessionPositions = sessionStorage.getItem(
+            storageKey2 || SCROLL_RESTORATION_STORAGE_KEY
+          );
+          if (sessionPositions) {
+            savedScrollPositions = JSON.parse(sessionPositions);
+          }
+        } catch (e) {
+        }
+      }, [storageKey2]);
+      React10.useLayoutEffect(() => {
+        let disableScrollRestoration = router?.enableScrollRestoration(
+          savedScrollPositions,
+          () => window.scrollY,
+          getKey ? (location2, matches2) => getScrollRestorationKey(location2, matches2, basename, getKey) : void 0
+        );
+        return () => disableScrollRestoration && disableScrollRestoration();
+      }, [router, basename, getKey]);
+      React10.useLayoutEffect(() => {
+        if (restoreScrollPosition === false) {
+          return;
+        }
+        if (typeof restoreScrollPosition === "number") {
+          window.scrollTo(0, restoreScrollPosition);
+          return;
+        }
+        try {
+          if (location.hash) {
+            let el = document.getElementById(
+              decodeURIComponent(location.hash.slice(1))
+            );
+            if (el) {
+              el.scrollIntoView();
+              return;
+            }
+          }
+        } catch {
+          warning(
+            false,
+            `"${location.hash.slice(
+              1
+            )}" is not a decodable element ID. The view will not scroll to it.`
+          );
+        }
+        if (preventScrollReset === true) {
+          return;
+        }
+        window.scrollTo(0, 0);
+      }, [location, restoreScrollPosition, preventScrollReset]);
+    }
+  }
+  function usePageHide(callback, options) {
+    let { capture } = options || {};
+    React10.useEffect(() => {
+      let opts = capture != null ? { capture } : void 0;
+      window.addEventListener("pagehide", callback, opts);
+      return () => {
+        window.removeEventListener("pagehide", callback, opts);
+      };
+    }, [callback, capture]);
+  }
+  function useViewTransitionState(to, { relative } = {}) {
+    let vtContext = React10.useContext(ViewTransitionContext);
+    invariant(
+      vtContext != null,
+      "`useViewTransitionState` must be used within `react-router-dom`'s `RouterProvider`.  Did you accidentally import `RouterProvider` from `react-router`?"
+    );
+    let { basename } = useDataRouterContext3(
+      "useViewTransitionState"
+      /* useViewTransitionState */
+    );
+    let path = useResolvedPath(to, { relative });
+    if (!vtContext.isTransitioning) {
+      return false;
+    }
+    let currentPath = stripBasename(vtContext.currentLocation.pathname, basename) || vtContext.currentLocation.pathname;
+    let nextPath = stripBasename(vtContext.nextLocation.pathname, basename) || vtContext.nextLocation.pathname;
+    return matchPath(path.pathname, nextPath) != null || matchPath(path.pathname, currentPath) != null;
+  }
+
+  // projects/benes-finance/frontend/components/Layout.tsx
+  var import_react3 = __toESM(require_react());
+
+  // node_modules/lucide-react/dist/esm/createLucideIcon.js
+  var import_react2 = __toESM(require_react());
+
+  // node_modules/lucide-react/dist/esm/shared/src/utils.js
+  var toKebabCase = (string) => string.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+  var toCamelCase = (string) => string.replace(
+    /^([A-Z])|[\s-_]+(\w)/g,
+    (match, p1, p2) => p2 ? p2.toUpperCase() : p1.toLowerCase()
+  );
+  var toPascalCase = (string) => {
+    const camelCase = toCamelCase(string);
+    return camelCase.charAt(0).toUpperCase() + camelCase.slice(1);
+  };
+  var mergeClasses = (...classes) => classes.filter((className, index, array) => {
+    return Boolean(className) && className.trim() !== "" && array.indexOf(className) === index;
+  }).join(" ").trim();
+  var hasA11yProp = (props) => {
+    for (const prop in props) {
+      if (prop.startsWith("aria-") || prop === "role" || prop === "title") {
+        return true;
+      }
+    }
+  };
+
+  // node_modules/lucide-react/dist/esm/Icon.js
+  var import_react = __toESM(require_react());
+
+  // node_modules/lucide-react/dist/esm/defaultAttributes.js
+  var defaultAttributes = {
+    xmlns: "http://www.w3.org/2000/svg",
+    width: 24,
+    height: 24,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  };
+
+  // node_modules/lucide-react/dist/esm/Icon.js
+  var Icon = (0, import_react.forwardRef)(
+    ({
+      color = "currentColor",
+      size = 24,
+      strokeWidth = 2,
+      absoluteStrokeWidth,
+      className = "",
+      children,
+      iconNode,
+      ...rest
+    }, ref) => (0, import_react.createElement)(
+      "svg",
+      {
+        ref,
+        ...defaultAttributes,
+        width: size,
+        height: size,
+        stroke: color,
+        strokeWidth: absoluteStrokeWidth ? Number(strokeWidth) * 24 / Number(size) : strokeWidth,
+        className: mergeClasses("lucide", className),
+        ...!children && !hasA11yProp(rest) && { "aria-hidden": "true" },
+        ...rest
+      },
+      [
+        ...iconNode.map(([tag, attrs]) => (0, import_react.createElement)(tag, attrs)),
+        ...Array.isArray(children) ? children : [children]
+      ]
+    )
+  );
+
+  // node_modules/lucide-react/dist/esm/createLucideIcon.js
+  var createLucideIcon = (iconName, iconNode) => {
+    const Component4 = (0, import_react2.forwardRef)(
+      ({ className, ...props }, ref) => (0, import_react2.createElement)(Icon, {
+        ref,
+        iconNode,
+        className: mergeClasses(
+          `lucide-${toKebabCase(toPascalCase(iconName))}`,
+          `lucide-${iconName}`,
+          className
+        ),
+        ...props
+      })
+    );
+    Component4.displayName = toPascalCase(iconName);
+    return Component4;
+  };
+
+  // node_modules/lucide-react/dist/esm/icons/activity.js
+  var __iconNode = [
+    [
+      "path",
+      {
+        d: "M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2",
+        key: "169zse"
+      }
+    ]
+  ];
+  var Activity = createLucideIcon("activity", __iconNode);
+
+  // node_modules/lucide-react/dist/esm/icons/arrow-left.js
+  var __iconNode2 = [
+    ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
+    ["path", { d: "M19 12H5", key: "x3x0zl" }]
+  ];
+  var ArrowLeft = createLucideIcon("arrow-left", __iconNode2);
+
+  // node_modules/lucide-react/dist/esm/icons/calendar-clock.js
+  var __iconNode3 = [
+    ["path", { d: "M16 14v2.2l1.6 1", key: "fo4ql5" }],
+    ["path", { d: "M16 2v4", key: "4m81vk" }],
+    ["path", { d: "M21 7.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3.5", key: "1osxxc" }],
+    ["path", { d: "M3 10h5", key: "r794hk" }],
+    ["path", { d: "M8 2v4", key: "1cmpym" }],
+    ["circle", { cx: "16", cy: "16", r: "6", key: "qoo3c4" }]
+  ];
+  var CalendarClock = createLucideIcon("calendar-clock", __iconNode3);
+
+  // node_modules/lucide-react/dist/esm/icons/calendar-days.js
+  var __iconNode4 = [
+    ["path", { d: "M8 2v4", key: "1cmpym" }],
+    ["path", { d: "M16 2v4", key: "4m81vk" }],
+    ["rect", { width: "18", height: "18", x: "3", y: "4", rx: "2", key: "1hopcy" }],
+    ["path", { d: "M3 10h18", key: "8toen8" }],
+    ["path", { d: "M8 14h.01", key: "6423bh" }],
+    ["path", { d: "M12 14h.01", key: "1etili" }],
+    ["path", { d: "M16 14h.01", key: "1gbofw" }],
+    ["path", { d: "M8 18h.01", key: "lrp35t" }],
+    ["path", { d: "M12 18h.01", key: "mhygvu" }],
+    ["path", { d: "M16 18h.01", key: "kzsmim" }]
+  ];
+  var CalendarDays = createLucideIcon("calendar-days", __iconNode4);
+
+  // node_modules/lucide-react/dist/esm/icons/chart-column.js
+  var __iconNode5 = [
+    ["path", { d: "M3 3v16a2 2 0 0 0 2 2h16", key: "c24i48" }],
+    ["path", { d: "M18 17V9", key: "2bz60n" }],
+    ["path", { d: "M13 17V5", key: "1frdt8" }],
+    ["path", { d: "M8 17v-3", key: "17ska0" }]
+  ];
+  var ChartColumn = createLucideIcon("chart-column", __iconNode5);
+
+  // node_modules/lucide-react/dist/esm/icons/chart-line.js
+  var __iconNode6 = [
+    ["path", { d: "M3 3v16a2 2 0 0 0 2 2h16", key: "c24i48" }],
+    ["path", { d: "m19 9-5 5-4-4-3 3", key: "2osh9i" }]
+  ];
+  var ChartLine = createLucideIcon("chart-line", __iconNode6);
+
+  // node_modules/lucide-react/dist/esm/icons/check.js
+  var __iconNode7 = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+  var Check = createLucideIcon("check", __iconNode7);
+
+  // node_modules/lucide-react/dist/esm/icons/chevron-down.js
+  var __iconNode8 = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+  var ChevronDown = createLucideIcon("chevron-down", __iconNode8);
+
+  // node_modules/lucide-react/dist/esm/icons/chevron-left.js
+  var __iconNode9 = [["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]];
+  var ChevronLeft = createLucideIcon("chevron-left", __iconNode9);
+
+  // node_modules/lucide-react/dist/esm/icons/chevron-right.js
+  var __iconNode10 = [["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]];
+  var ChevronRight = createLucideIcon("chevron-right", __iconNode10);
+
+  // node_modules/lucide-react/dist/esm/icons/chevron-up.js
+  var __iconNode11 = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+  var ChevronUp = createLucideIcon("chevron-up", __iconNode11);
+
+  // node_modules/lucide-react/dist/esm/icons/chevrons-up-down.js
+  var __iconNode12 = [
+    ["path", { d: "m7 15 5 5 5-5", key: "1hf1tw" }],
+    ["path", { d: "m7 9 5-5 5 5", key: "sgt6xg" }]
+  ];
+  var ChevronsUpDown = createLucideIcon("chevrons-up-down", __iconNode12);
+
+  // node_modules/lucide-react/dist/esm/icons/circle-check-big.js
+  var __iconNode13 = [
+    ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
+    ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
+  ];
+  var CircleCheckBig = createLucideIcon("circle-check-big", __iconNode13);
+
+  // node_modules/lucide-react/dist/esm/icons/circle-plus.js
+  var __iconNode14 = [
+    ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+    ["path", { d: "M8 12h8", key: "1wcyev" }],
+    ["path", { d: "M12 8v8", key: "napkw2" }]
+  ];
+  var CirclePlus = createLucideIcon("circle-plus", __iconNode14);
+
+  // node_modules/lucide-react/dist/esm/icons/circle.js
+  var __iconNode15 = [["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]];
+  var Circle = createLucideIcon("circle", __iconNode15);
+
+  // node_modules/lucide-react/dist/esm/icons/circle-x.js
+  var __iconNode16 = [
+    ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+    ["path", { d: "m15 9-6 6", key: "1uzhvr" }],
+    ["path", { d: "m9 9 6 6", key: "z0biqf" }]
+  ];
+  var CircleX = createLucideIcon("circle-x", __iconNode16);
+
+  // node_modules/lucide-react/dist/esm/icons/credit-card.js
+  var __iconNode17 = [
+    ["rect", { width: "20", height: "14", x: "2", y: "5", rx: "2", key: "ynyp8z" }],
+    ["line", { x1: "2", x2: "22", y1: "10", y2: "10", key: "1b3vmo" }]
+  ];
+  var CreditCard = createLucideIcon("credit-card", __iconNode17);
+
+  // node_modules/lucide-react/dist/esm/icons/download.js
+  var __iconNode18 = [
+    ["path", { d: "M12 15V3", key: "m9g1x1" }],
+    ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
+    ["path", { d: "m7 10 5 5 5-5", key: "brsn70" }]
+  ];
+  var Download = createLucideIcon("download", __iconNode18);
+
+  // node_modules/lucide-react/dist/esm/icons/external-link.js
+  var __iconNode19 = [
+    ["path", { d: "M15 3h6v6", key: "1q9fwt" }],
+    ["path", { d: "M10 14 21 3", key: "gplh6r" }],
+    ["path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6", key: "a6xqqp" }]
+  ];
+  var ExternalLink = createLucideIcon("external-link", __iconNode19);
+
+  // node_modules/lucide-react/dist/esm/icons/globe.js
+  var __iconNode20 = [
+    ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+    ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
+    ["path", { d: "M2 12h20", key: "9i4pu4" }]
+  ];
+  var Globe = createLucideIcon("globe", __iconNode20);
+
+  // node_modules/lucide-react/dist/esm/icons/grip-vertical.js
+  var __iconNode21 = [
+    ["circle", { cx: "9", cy: "12", r: "1", key: "1vctgf" }],
+    ["circle", { cx: "9", cy: "5", r: "1", key: "hp0tcf" }],
+    ["circle", { cx: "9", cy: "19", r: "1", key: "fkjjf6" }],
+    ["circle", { cx: "15", cy: "12", r: "1", key: "1tmaij" }],
+    ["circle", { cx: "15", cy: "5", r: "1", key: "19l28e" }],
+    ["circle", { cx: "15", cy: "19", r: "1", key: "f4zoj3" }]
+  ];
+  var GripVertical = createLucideIcon("grip-vertical", __iconNode21);
+
+  // node_modules/lucide-react/dist/esm/icons/hash.js
+  var __iconNode22 = [
+    ["line", { x1: "4", x2: "20", y1: "9", y2: "9", key: "4lhtct" }],
+    ["line", { x1: "4", x2: "20", y1: "15", y2: "15", key: "vyu0kd" }],
+    ["line", { x1: "10", x2: "8", y1: "3", y2: "21", key: "1ggp8o" }],
+    ["line", { x1: "16", x2: "14", y1: "3", y2: "21", key: "weycgp" }]
+  ];
+  var Hash = createLucideIcon("hash", __iconNode22);
+
+  // node_modules/lucide-react/dist/esm/icons/layout-dashboard.js
+  var __iconNode23 = [
+    ["rect", { width: "7", height: "9", x: "3", y: "3", rx: "1", key: "10lvy0" }],
+    ["rect", { width: "7", height: "5", x: "14", y: "3", rx: "1", key: "16une8" }],
+    ["rect", { width: "7", height: "9", x: "14", y: "12", rx: "1", key: "1hutg5" }],
+    ["rect", { width: "7", height: "5", x: "3", y: "16", rx: "1", key: "ldoo1y" }]
+  ];
+  var LayoutDashboard = createLucideIcon("layout-dashboard", __iconNode23);
+
+  // node_modules/lucide-react/dist/esm/icons/list.js
+  var __iconNode24 = [
+    ["path", { d: "M3 5h.01", key: "18ugdj" }],
+    ["path", { d: "M3 12h.01", key: "nlz23k" }],
+    ["path", { d: "M3 19h.01", key: "noohij" }],
+    ["path", { d: "M8 5h13", key: "1pao27" }],
+    ["path", { d: "M8 12h13", key: "1za7za" }],
+    ["path", { d: "M8 19h13", key: "m83p4d" }]
+  ];
+  var List = createLucideIcon("list", __iconNode24);
+
+  // node_modules/lucide-react/dist/esm/icons/mail.js
+  var __iconNode25 = [
+    ["path", { d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7", key: "132q7q" }],
+    ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "2", key: "izxlao" }]
+  ];
+  var Mail = createLucideIcon("mail", __iconNode25);
+
+  // node_modules/lucide-react/dist/esm/icons/menu.js
+  var __iconNode26 = [
+    ["path", { d: "M4 5h16", key: "1tepv9" }],
+    ["path", { d: "M4 12h16", key: "1lakjw" }],
+    ["path", { d: "M4 19h16", key: "1djgab" }]
+  ];
+  var Menu = createLucideIcon("menu", __iconNode26);
+
+  // node_modules/lucide-react/dist/esm/icons/message-square-plus.js
+  var __iconNode27 = [
+    [
+      "path",
+      {
+        d: "M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z",
+        key: "18887p"
+      }
+    ],
+    ["path", { d: "M12 8v6", key: "1ib9pf" }],
+    ["path", { d: "M9 11h6", key: "1fldmi" }]
+  ];
+  var MessageSquarePlus = createLucideIcon("message-square-plus", __iconNode27);
+
+  // node_modules/lucide-react/dist/esm/icons/pen.js
+  var __iconNode28 = [
+    [
+      "path",
+      {
+        d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
+        key: "1a8usu"
+      }
+    ]
+  ];
+  var Pen = createLucideIcon("pen", __iconNode28);
+
+  // node_modules/lucide-react/dist/esm/icons/pencil.js
+  var __iconNode29 = [
+    [
+      "path",
+      {
+        d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z",
+        key: "1a8usu"
+      }
+    ],
+    ["path", { d: "m15 5 4 4", key: "1mk7zo" }]
+  ];
+  var Pencil = createLucideIcon("pencil", __iconNode29);
+
+  // node_modules/lucide-react/dist/esm/icons/phone.js
+  var __iconNode30 = [
+    [
+      "path",
+      {
+        d: "M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384",
+        key: "9njp5v"
+      }
+    ]
+  ];
+  var Phone = createLucideIcon("phone", __iconNode30);
+
+  // node_modules/lucide-react/dist/esm/icons/play.js
+  var __iconNode31 = [
+    [
+      "path",
+      {
+        d: "M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z",
+        key: "10ikf1"
+      }
+    ]
+  ];
+  var Play = createLucideIcon("play", __iconNode31);
+
+  // node_modules/lucide-react/dist/esm/icons/plus.js
+  var __iconNode32 = [
+    ["path", { d: "M5 12h14", key: "1ays0h" }],
+    ["path", { d: "M12 5v14", key: "s699le" }]
+  ];
+  var Plus = createLucideIcon("plus", __iconNode32);
+
+  // node_modules/lucide-react/dist/esm/icons/refresh-cw.js
+  var __iconNode33 = [
+    ["path", { d: "M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8", key: "v9h5vc" }],
+    ["path", { d: "M21 3v5h-5", key: "1q7to0" }],
+    ["path", { d: "M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16", key: "3uifl3" }],
+    ["path", { d: "M8 16H3v5", key: "1cv678" }]
+  ];
+  var RefreshCw = createLucideIcon("refresh-cw", __iconNode33);
+
+  // node_modules/lucide-react/dist/esm/icons/repeat-2.js
+  var __iconNode34 = [
+    ["path", { d: "m2 9 3-3 3 3", key: "1ltn5i" }],
+    ["path", { d: "M13 18H7a2 2 0 0 1-2-2V6", key: "1r6tfw" }],
+    ["path", { d: "m22 15-3 3-3-3", key: "4rnwn2" }],
+    ["path", { d: "M11 6h6a2 2 0 0 1 2 2v10", key: "2f72bc" }]
+  ];
+  var Repeat2 = createLucideIcon("repeat-2", __iconNode34);
+
+  // node_modules/lucide-react/dist/esm/icons/scroll-text.js
+  var __iconNode35 = [
+    ["path", { d: "M15 12h-5", key: "r7krc0" }],
+    ["path", { d: "M15 8h-5", key: "1khuty" }],
+    ["path", { d: "M19 17V5a2 2 0 0 0-2-2H4", key: "zz82l3" }],
+    [
+      "path",
+      {
+        d: "M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3",
+        key: "1ph1d7"
+      }
+    ]
+  ];
+  var ScrollText = createLucideIcon("scroll-text", __iconNode35);
+
+  // node_modules/lucide-react/dist/esm/icons/shield-check.js
+  var __iconNode36 = [
+    [
+      "path",
+      {
+        d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+        key: "oel41y"
+      }
+    ],
+    ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+  ];
+  var ShieldCheck = createLucideIcon("shield-check", __iconNode36);
+
+  // node_modules/lucide-react/dist/esm/icons/square-check-big.js
+  var __iconNode37 = [
+    [
+      "path",
+      { d: "M21 10.656V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12.344", key: "2acyp4" }
+    ],
+    ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
+  ];
+  var SquareCheckBig = createLucideIcon("square-check-big", __iconNode37);
+
+  // node_modules/lucide-react/dist/esm/icons/square-split-horizontal.js
+  var __iconNode38 = [
+    ["path", { d: "M8 19H5c-1 0-2-1-2-2V7c0-1 1-2 2-2h3", key: "lubmu8" }],
+    ["path", { d: "M16 5h3c1 0 2 1 2 2v10c0 1-1 2-2 2h-3", key: "1ag34g" }],
+    ["line", { x1: "12", x2: "12", y1: "4", y2: "20", key: "1tx1rr" }]
+  ];
+  var SquareSplitHorizontal = createLucideIcon("square-split-horizontal", __iconNode38);
+
+  // node_modules/lucide-react/dist/esm/icons/square.js
+  var __iconNode39 = [
+    ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", key: "afitv7" }]
+  ];
+  var Square = createLucideIcon("square", __iconNode39);
+
+  // node_modules/lucide-react/dist/esm/icons/tag.js
+  var __iconNode40 = [
+    [
+      "path",
+      {
+        d: "M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z",
+        key: "vktsd0"
+      }
+    ],
+    ["circle", { cx: "7.5", cy: "7.5", r: ".5", fill: "currentColor", key: "kqv944" }]
+  ];
+  var Tag = createLucideIcon("tag", __iconNode40);
+
+  // node_modules/lucide-react/dist/esm/icons/trash-2.js
+  var __iconNode41 = [
+    ["path", { d: "M10 11v6", key: "nco0om" }],
+    ["path", { d: "M14 11v6", key: "outv1u" }],
+    ["path", { d: "M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6", key: "miytrc" }],
+    ["path", { d: "M3 6h18", key: "d0wm0j" }],
+    ["path", { d: "M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2", key: "e791ji" }]
+  ];
+  var Trash2 = createLucideIcon("trash-2", __iconNode41);
+
+  // node_modules/lucide-react/dist/esm/icons/trending-down.js
+  var __iconNode42 = [
+    ["path", { d: "M16 17h6v-6", key: "t6n2it" }],
+    ["path", { d: "m22 17-8.5-8.5-5 5L2 7", key: "x473p" }]
+  ];
+  var TrendingDown = createLucideIcon("trending-down", __iconNode42);
+
+  // node_modules/lucide-react/dist/esm/icons/triangle-alert.js
+  var __iconNode43 = [
+    [
+      "path",
+      {
+        d: "m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3",
+        key: "wmoenq"
+      }
+    ],
+    ["path", { d: "M12 9v4", key: "juzpu7" }],
+    ["path", { d: "M12 17h.01", key: "p32p05" }]
+  ];
+  var TriangleAlert = createLucideIcon("triangle-alert", __iconNode43);
+
+  // node_modules/lucide-react/dist/esm/icons/wand-sparkles.js
+  var __iconNode44 = [
+    [
+      "path",
+      {
+        d: "m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72",
+        key: "ul74o6"
+      }
+    ],
+    ["path", { d: "m14 7 3 3", key: "1r5n42" }],
+    ["path", { d: "M5 6v4", key: "ilb8ba" }],
+    ["path", { d: "M19 14v4", key: "blhpug" }],
+    ["path", { d: "M10 2v2", key: "7u0qdc" }],
+    ["path", { d: "M7 8H3", key: "zfb6yr" }],
+    ["path", { d: "M21 16h-4", key: "1cnmox" }],
+    ["path", { d: "M11 3H9", key: "1obp7u" }]
+  ];
+  var WandSparkles = createLucideIcon("wand-sparkles", __iconNode44);
+
+  // node_modules/lucide-react/dist/esm/icons/x.js
+  var __iconNode45 = [
+    ["path", { d: "M18 6 6 18", key: "1bl5f8" }],
+    ["path", { d: "m6 6 12 12", key: "d8bk6v" }]
+  ];
+  var X = createLucideIcon("x", __iconNode45);
+
+  // node_modules/lucide-react/dist/esm/icons/zap.js
+  var __iconNode46 = [
+    [
+      "path",
+      {
+        d: "M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z",
+        key: "1xq2db"
+      }
+    ]
+  ];
+  var Zap = createLucideIcon("zap", __iconNode46);
+
+  // projects/benes-finance/frontend/components/Layout.tsx
+  var NAV = [
+    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { to: "/accounts", label: "Accounts", icon: CreditCard },
+    { to: "/transactions", label: "Transactions", icon: List },
+    { to: "/recurring", label: "Recurring", icon: Repeat2 },
+    { to: "/tags", label: "Tags", icon: Tag },
+    { to: "/coverage", label: "Coverage", icon: ShieldCheck },
+    { to: "/rules", label: "Rules", icon: WandSparkles },
+    { to: "/schedule", label: "Schedule", icon: CalendarDays },
+    { to: "/forecast", label: "Forecast", icon: CalendarClock },
+    { to: "/budget", label: "Budget", icon: ChartColumn },
+    { to: "/cashflow", label: "Cash Flow", icon: Activity },
+    { to: "/debt", label: "Debt", icon: TrendingDown },
+    { to: "/projections", label: "Projections", icon: ChartLine },
+    { to: "/scenarios", label: "Scenarios", icon: SquareSplitHorizontal },
+    { to: "/cascade", label: "Cascade", icon: Zap },
+    { to: "/audit", label: "Audit", icon: ScrollText },
+    { to: "/requests", label: "Requests", icon: MessageSquarePlus }
+  ];
+  function NavItems({ onClick }) {
+    return /* @__PURE__ */ import_react3.default.createElement(import_react3.default.Fragment, null, NAV.map(({ to, label, icon: Icon2 }) => /* @__PURE__ */ import_react3.default.createElement(
+      NavLink,
+      {
+        key: to,
+        to,
+        onClick,
+        className: ({ isActive }) => `flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors ${isActive ? "bg-blue-50 text-blue-700 font-medium" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"}`
+      },
+      /* @__PURE__ */ import_react3.default.createElement(Icon2, { size: 15, className: "shrink-0" }),
+      label
+    )));
+  }
+  function Layout() {
+    const [drawerOpen, setDrawerOpen] = (0, import_react3.useState)(false);
+    return /* @__PURE__ */ import_react3.default.createElement("div", { className: "min-h-screen flex" }, /* @__PURE__ */ import_react3.default.createElement("aside", { className: "hidden lg:flex flex-col w-48 shrink-0 border-r border-gray-200 bg-white sticky top-0 h-screen overflow-y-auto" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "px-4 py-4 border-b border-gray-100" }, /* @__PURE__ */ import_react3.default.createElement("span", { className: "font-semibold text-gray-900 text-sm tracking-wide" }, "Benes Finance")), /* @__PURE__ */ import_react3.default.createElement("nav", { className: "flex flex-col gap-0.5 p-2 flex-1" }, /* @__PURE__ */ import_react3.default.createElement(NavItems, null))), /* @__PURE__ */ import_react3.default.createElement("div", { className: "lg:hidden fixed top-0 inset-x-0 z-30 h-12 bg-white border-b border-gray-200 flex items-center px-4 gap-3" }, /* @__PURE__ */ import_react3.default.createElement(
+      "button",
+      {
+        onClick: () => setDrawerOpen(true),
+        className: "p-1 text-gray-500 hover:text-gray-800 rounded",
+        "aria-label": "Open menu"
+      },
+      /* @__PURE__ */ import_react3.default.createElement(Menu, { size: 20 })
+    ), /* @__PURE__ */ import_react3.default.createElement("span", { className: "font-semibold text-gray-900 text-sm tracking-wide" }, "Benes Finance")), drawerOpen && /* @__PURE__ */ import_react3.default.createElement("div", { className: "lg:hidden fixed inset-0 z-40 flex" }, /* @__PURE__ */ import_react3.default.createElement(
+      "div",
+      {
+        className: "absolute inset-0 bg-black/40",
+        onClick: () => setDrawerOpen(false)
+      }
+    ), /* @__PURE__ */ import_react3.default.createElement("div", { className: "relative z-50 w-56 bg-white h-full flex flex-col shadow-xl" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "px-4 py-3.5 border-b border-gray-100 flex items-center justify-between" }, /* @__PURE__ */ import_react3.default.createElement("span", { className: "font-semibold text-gray-900 text-sm tracking-wide" }, "Benes Finance"), /* @__PURE__ */ import_react3.default.createElement(
+      "button",
+      {
+        onClick: () => setDrawerOpen(false),
+        className: "p-1 text-gray-400 hover:text-gray-700 rounded"
+      },
+      /* @__PURE__ */ import_react3.default.createElement(X, { size: 18 })
+    )), /* @__PURE__ */ import_react3.default.createElement("nav", { className: "flex flex-col gap-0.5 p-2 flex-1 overflow-y-auto" }, /* @__PURE__ */ import_react3.default.createElement(NavItems, { onClick: () => setDrawerOpen(false) })))), /* @__PURE__ */ import_react3.default.createElement("main", { className: "flex-1 min-w-0 pt-12 lg:pt-0" }, /* @__PURE__ */ import_react3.default.createElement("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 py-5 lg:py-6" }, /* @__PURE__ */ import_react3.default.createElement(Outlet, null))));
+  }
+
+  // projects/benes-finance/frontend/components/Dashboard.tsx
+  var import_react5 = __toESM(require_react());
+
+  // projects/benes-finance/frontend/lib/api.ts
+  var BASE = "/api";
+  async function get(path) {
+    const res = await fetch(`${BASE}${path}`);
+    if (!res.ok) throw new Error(`GET ${path} \u2192 ${res.status}`);
+    return res.json();
+  }
+  async function patch(path, body) {
+    const res = await fetch(`${BASE}${path}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error(`PATCH ${path} \u2192 ${res.status}`);
+    return res.json();
+  }
+  async function post(path, body) {
+    const res = await fetch(`${BASE}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error(`POST ${path} \u2192 ${res.status}`);
+    return res.json();
+  }
+  async function del(path) {
+    const res = await fetch(`${BASE}${path}`, { method: "DELETE" });
+    if (!res.ok && res.status !== 204) throw new Error(`DELETE ${path} \u2192 ${res.status}`);
+  }
+  var api = {
+    accounts: {
+      list: () => get("/accounts"),
+      detail: (id) => get(`/accounts/${id}/detail`),
+      update: (id, body) => patch(`/accounts/${id}`, body),
+      addTag: (id, tag) => post(`/accounts/${id}/tags`, { tag }),
+      removeTag: (id, tag) => del(`/accounts/${id}/tags/${encodeURIComponent(tag)}`)
+    },
+    budget: {
+      items: () => get("/budget/items"),
+      variance: (month) => get(`/budget/variance?month=${month}`)
+    },
+    recurring: {
+      list: () => get("/recurring"),
+      listAll: () => get("/recurring?all=true"),
+      create: (body) => post("/recurring", body),
+      update: (id, body) => patch(`/recurring/${id}`, body),
+      delete: (id) => del(`/recurring/${id}`),
+      addTag: (id, tag) => post(`/recurring/${id}/tags`, { tag }),
+      removeTag: (id, tag) => del(`/recurring/${id}/tags/${encodeURIComponent(tag)}`),
+      allTags: () => get("/recurring/tags")
+    },
+    transactions: {
+      list: (filters = {}) => {
+        const qs = new URLSearchParams();
+        if (filters.account_id) qs.set("account_id", filters.account_id);
+        if (filters.unmatched) qs.set("unmatched", "true");
+        if (filters.q) qs.set("q", filters.q);
+        if (filters.limit) qs.set("limit", String(filters.limit));
+        if (filters.offset) qs.set("offset", String(filters.offset));
+        return get(`/transactions?${qs}`);
+      },
+      get: (id) => get(`/transactions/${id}`),
+      classify: (id, body) => post(`/transactions/${id}/classify`, body)
+    },
+    mappings: {
+      delete: (id) => del(`/mappings/${id}`)
+    },
+    scheduled: {
+      list: (days = 90) => get(`/scheduled?days=${days}`)
+    },
+    rules: {
+      list: () => get("/rules"),
+      create: (body) => post("/rules", body),
+      update: (id, body) => patch(`/rules/${id}`, body),
+      delete: (id) => del(`/rules/${id}`),
+      apply: () => post("/rules/apply", {})
+    },
+    audit: {
+      list: (filters = {}) => {
+        const qs = new URLSearchParams();
+        if (filters.transaction_id) qs.set("transaction_id", filters.transaction_id);
+        if (filters.action) qs.set("action", filters.action);
+        if (filters.changed_by) qs.set("changed_by", filters.changed_by);
+        if (filters.limit) qs.set("limit", String(filters.limit));
+        if (filters.offset) qs.set("offset", String(filters.offset));
+        return get(`/audit?${qs}`);
+      }
+    },
+    forecast: {
+      list: (activeOnly = true) => get(`/forecast${activeOnly ? "" : "?active=false"}`),
+      create: (body) => post("/forecast", body),
+      update: (id, body) => patch(`/forecast/${id}`, body),
+      delete: (id) => del(`/forecast/${id}`)
+    },
+    featureRequests: {
+      list: () => get("/feature-requests"),
+      create: (body) => post("/feature-requests", body),
+      update: (id, body) => patch(`/feature-requests/${id}`, body),
+      delete: (id) => del(`/feature-requests/${id}`),
+      sync: () => post("/feature-requests/sync", {})
+    },
+    debtPriority: () => get("/debt-priority"),
+    summary: () => get("/summary"),
+    coverage: () => get("/coverage")
+  };
+
+  // projects/benes-finance/frontend/lib/format.ts
+  var usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+  var usdCents = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+  function formatCurrency(amount, cents = false) {
+    return (cents ? usdCents : usd).format(amount);
+  }
+  function formatDate(dateStr) {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  }
+  var STATUS_LABEL = {
+    active: "Active",
+    delinquent: "Delinquent",
+    paid_off: "Paid Off",
+    charged_off: "Charged Off",
+    in_collections: "In Collections",
+    judgment: "Judgment",
+    settled: "Settled"
+  };
+  var STATUS_COLOR = {
+    judgment: "bg-red-100 text-red-700",
+    in_collections: "bg-red-100 text-red-700",
+    delinquent: "bg-orange-100 text-orange-700",
+    charged_off: "bg-amber-100 text-amber-700",
+    active: "bg-blue-100 text-blue-700",
+    paid_off: "bg-green-100 text-green-700",
+    settled: "bg-green-100 text-green-700"
+  };
+  var STATUS_SORT = {
+    judgment: 0,
+    in_collections: 1,
+    delinquent: 2,
+    charged_off: 3,
+    active: 4,
+    settled: 5,
+    paid_off: 6
+  };
+  var FREQUENCY_LABEL = {
+    weekly: "Weekly",
+    biweekly: "Biweekly",
+    monthly: "Monthly",
+    every_4_weeks: "Every 4 wks",
+    annually: "Annually",
+    one_time: "One-time"
+  };
+  var TYPE_LABEL = {
+    personal_loan: "Personal Loan",
+    mortgage: "Mortgage",
+    credit_card: "Credit Card",
+    student_loan: "Student Loan",
+    tax_debt: "Tax Debt",
+    auto_loan: "Auto Loan",
+    settlement: "Settlement",
+    collections: "Collections",
+    judgment: "Judgment",
+    bnpl: "BNPL",
+    income_source: "Bank Account"
+  };
+
+  // projects/benes-finance/frontend/components/BalloonCountdown.tsx
+  var import_react4 = __toESM(require_react());
+  var CHECKLIST_ITEMS = [
+    { id: "credit_score", label: "Pull credit report & confirm score (target 720+)" },
+    { id: "income_docs", label: "Gather income documents (pay stubs, W-2s, tax returns)" },
+    { id: "lender_quotes", label: "Get rate quotes from \u22653 lenders" },
+    { id: "application", label: "Submit application with chosen lender" },
+    { id: "appraisal", label: "Order appraisal / property valuation" },
+    { id: "rate_lock", label: "Lock interest rate" },
+    { id: "closing", label: "Review closing disclosure & schedule closing" }
+  ];
+  function monthsRemaining(deadlineYM) {
+    const [y, m] = deadlineYM.split("-").map(Number);
+    const now = /* @__PURE__ */ new Date();
+    return (y - now.getFullYear()) * 12 + (m - (now.getMonth() + 1));
+  }
+  function formatYM(ym) {
+    const [y, m] = ym.split("-").map(Number);
+    return new Date(y, m - 1).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  }
+  function storageKey(accountId) {
+    return `balloon_checklist_${accountId}`;
+  }
+  function loadChecklist(accountId) {
+    try {
+      const raw = localStorage.getItem(storageKey(accountId));
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  }
+  function saveChecklist(accountId, state) {
+    localStorage.setItem(storageKey(accountId), JSON.stringify(state));
+  }
+  function BalloonCard({ item }) {
+    const [expanded, setExpanded] = (0, import_react4.useState)(false);
+    const [checks, setChecks] = (0, import_react4.useState)(() => loadChecklist(item.account_id));
+    const deadline = item.payoff_date_est;
+    const months = monthsRemaining(deadline);
+    const onTrack = item.payoff_date != null && item.payoff_date <= deadline;
+    const overdue = months < 0;
+    const doneCount = CHECKLIST_ITEMS.filter((ci) => checks[ci.id]).length;
+    function toggle(id) {
+      const next = { ...checks, [id]: !checks[id] };
+      setChecks(next);
+      saveChecklist(item.account_id, next);
+    }
+    return /* @__PURE__ */ import_react4.default.createElement("div", { className: `bg-white rounded-lg border overflow-hidden ${overdue ? "border-red-300" : onTrack ? "border-green-200" : "border-amber-300"}` }, /* @__PURE__ */ import_react4.default.createElement("div", { className: "px-4 py-3 flex items-center gap-4" }, overdue ? /* @__PURE__ */ import_react4.default.createElement(TriangleAlert, { size: 18, className: "text-red-500 shrink-0" }) : onTrack ? /* @__PURE__ */ import_react4.default.createElement(CircleCheckBig, { size: 18, className: "text-green-500 shrink-0" }) : /* @__PURE__ */ import_react4.default.createElement(TriangleAlert, { size: 18, className: "text-amber-500 shrink-0" }), /* @__PURE__ */ import_react4.default.createElement("div", { className: "flex-1 min-w-0" }, /* @__PURE__ */ import_react4.default.createElement("p", { className: "font-medium text-gray-900 text-sm truncate" }, item.creditor), /* @__PURE__ */ import_react4.default.createElement("p", { className: "text-xs text-gray-500" }, "Balloon deadline: ", /* @__PURE__ */ import_react4.default.createElement("strong", null, formatYM(deadline)))), /* @__PURE__ */ import_react4.default.createElement("div", { className: "text-right shrink-0" }, overdue ? /* @__PURE__ */ import_react4.default.createElement("p", { className: "text-lg font-semibold text-red-600" }, "Overdue") : /* @__PURE__ */ import_react4.default.createElement("p", { className: "text-lg font-semibold text-gray-900" }, months, " ", /* @__PURE__ */ import_react4.default.createElement("span", { className: "text-sm font-normal text-gray-500" }, "mo left")), /* @__PURE__ */ import_react4.default.createElement("p", { className: `text-xs font-medium ${overdue ? "text-red-500" : onTrack ? "text-green-600" : "text-amber-600"}` }, overdue ? "Past deadline" : onTrack ? "On track" : item.payoff_date ? `Payoff: ${formatYM(item.payoff_date)}` : "No payoff date")), /* @__PURE__ */ import_react4.default.createElement(
+      "button",
+      {
+        onClick: () => setExpanded((e) => !e),
+        className: "flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 shrink-0 ml-2"
+      },
+      /* @__PURE__ */ import_react4.default.createElement("span", { className: "text-gray-500" }, doneCount, "/", CHECKLIST_ITEMS.length),
+      expanded ? /* @__PURE__ */ import_react4.default.createElement(ChevronDown, { size: 14 }) : /* @__PURE__ */ import_react4.default.createElement(ChevronRight, { size: 14 })
+    )), expanded && /* @__PURE__ */ import_react4.default.createElement("div", { className: "border-t border-gray-100 px-4 py-3 space-y-2 bg-gray-50" }, /* @__PURE__ */ import_react4.default.createElement("p", { className: "text-xs font-medium text-gray-500 uppercase tracking-wide mb-2" }, "Refinance Readiness"), CHECKLIST_ITEMS.map((ci) => /* @__PURE__ */ import_react4.default.createElement(
+      "button",
+      {
+        key: ci.id,
+        onClick: () => toggle(ci.id),
+        className: "flex items-start gap-2 w-full text-left group"
+      },
+      checks[ci.id] ? /* @__PURE__ */ import_react4.default.createElement(SquareCheckBig, { size: 14, className: "text-green-600 shrink-0 mt-0.5" }) : /* @__PURE__ */ import_react4.default.createElement(Square, { size: 14, className: "text-gray-300 group-hover:text-gray-400 shrink-0 mt-0.5" }),
+      /* @__PURE__ */ import_react4.default.createElement("span", { className: `text-xs ${checks[ci.id] ? "line-through text-gray-400" : "text-gray-700"}` }, ci.label)
+    ))));
+  }
+  function BalloonCountdown({ items }) {
+    const balloons = items.filter((i) => i.payoff_date_est != null);
+    if (!balloons.length) return null;
+    return /* @__PURE__ */ import_react4.default.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ import_react4.default.createElement("div", { className: "flex items-baseline gap-3" }, /* @__PURE__ */ import_react4.default.createElement("h2", { className: "text-sm font-semibold text-gray-800" }, "Balloon Payment Deadlines"), /* @__PURE__ */ import_react4.default.createElement("span", { className: "text-xs text-gray-400" }, "Accounts with fixed payoff targets \u2014 click to track refi readiness")), /* @__PURE__ */ import_react4.default.createElement("div", { className: "grid gap-3", style: { gridTemplateColumns: `repeat(${Math.min(balloons.length, 2)}, 1fr)` } }, balloons.map((item) => /* @__PURE__ */ import_react4.default.createElement(BalloonCard, { key: item.account_id, item }))));
+  }
+
+  // projects/benes-finance/frontend/components/Dashboard.tsx
+  function StatCard({ title, value, sub, linkTo, valueClass = "" }) {
+    const body = /* @__PURE__ */ import_react5.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 p-5" }, /* @__PURE__ */ import_react5.default.createElement("p", { className: "text-xs font-medium text-gray-500 uppercase tracking-wide mb-1" }, title), /* @__PURE__ */ import_react5.default.createElement("p", { className: `text-2xl font-semibold ${valueClass}` }, value), sub && /* @__PURE__ */ import_react5.default.createElement("p", { className: "text-xs text-gray-400 mt-1" }, sub));
+    return linkTo ? /* @__PURE__ */ import_react5.default.createElement(Link, { to: linkTo, className: "block hover:ring-2 hover:ring-blue-200 rounded-lg transition-shadow" }, body) : body;
+  }
+  function Dashboard() {
+    const [summary, setSummary] = (0, import_react5.useState)(null);
+    const [recurring, setRecurring] = (0, import_react5.useState)([]);
+    const [debtItems, setDebtItems] = (0, import_react5.useState)([]);
+    const [error, setError] = (0, import_react5.useState)(null);
+    (0, import_react5.useEffect)(() => {
+      Promise.all([api.summary(), api.recurring.list(), api.debtPriority()]).then(([s, cf, debt]) => {
+        setSummary(s);
+        setRecurring(cf);
+        setDebtItems(debt);
+      }).catch((e) => setError(e.message));
+    }, []);
+    if (error) return /* @__PURE__ */ import_react5.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    if (!summary) return /* @__PURE__ */ import_react5.default.createElement("p", { className: "text-gray-400 text-sm" }, "Loading\u2026");
+    const monthlyIncome = recurring.filter((r) => r.effective_monthly > 0).reduce((sum, r) => sum + r.effective_monthly, 0);
+    const monthlyExpenses = summary.monthly_recurring_by_category.reduce((sum, cat) => sum + cat.total_effective_monthly, 0);
+    const net = monthlyIncome + monthlyExpenses;
+    return /* @__PURE__ */ import_react5.default.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ import_react5.default.createElement(BalloonCountdown, { items: debtItems }), /* @__PURE__ */ import_react5.default.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-4" }, /* @__PURE__ */ import_react5.default.createElement(
+      StatCard,
+      {
+        title: "Total Debt",
+        value: formatCurrency(summary.total_debt ?? 0),
+        valueClass: "text-red-600"
+      }
+    ), /* @__PURE__ */ import_react5.default.createElement(
+      StatCard,
+      {
+        title: "Est. Monthly Expenses",
+        value: formatCurrency(Math.abs(monthlyExpenses)),
+        sub: "from active recurring items",
+        valueClass: "text-amber-600"
+      }
+    ), /* @__PURE__ */ import_react5.default.createElement(
+      StatCard,
+      {
+        title: "Unmatched Transactions",
+        value: summary.unmatched_transaction_count.toLocaleString(),
+        sub: "need classification",
+        linkTo: "/transactions?unmatched=true",
+        valueClass: summary.unmatched_transaction_count > 0 ? "text-orange-600" : "text-green-600"
+      }
+    )), /* @__PURE__ */ import_react5.default.createElement("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-4" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "px-4 py-3 border-b border-gray-100" }, /* @__PURE__ */ import_react5.default.createElement("h2", { className: "text-sm font-medium text-gray-700" }, "Monthly Expenses by Category"), /* @__PURE__ */ import_react5.default.createElement("p", { className: "text-xs text-gray-400" }, "from active recurring items")), /* @__PURE__ */ import_react5.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react5.default.createElement("tbody", null, summary.monthly_recurring_by_category.map((cat) => /* @__PURE__ */ import_react5.default.createElement("tr", { key: cat.category_id, className: "border-b border-gray-50 last:border-0" }, /* @__PURE__ */ import_react5.default.createElement("td", { className: "px-4 py-2 text-gray-700" }, cat.category_name), /* @__PURE__ */ import_react5.default.createElement("td", { className: "px-4 py-2 text-right font-mono text-red-600" }, formatCurrency(Math.abs(cat.total_effective_monthly)))))))), /* @__PURE__ */ import_react5.default.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "px-4 py-3 border-b border-gray-100" }, /* @__PURE__ */ import_react5.default.createElement("h2", { className: "text-sm font-medium text-gray-700" }, "Monthly Income Sources")), /* @__PURE__ */ import_react5.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react5.default.createElement("tbody", null, recurring.filter((r) => r.effective_monthly > 0).map((r) => /* @__PURE__ */ import_react5.default.createElement("tr", { key: r.recurring_item_id, className: "border-b border-gray-50 last:border-0" }, /* @__PURE__ */ import_react5.default.createElement("td", { className: "px-4 py-2 text-gray-700" }, r.name), /* @__PURE__ */ import_react5.default.createElement("td", { className: "px-4 py-2 text-right font-mono text-green-600" }, formatCurrency(r.effective_monthly)))), recurring.filter((r) => r.effective_monthly > 0).length === 0 && /* @__PURE__ */ import_react5.default.createElement("tr", null, /* @__PURE__ */ import_react5.default.createElement("td", { className: "px-4 py-3 text-gray-400 italic", colSpan: 2 }, "No income items"))))), /* @__PURE__ */ import_react5.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 p-4 space-y-2 text-sm" }, /* @__PURE__ */ import_react5.default.createElement("div", { className: "flex justify-between" }, /* @__PURE__ */ import_react5.default.createElement("span", { className: "text-gray-600" }, "Monthly Income"), /* @__PURE__ */ import_react5.default.createElement("span", { className: "font-mono text-green-600" }, formatCurrency(monthlyIncome))), /* @__PURE__ */ import_react5.default.createElement("div", { className: "flex justify-between" }, /* @__PURE__ */ import_react5.default.createElement("span", { className: "text-gray-600" }, "Monthly Expenses"), /* @__PURE__ */ import_react5.default.createElement("span", { className: "font-mono text-red-600" }, "\u2212", formatCurrency(Math.abs(monthlyExpenses)))), /* @__PURE__ */ import_react5.default.createElement("div", { className: "border-t border-gray-100 pt-2 flex justify-between font-medium" }, /* @__PURE__ */ import_react5.default.createElement("span", { className: "text-gray-800" }, "Net"), /* @__PURE__ */ import_react5.default.createElement("span", { className: `font-mono ${net >= 0 ? "text-green-700" : "text-red-700"}` }, net >= 0 ? "+" : "\u2212", formatCurrency(Math.abs(net))))))));
+  }
+
+  // projects/benes-finance/frontend/components/Accounts.tsx
+  var import_react6 = __toESM(require_react());
+
+  // projects/benes-finance/frontend/lib/csv.ts
+  function escapeCell(v) {
+    if (v == null) return "";
+    const s = String(v);
+    return /[,"\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  }
+  function downloadCsv(filename, headers, rows) {
+    const lines = [headers, ...rows].map((row) => row.map(escapeCell).join(","));
+    const blob = new Blob([lines.join("\r\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // projects/benes-finance/frontend/components/Accounts.tsx
+  var STATUSES = Object.keys(STATUS_LABEL);
+  function StatusBadge({ status }) {
+    const color = STATUS_COLOR[status] ?? "bg-gray-100 text-gray-600";
+    return /* @__PURE__ */ import_react6.default.createElement("span", { className: `inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${color}` }, STATUS_LABEL[status] ?? status);
+  }
+  function ColHeader({ label, sortKey: key, current, dir, onSort, align = "left" }) {
+    const isActive = current === key;
+    const Icon2 = !isActive ? ChevronsUpDown : dir === "asc" ? ChevronUp : ChevronDown;
+    return /* @__PURE__ */ import_react6.default.createElement(
+      "th",
+      {
+        onClick: () => onSort(key),
+        className: `px-4 py-2 font-medium cursor-pointer select-none hover:text-gray-700 ${align === "right" ? "text-right" : "text-left"}`
+      },
+      /* @__PURE__ */ import_react6.default.createElement("span", { className: `inline-flex items-center gap-1 ${align === "right" ? "flex-row-reverse" : ""}` }, label, /* @__PURE__ */ import_react6.default.createElement(Icon2, { size: 11, className: isActive ? "text-gray-600" : "text-gray-300" }))
+    );
+  }
+  function Accounts() {
+    const [accounts, setAccounts] = (0, import_react6.useState)([]);
+    const [recurringItems, setRecurringItems] = (0, import_react6.useState)([]);
+    const [error, setError] = (0, import_react6.useState)(null);
+    (0, import_react6.useEffect)(() => {
+      Promise.all([api.accounts.list(), api.recurring.list()]).then(([accts, items]) => {
+        setAccounts(accts);
+        setRecurringItems(items);
+      }).catch((e) => setError(e.message));
+    }, []);
+    const paymentMap = recurringItems.filter((i) => i.amount < 0 && i.account_id != null).reduce((m, i) => {
+      const key = i.account_id;
+      m[key] = [...m[key] ?? [], i];
+      return m;
+    }, {});
+    function handleUpdate(updated) {
+      setAccounts((prev) => prev.map((a) => a.account_id === updated.account_id ? updated : a));
+      api.recurring.list().then(setRecurringItems).catch(() => {
+      });
+    }
+    if (error) return /* @__PURE__ */ import_react6.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    if (!accounts.length) return /* @__PURE__ */ import_react6.default.createElement("p", { className: "text-gray-400 text-sm" }, "Loading\u2026");
+    const debts = accounts.filter((a) => a.account_type !== "income_source");
+    const sources = accounts.filter((a) => a.account_type === "income_source");
+    const totalDebt = debts.filter((a) => !["paid_off", "settled", "charged_off"].includes(a.status)).reduce((sum, a) => sum + (a.current_balance ?? 0), 0);
+    function handleExport() {
+      const date = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+      const rows = accounts.map((a) => {
+        const monthly = Math.abs(
+          (paymentMap[a.account_id] ?? []).reduce((s, i) => s + i.effective_monthly, 0)
+        );
+        return [
+          a.creditor,
+          TYPE_LABEL[a.account_type] ?? a.account_type,
+          STATUS_LABEL[a.status] ?? a.status,
+          a.current_balance?.toFixed(2) ?? "",
+          a.balance_date ?? "",
+          a.interest_rate_pct ?? "",
+          monthly > 0 ? monthly.toFixed(2) : "",
+          a.notes ?? ""
+        ];
+      });
+      downloadCsv(
+        `accounts-${date}.csv`,
+        ["Creditor", "Type", "Status", "Balance", "Balance Date", "APR %", "Monthly Payment", "Notes"],
+        rows
+      );
+    }
+    return /* @__PURE__ */ import_react6.default.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ import_react6.default.createElement("div", { className: "flex items-baseline gap-4" }, /* @__PURE__ */ import_react6.default.createElement("h1", { className: "text-lg font-semibold text-gray-900" }, "Accounts"), /* @__PURE__ */ import_react6.default.createElement("span", { className: "text-sm text-gray-500" }, "Total active debt: ", /* @__PURE__ */ import_react6.default.createElement("span", { className: "font-mono text-red-600" }, formatCurrency(totalDebt))), /* @__PURE__ */ import_react6.default.createElement(
+      "button",
+      {
+        onClick: handleExport,
+        className: "ml-auto flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50"
+      },
+      /* @__PURE__ */ import_react6.default.createElement(Download, { size: 12 }),
+      " CSV"
+    )), /* @__PURE__ */ import_react6.default.createElement(AccountTable, { title: "Debt Accounts", accounts: debts, paymentMap, onUpdate: handleUpdate }), sources.length > 0 && /* @__PURE__ */ import_react6.default.createElement(AccountTable, { title: "Bank Accounts", accounts: sources, paymentMap, onUpdate: handleUpdate }));
+  }
+  function AccountTable({ title, accounts, paymentMap, onUpdate }) {
+    const navigate = useNavigate();
+    const [sortKey, setSortKey] = (0, import_react6.useState)("status");
+    const [sortDir, setSortDir] = (0, import_react6.useState)("asc");
+    function handleSort(key) {
+      if (sortKey === key) setSortDir((d) => d === "asc" ? "desc" : "asc");
+      else {
+        setSortKey(key);
+        setSortDir("asc");
+      }
+    }
+    const effectiveMonthly = (a) => Math.abs((paymentMap[a.account_id] ?? []).reduce((s, i) => s + i.effective_monthly, 0));
+    const sorted2 = [...accounts].sort((a, b) => {
+      const d = sortDir === "asc" ? 1 : -1;
+      switch (sortKey) {
+        case "creditor":
+          return d * a.creditor.localeCompare(b.creditor);
+        case "account_type":
+          return d * a.account_type.localeCompare(b.account_type);
+        case "status":
+          return d * ((STATUS_SORT[a.status] ?? 99) - (STATUS_SORT[b.status] ?? 99));
+        case "current_balance":
+          return d * ((a.current_balance ?? 0) - (b.current_balance ?? 0));
+        case "interest_rate_pct": {
+          if (a.interest_rate_pct == null && b.interest_rate_pct == null) return 0;
+          if (a.interest_rate_pct == null) return d;
+          if (b.interest_rate_pct == null) return -d;
+          return d * (a.interest_rate_pct - b.interest_rate_pct);
+        }
+        case "monthly_payment":
+          return d * (effectiveMonthly(a) - effectiveMonthly(b));
+        default:
+          return 0;
+      }
+    });
+    const colProps = { current: sortKey, dir: sortDir, onSort: handleSort };
+    return /* @__PURE__ */ import_react6.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react6.default.createElement("div", { className: "px-4 py-3 border-b border-gray-100" }, /* @__PURE__ */ import_react6.default.createElement("h2", { className: "text-sm font-medium text-gray-700" }, title)), /* @__PURE__ */ import_react6.default.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ import_react6.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react6.default.createElement("thead", null, /* @__PURE__ */ import_react6.default.createElement("tr", { className: "border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide" }, /* @__PURE__ */ import_react6.default.createElement(ColHeader, { label: "Creditor", sortKey: "creditor", ...colProps }), /* @__PURE__ */ import_react6.default.createElement(ColHeader, { label: "Type", sortKey: "account_type", ...colProps }), /* @__PURE__ */ import_react6.default.createElement(ColHeader, { label: "Status", sortKey: "status", ...colProps }), /* @__PURE__ */ import_react6.default.createElement(ColHeader, { label: "Balance", sortKey: "current_balance", ...colProps, align: "right" }), /* @__PURE__ */ import_react6.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "As of"), /* @__PURE__ */ import_react6.default.createElement(ColHeader, { label: "APR", sortKey: "interest_rate_pct", ...colProps, align: "right" }), /* @__PURE__ */ import_react6.default.createElement(ColHeader, { label: "Min Pmt/mo", sortKey: "monthly_payment", ...colProps, align: "right" }), /* @__PURE__ */ import_react6.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Notes"))), /* @__PURE__ */ import_react6.default.createElement("tbody", null, sorted2.map((acct) => {
+      const monthly = effectiveMonthly(acct);
+      return /* @__PURE__ */ import_react6.default.createElement(import_react6.default.Fragment, { key: acct.account_id }, /* @__PURE__ */ import_react6.default.createElement(
+        "tr",
+        {
+          onClick: () => navigate(`/accounts/${acct.account_id}`),
+          className: "border-b border-gray-50 last:border-0 cursor-pointer hover:bg-gray-50"
+        },
+        /* @__PURE__ */ import_react6.default.createElement("td", { className: "px-4 py-2.5 font-medium text-gray-800" }, /* @__PURE__ */ import_react6.default.createElement("div", { className: "flex items-center gap-1.5" }, acct.creditor, acct.portal_url && /* @__PURE__ */ import_react6.default.createElement(
+          "a",
+          {
+            href: acct.portal_url,
+            target: "_blank",
+            rel: "noreferrer",
+            onClick: (e) => e.stopPropagation(),
+            className: "text-gray-400 hover:text-blue-600"
+          },
+          /* @__PURE__ */ import_react6.default.createElement(ExternalLink, { size: 12 })
+        ))),
+        /* @__PURE__ */ import_react6.default.createElement("td", { className: "px-4 py-2.5 text-gray-600" }, TYPE_LABEL[acct.account_type] ?? acct.account_type),
+        /* @__PURE__ */ import_react6.default.createElement("td", { className: "px-4 py-2.5" }, /* @__PURE__ */ import_react6.default.createElement(StatusBadge, { status: acct.status })),
+        /* @__PURE__ */ import_react6.default.createElement("td", { className: `px-4 py-2.5 text-right font-mono ${acct.current_balance != null ? "text-gray-900" : "text-gray-300"}` }, acct.current_balance != null ? formatCurrency(acct.current_balance) : "\u2014"),
+        /* @__PURE__ */ import_react6.default.createElement("td", { className: "px-4 py-2.5 text-gray-400 text-xs" }, acct.balance_date ? formatDate(acct.balance_date) : "\u2014"),
+        /* @__PURE__ */ import_react6.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono text-gray-700" }, acct.interest_rate_pct != null ? `${acct.interest_rate_pct}%` : /* @__PURE__ */ import_react6.default.createElement("span", { className: "text-gray-300" }, "\u2014")),
+        /* @__PURE__ */ import_react6.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono text-gray-700" }, monthly > 0 ? formatCurrency(monthly) : /* @__PURE__ */ import_react6.default.createElement("span", { className: "text-gray-300" }, "\u2014")),
+        /* @__PURE__ */ import_react6.default.createElement("td", { className: "px-4 py-2.5 text-gray-400 text-xs max-w-xs truncate" }, acct.notes ?? "")
+      ));
+    })))));
+  }
+
+  // projects/benes-finance/frontend/components/Transactions.tsx
+  var import_react7 = __toESM(require_react());
+  var PAGE_SIZE = 50;
+  function BudgetItemSelect({ items, value, onChange }) {
+    const byCategory = items.reduce((acc, item) => {
+      (acc[item.category_name] ??= []).push(item);
+      return acc;
+    }, {});
+    return /* @__PURE__ */ import_react7.default.createElement(
+      "select",
+      {
+        value,
+        onChange: (e) => onChange(e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm text-gray-700 bg-white focus:outline-none focus:ring-1 focus:ring-blue-400"
+      },
+      /* @__PURE__ */ import_react7.default.createElement("option", { value: "" }, "\u2014 select budget item \u2014"),
+      Object.entries(byCategory).map(([cat, catItems]) => /* @__PURE__ */ import_react7.default.createElement("optgroup", { key: cat, label: cat }, catItems.map((item) => /* @__PURE__ */ import_react7.default.createElement("option", { key: item.budget_item_id, value: item.budget_item_id }, item.name))))
+    );
+  }
+  function ClassifyPanel({ tx, budgetItems, onDone }) {
+    const [mappings, setMappings] = (0, import_react7.useState)(tx.mappings ?? []);
+    const [selectedItem, setSelectedItem] = (0, import_react7.useState)("");
+    const [amount, setAmount] = (0, import_react7.useState)(tx.amount.toFixed(2));
+    const [saving, setSaving] = (0, import_react7.useState)(false);
+    const [err, setErr] = (0, import_react7.useState)("");
+    (0, import_react7.useEffect)(() => {
+      if (!tx.mappings) {
+        api.transactions.get(tx.transaction_id).then((d) => setMappings(d.mappings));
+      }
+    }, [tx.transaction_id]);
+    async function handleClassify() {
+      if (!selectedItem) {
+        setErr("Select a budget item");
+        return;
+      }
+      setSaving(true);
+      setErr("");
+      try {
+        const mapping = await api.transactions.classify(tx.transaction_id, {
+          budget_item_id: selectedItem,
+          allocated_amount: parseFloat(amount)
         });
-        const updatedTodo = await response.json();
-        setTodos(todos.map((t) => t.id === id ? updatedTodo : t));
-      } catch (err) {
-        console.error("Error updating todo:", err);
+        setMappings((prev) => [...prev, mapping]);
+        setSelectedItem("");
+        setAmount(tx.amount.toFixed(2));
+        onDone();
+      } catch (e) {
+        setErr(e.message);
+      } finally {
+        setSaving(false);
       }
-    };
-    const deleteTodo = async (id) => {
+    }
+    async function handleDelete(mappingId) {
       try {
-        await fetch(`/todos/api/todos/${id}`, { method: "DELETE" });
-        setTodos(todos.filter((t) => t.id !== id));
-      } catch (err) {
-        console.error("Error deleting todo:", err);
+        await api.mappings.delete(mappingId);
+        setMappings((prev) => prev.filter((m) => m.mapping_id !== mappingId));
+        onDone();
+      } catch (e) {
+        setErr(e.message);
       }
-    };
-    return /* @__PURE__ */ import_react.default.createElement("div", { style: { maxWidth: "600px", margin: "50px auto", fontFamily: "Arial, sans-serif" } }, /* @__PURE__ */ import_react.default.createElement("h1", null, "Todo App"), /* @__PURE__ */ import_react.default.createElement("div", { style: { marginBottom: "20px" } }, /* @__PURE__ */ import_react.default.createElement(
+    }
+    return /* @__PURE__ */ import_react7.default.createElement("div", { className: "bg-blue-50 border-t border-blue-100 px-3 sm:px-4 py-3" }, mappings.length > 0 && /* @__PURE__ */ import_react7.default.createElement("div", { className: "mb-3 space-y-1" }, mappings.map((m) => /* @__PURE__ */ import_react7.default.createElement("div", { key: m.mapping_id, className: "flex items-center gap-2 text-sm text-gray-700 flex-wrap" }, /* @__PURE__ */ import_react7.default.createElement(CircleCheckBig, { size: 13, className: "text-green-500 shrink-0" }), /* @__PURE__ */ import_react7.default.createElement("span", { className: "truncate max-w-[140px] sm:max-w-none" }, m.budget_item_name ?? m.budget_item_id), /* @__PURE__ */ import_react7.default.createElement("span", { className: "text-gray-400 hidden sm:inline" }, "(", m.category_name, ")"), /* @__PURE__ */ import_react7.default.createElement("span", { className: "font-mono ml-auto" }, formatCurrency(m.allocated_amount, true)), /* @__PURE__ */ import_react7.default.createElement("button", { onClick: () => handleDelete(m.mapping_id), className: "text-gray-400 hover:text-red-500 ml-1" }, /* @__PURE__ */ import_react7.default.createElement(X, { size: 13 }))))), /* @__PURE__ */ import_react7.default.createElement("div", { className: "flex items-center gap-2 flex-wrap" }, /* @__PURE__ */ import_react7.default.createElement(BudgetItemSelect, { items: budgetItems, value: selectedItem, onChange: setSelectedItem }), /* @__PURE__ */ import_react7.default.createElement(
       "input",
       {
-        type: "text",
-        value: newTodo,
-        onChange: (e) => setNewTodo(e.target.value),
-        onKeyPress: (e) => e.key === "Enter" && addTodo(),
-        placeholder: "Add a new todo...",
-        style: { padding: "10px", width: "70%", marginRight: "10px" }
+        type: "number",
+        step: "0.01",
+        value: amount,
+        onChange: (e) => setAmount(e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm w-24 font-mono focus:outline-none focus:ring-1 focus:ring-blue-400"
       }
-    ), /* @__PURE__ */ import_react.default.createElement("button", { onClick: addTodo, style: { padding: "10px 20px" } }, "Add")), /* @__PURE__ */ import_react.default.createElement("ul", { style: { listStyle: "none", padding: 0 } }, todos.map((todo) => /* @__PURE__ */ import_react.default.createElement("li", { key: todo.id, style: {
-      padding: "10px",
-      marginBottom: "10px",
-      border: "1px solid #ccc",
-      borderRadius: "4px",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center"
-    } }, /* @__PURE__ */ import_react.default.createElement("div", null, /* @__PURE__ */ import_react.default.createElement(
+    ), /* @__PURE__ */ import_react7.default.createElement(
+      "button",
+      {
+        onClick: handleClassify,
+        disabled: saving,
+        className: "bg-blue-600 text-white text-sm px-3 py-1 rounded hover:bg-blue-700 disabled:opacity-50"
+      },
+      saving ? "Saving\u2026" : "Classify"
+    ), err && /* @__PURE__ */ import_react7.default.createElement("span", { className: "text-red-600 text-xs w-full" }, err)));
+  }
+  function Transactions() {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [transactions, setTransactions] = (0, import_react7.useState)([]);
+    const [accounts, setAccounts] = (0, import_react7.useState)([]);
+    const [budgetItems, setBudgetItems] = (0, import_react7.useState)([]);
+    const [expandedId, setExpandedId] = (0, import_react7.useState)(null);
+    const [offset, setOffset] = (0, import_react7.useState)(0);
+    const [hasMore, setHasMore] = (0, import_react7.useState)(false);
+    const [loading, setLoading] = (0, import_react7.useState)(false);
+    const [error, setError] = (0, import_react7.useState)(null);
+    const q = searchParams.get("q") ?? "";
+    const accountId = searchParams.get("account_id") ?? "";
+    const unmatched = searchParams.get("unmatched") === "true";
+    function setFilter(key, value) {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        value ? next.set(key, value) : next.delete(key);
+        return next;
+      });
+      setOffset(0);
+    }
+    const loadTransactions = (0, import_react7.useCallback)((reset) => {
+      const currentOffset = reset ? 0 : offset;
+      setLoading(true);
+      api.transactions.list({
+        q: q || void 0,
+        account_id: accountId || void 0,
+        unmatched: unmatched || void 0,
+        limit: PAGE_SIZE + 1,
+        offset: currentOffset
+      }).then((rows) => {
+        setHasMore(rows.length > PAGE_SIZE);
+        const page = rows.slice(0, PAGE_SIZE);
+        setTransactions((prev) => reset ? page : [...prev, ...page]);
+        if (reset) setOffset(0);
+      }).catch((e) => setError(e.message)).finally(() => setLoading(false));
+    }, [q, accountId, unmatched, offset]);
+    (0, import_react7.useEffect)(() => {
+      loadTransactions(true);
+    }, [q, accountId, unmatched]);
+    (0, import_react7.useEffect)(() => {
+      api.accounts.list().then(setAccounts);
+      api.budget.items().then(setBudgetItems);
+    }, []);
+    function loadMore() {
+      const next = offset + PAGE_SIZE;
+      setOffset(next);
+      setLoading(true);
+      api.transactions.list({
+        q: q || void 0,
+        account_id: accountId || void 0,
+        unmatched: unmatched || void 0,
+        limit: PAGE_SIZE + 1,
+        offset: next
+      }).then((rows) => {
+        setHasMore(rows.length > PAGE_SIZE);
+        setTransactions((prev) => [...prev, ...rows.slice(0, PAGE_SIZE)]);
+      }).catch((e) => setError(e.message)).finally(() => setLoading(false));
+    }
+    function handleClassifyDone() {
+      setTransactions((prev) => prev.map(
+        (tx) => tx.transaction_id === expandedId ? { ...tx, mapping_count: tx.mapping_count + 1 } : tx
+      ));
+      if (unmatched) {
+        setTransactions((prev) => prev.filter((tx) => tx.transaction_id !== expandedId));
+        setExpandedId(null);
+      }
+    }
+    async function handleExport() {
+      const all = await api.transactions.list({
+        q: q || void 0,
+        account_id: accountId || void 0,
+        unmatched: unmatched || void 0,
+        limit: 5e3,
+        offset: 0
+      });
+      const date = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+      downloadCsv(
+        `transactions-${date}.csv`,
+        ["Date", "Merchant", "Merchant (raw)", "Amount", "Account", "Matched", "Transaction ID"],
+        all.map((tx) => [
+          tx.transaction_date,
+          tx.merchant_normalized ?? tx.merchant_text,
+          tx.merchant_text,
+          tx.amount.toFixed(2),
+          tx.account_id,
+          tx.mapping_count > 0 ? "Yes" : "No",
+          tx.transaction_id
+        ])
+      );
+    }
+    const debitSources = accounts.filter((a) => a.account_type === "income_source");
+    if (error) return /* @__PURE__ */ import_react7.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    return /* @__PURE__ */ import_react7.default.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ import_react7.default.createElement("div", { className: "flex items-center gap-2 flex-wrap" }, /* @__PURE__ */ import_react7.default.createElement(
+      "input",
+      {
+        type: "search",
+        placeholder: "Search merchant\u2026",
+        value: q,
+        onChange: (e) => setFilter("q", e.target.value),
+        className: "border border-gray-300 rounded px-3 py-1.5 text-sm w-full sm:w-48 focus:outline-none focus:ring-1 focus:ring-blue-400"
+      }
+    ), /* @__PURE__ */ import_react7.default.createElement(
+      "select",
+      {
+        value: accountId,
+        onChange: (e) => setFilter("account_id", e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:ring-1 focus:ring-blue-400"
+      },
+      /* @__PURE__ */ import_react7.default.createElement("option", { value: "" }, "All accounts"),
+      debitSources.map((a) => /* @__PURE__ */ import_react7.default.createElement("option", { key: a.account_id, value: a.account_id }, a.creditor))
+    ), /* @__PURE__ */ import_react7.default.createElement("label", { className: "flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none" }, /* @__PURE__ */ import_react7.default.createElement(
       "input",
       {
         type: "checkbox",
-        checked: todo.completed,
-        onChange: () => toggleTodo(todo.id, todo.completed),
-        style: { marginRight: "10px" }
+        checked: unmatched,
+        onChange: (e) => setFilter("unmatched", e.target.checked ? "true" : ""),
+        className: "rounded border-gray-300"
       }
-    ), /* @__PURE__ */ import_react.default.createElement("span", { style: { textDecoration: todo.completed ? "line-through" : "none" } }, todo.title)), /* @__PURE__ */ import_react.default.createElement("button", { onClick: () => deleteTodo(todo.id), style: { padding: "5px 10px" } }, "Delete")))));
+    ), "Unmatched only"), /* @__PURE__ */ import_react7.default.createElement("span", { className: "text-xs text-gray-400 ml-auto hidden sm:inline" }, transactions.length, " transactions"), /* @__PURE__ */ import_react7.default.createElement(
+      "button",
+      {
+        onClick: handleExport,
+        className: "flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50"
+      },
+      /* @__PURE__ */ import_react7.default.createElement(Download, { size: 12 }),
+      " CSV"
+    )), /* @__PURE__ */ import_react7.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react7.default.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ import_react7.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react7.default.createElement("thead", null, /* @__PURE__ */ import_react7.default.createElement("tr", { className: "border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide" }, /* @__PURE__ */ import_react7.default.createElement("th", { className: "px-3 sm:px-4 py-2 text-left font-medium w-20" }, "Date"), /* @__PURE__ */ import_react7.default.createElement("th", { className: "px-3 sm:px-4 py-2 text-left font-medium" }, "Merchant"), /* @__PURE__ */ import_react7.default.createElement("th", { className: "px-3 sm:px-4 py-2 text-right font-medium w-20 sm:w-24" }, "Amount"), /* @__PURE__ */ import_react7.default.createElement("th", { className: "px-3 sm:px-4 py-2 text-left font-medium w-28 hidden sm:table-cell" }, "Account"), /* @__PURE__ */ import_react7.default.createElement("th", { className: "px-3 sm:px-4 py-2 text-center font-medium w-8" }))), /* @__PURE__ */ import_react7.default.createElement("tbody", null, transactions.map((tx) => {
+      const isExpanded = expandedId === tx.transaction_id;
+      const isMatched = tx.mapping_count > 0;
+      const merchantDisplay = tx.merchant_normalized ?? tx.merchant_text;
+      return /* @__PURE__ */ import_react7.default.createElement(import_react7.default.Fragment, { key: tx.transaction_id }, /* @__PURE__ */ import_react7.default.createElement(
+        "tr",
+        {
+          onClick: () => setExpandedId(isExpanded ? null : tx.transaction_id),
+          className: `border-b border-gray-50 last:border-0 cursor-pointer hover:bg-gray-50 ${isExpanded ? "bg-blue-50" : ""}`
+        },
+        /* @__PURE__ */ import_react7.default.createElement("td", { className: "px-3 sm:px-4 py-2.5 text-gray-400 text-xs whitespace-nowrap" }, formatDate(tx.transaction_date)),
+        /* @__PURE__ */ import_react7.default.createElement("td", { className: "px-3 sm:px-4 py-2.5 text-gray-800 max-w-[140px] sm:max-w-xs truncate", title: tx.merchant_text }, merchantDisplay),
+        /* @__PURE__ */ import_react7.default.createElement("td", { className: `px-3 sm:px-4 py-2.5 text-right font-mono text-xs ${tx.amount < 0 ? "text-red-600" : "text-green-600"}` }, tx.amount < 0 ? "\u2212" : "+", formatCurrency(Math.abs(tx.amount), true)),
+        /* @__PURE__ */ import_react7.default.createElement("td", { className: "px-3 sm:px-4 py-2.5 text-gray-400 text-xs hidden sm:table-cell" }, tx.account_id),
+        /* @__PURE__ */ import_react7.default.createElement("td", { className: "px-3 sm:px-4 py-2.5 text-center" }, isMatched ? /* @__PURE__ */ import_react7.default.createElement(CircleCheckBig, { size: 14, className: "text-green-500 mx-auto" }) : /* @__PURE__ */ import_react7.default.createElement(Circle, { size: 14, className: "text-gray-300 mx-auto" }))
+      ), isExpanded && /* @__PURE__ */ import_react7.default.createElement("tr", { className: "border-b border-blue-100" }, /* @__PURE__ */ import_react7.default.createElement("td", { colSpan: 5, className: "p-0" }, /* @__PURE__ */ import_react7.default.createElement(
+        ClassifyPanel,
+        {
+          tx,
+          budgetItems,
+          onDone: handleClassifyDone
+        }
+      ))));
+    }), !loading && transactions.length === 0 && /* @__PURE__ */ import_react7.default.createElement("tr", null, /* @__PURE__ */ import_react7.default.createElement("td", { colSpan: 5, className: "px-4 py-8 text-center text-gray-400 italic" }, "No transactions found."))))), loading && /* @__PURE__ */ import_react7.default.createElement("div", { className: "px-4 py-3 text-center text-gray-400 text-sm border-t border-gray-100" }, "Loading\u2026"), hasMore && !loading && /* @__PURE__ */ import_react7.default.createElement("div", { className: "px-4 py-3 text-center border-t border-gray-100" }, /* @__PURE__ */ import_react7.default.createElement("button", { onClick: loadMore, className: "text-sm text-blue-600 hover:underline" }, "Load more"))));
   }
-  var container = document.getElementById("root");
-  if (container) {
-    const root = (0, import_client.createRoot)(container);
-    root.render(/* @__PURE__ */ import_react.default.createElement(App, null));
+
+  // projects/benes-finance/frontend/components/ScheduledPayments.tsx
+  var import_react8 = __toESM(require_react());
+  var WINDOWS = [30, 60, 90];
+  function todayStr() {
+    const d = /* @__PURE__ */ new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
   }
+  function tomorrowStr() {
+    const d = /* @__PURE__ */ new Date();
+    d.setDate(d.getDate() + 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  }
+  function formatDueDate(dateStr, today, tomorrow) {
+    if (dateStr === today) return "Today";
+    if (dateStr === tomorrow) return "Tomorrow";
+    const [y, m, d] = dateStr.split("-").map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric"
+    });
+  }
+  function groupByDate(payments) {
+    const map = /* @__PURE__ */ new Map();
+    for (const p of payments) {
+      if (!map.has(p.due_date)) map.set(p.due_date, []);
+      map.get(p.due_date).push(p);
+    }
+    return Array.from(map.entries()).sort(([a], [b]) => a.localeCompare(b));
+  }
+  function QuickAddForecast({
+    defaultDate,
+    accounts,
+    onSave,
+    onCancel
+  }) {
+    const [form, setForm] = (0, import_react8.useState)({ name: "", amount: "", item_date: defaultDate });
+    const [accountId, setAccountId] = (0, import_react8.useState)("");
+    const [saving, setSaving] = (0, import_react8.useState)(false);
+    const nameRef = (0, import_react8.useRef)(null);
+    (0, import_react8.useEffect)(() => {
+      nameRef.current?.focus();
+    }, []);
+    const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+    async function submit(e) {
+      e.preventDefault();
+      if (!form.name.trim() || !form.amount || !form.item_date) return;
+      setSaving(true);
+      try {
+        await onSave(form.name.trim(), parseFloat(form.amount), form.item_date, accountId || null);
+      } finally {
+        setSaving(false);
+      }
+    }
+    return /* @__PURE__ */ import_react8.default.createElement("form", { onSubmit: submit, className: "mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg space-y-2" }, /* @__PURE__ */ import_react8.default.createElement("p", { className: "text-xs font-medium text-blue-700 mb-2" }, "Add forecast item"), /* @__PURE__ */ import_react8.default.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-2" }, /* @__PURE__ */ import_react8.default.createElement(
+      "input",
+      {
+        ref: nameRef,
+        className: "border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400",
+        placeholder: "Name",
+        value: form.name,
+        onChange: set("name"),
+        required: true
+      }
+    ), /* @__PURE__ */ import_react8.default.createElement(
+      "input",
+      {
+        type: "number",
+        step: "0.01",
+        className: "border border-gray-300 rounded px-2 py-1.5 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-blue-400",
+        placeholder: "Amount (neg=expense)",
+        value: form.amount,
+        onChange: set("amount"),
+        required: true
+      }
+    ), /* @__PURE__ */ import_react8.default.createElement(
+      "input",
+      {
+        type: "date",
+        className: "border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400",
+        value: form.item_date,
+        onChange: set("item_date"),
+        required: true
+      }
+    )), /* @__PURE__ */ import_react8.default.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ import_react8.default.createElement(
+      "select",
+      {
+        className: "border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 flex-1",
+        value: accountId,
+        onChange: (e) => setAccountId(e.target.value)
+      },
+      /* @__PURE__ */ import_react8.default.createElement("option", { value: "" }, "Account (optional)"),
+      accounts.map((a) => /* @__PURE__ */ import_react8.default.createElement("option", { key: a.account_id, value: a.account_id }, a.creditor))
+    ), /* @__PURE__ */ import_react8.default.createElement(
+      "button",
+      {
+        type: "button",
+        onClick: onCancel,
+        className: "px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-100"
+      },
+      "Cancel"
+    ), /* @__PURE__ */ import_react8.default.createElement(
+      "button",
+      {
+        type: "submit",
+        disabled: saving,
+        className: "px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+      },
+      "Save"
+    )));
+  }
+  function ScheduledPayments() {
+    const [days, setDays] = (0, import_react8.useState)(90);
+    const [payments, setPayments] = (0, import_react8.useState)([]);
+    const [accounts, setAccounts] = (0, import_react8.useState)([]);
+    const [loading, setLoading] = (0, import_react8.useState)(true);
+    const [error, setError] = (0, import_react8.useState)(null);
+    const [addingDate, setAddingDate] = (0, import_react8.useState)(null);
+    const [showQuickAdd, setShowQuickAdd] = (0, import_react8.useState)(false);
+    const today = todayStr();
+    const tomorrow = tomorrowStr();
+    function loadPayments() {
+      return api.scheduled.list(days).then(setPayments).catch((e) => setError(e.message));
+    }
+    (0, import_react8.useEffect)(() => {
+      setLoading(true);
+      setError(null);
+      Promise.all([loadPayments(), api.accounts.list().then(setAccounts)]).finally(() => setLoading(false));
+    }, [days]);
+    const grouped = groupByDate(payments);
+    const totalIncome = payments.filter((p) => p.amount > 0).reduce((s, p) => s + p.amount, 0);
+    const totalExpenses = payments.filter((p) => p.amount < 0).reduce((s, p) => s + p.amount, 0);
+    const net = totalIncome + totalExpenses;
+    async function handleAddForecast(name, amount, item_date, account_id) {
+      await api.forecast.create({ name, amount, item_date, account_id });
+      await loadPayments();
+      setAddingDate(null);
+      setShowQuickAdd(false);
+    }
+    async function handleDeleteForecast(forecast_item_id, name) {
+      if (!confirm(`Remove forecast item "${name}"?`)) return;
+      await api.forecast.delete(forecast_item_id);
+      setPayments((prev) => prev.filter((p) => p.forecast_item_id !== forecast_item_id));
+    }
+    if (error) return /* @__PURE__ */ import_react8.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    return /* @__PURE__ */ import_react8.default.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ import_react8.default.createElement("div", { className: "flex items-center gap-3 flex-wrap" }, /* @__PURE__ */ import_react8.default.createElement("h1", { className: "text-lg font-semibold text-gray-900" }, "Upcoming Payments"), /* @__PURE__ */ import_react8.default.createElement("div", { className: "flex items-center gap-1 ml-auto" }, /* @__PURE__ */ import_react8.default.createElement(
+      "button",
+      {
+        onClick: () => setShowQuickAdd((v) => !v),
+        className: `flex items-center gap-1 px-2.5 py-1 text-sm rounded border ${showQuickAdd ? "bg-blue-600 text-white border-blue-600" : "text-gray-600 border-gray-200 hover:bg-gray-50"}`
+      },
+      showQuickAdd ? /* @__PURE__ */ import_react8.default.createElement(X, { size: 13 }) : /* @__PURE__ */ import_react8.default.createElement(Plus, { size: 13 }),
+      " Forecast"
+    ), WINDOWS.map((w) => /* @__PURE__ */ import_react8.default.createElement(
+      "button",
+      {
+        key: w,
+        onClick: () => setDays(w),
+        className: `px-3 py-1 text-sm rounded ${days === w ? "bg-blue-600 text-white" : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"}`
+      },
+      w,
+      "d"
+    )))), showQuickAdd && /* @__PURE__ */ import_react8.default.createElement(
+      QuickAddForecast,
+      {
+        defaultDate: today,
+        accounts,
+        onSave: handleAddForecast,
+        onCancel: () => setShowQuickAdd(false)
+      }
+    ), /* @__PURE__ */ import_react8.default.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-3" }, /* @__PURE__ */ import_react8.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react8.default.createElement("p", { className: "text-xs text-gray-500 uppercase tracking-wide mb-1" }, "Income"), /* @__PURE__ */ import_react8.default.createElement("p", { className: "text-lg font-semibold text-green-600 font-mono" }, formatCurrency(totalIncome))), /* @__PURE__ */ import_react8.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react8.default.createElement("p", { className: "text-xs text-gray-500 uppercase tracking-wide mb-1" }, "Outflow"), /* @__PURE__ */ import_react8.default.createElement("p", { className: "text-lg font-semibold text-red-600 font-mono" }, formatCurrency(Math.abs(totalExpenses)))), /* @__PURE__ */ import_react8.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react8.default.createElement("p", { className: "text-xs text-gray-500 uppercase tracking-wide mb-1" }, "Net"), /* @__PURE__ */ import_react8.default.createElement("p", { className: `text-lg font-semibold font-mono ${net >= 0 ? "text-green-700" : "text-red-700"}` }, net >= 0 ? "+" : "\u2212", formatCurrency(Math.abs(net))))), loading ? /* @__PURE__ */ import_react8.default.createElement("div", { className: "text-center text-gray-400 text-sm py-8" }, "Loading\u2026") : grouped.length === 0 ? /* @__PURE__ */ import_react8.default.createElement("div", { className: "text-center text-gray-400 italic text-sm py-8" }, "No scheduled payments in this window.") : /* @__PURE__ */ import_react8.default.createElement("div", { className: "space-y-2" }, grouped.map(([date, items]) => {
+      const dayNet = items.reduce((s, p) => s + p.amount, 0);
+      const isToday = date === today;
+      const isAddingHere = addingDate === date;
+      return /* @__PURE__ */ import_react8.default.createElement(
+        "div",
+        {
+          key: date,
+          className: `bg-white rounded-lg border overflow-hidden ${isToday ? "border-blue-300" : "border-gray-200"}`
+        },
+        /* @__PURE__ */ import_react8.default.createElement("div", { className: `px-4 py-2 flex items-center justify-between border-b ${isToday ? "bg-blue-50 border-blue-100" : "bg-gray-50 border-gray-100"}` }, /* @__PURE__ */ import_react8.default.createElement("span", { className: `text-sm font-medium ${isToday ? "text-blue-800" : "text-gray-700"}` }, formatDueDate(date, today, tomorrow)), /* @__PURE__ */ import_react8.default.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ import_react8.default.createElement("span", { className: `text-xs font-mono ${dayNet >= 0 ? "text-green-600" : "text-red-600"}` }, dayNet >= 0 ? "+" : "\u2212", formatCurrency(Math.abs(dayNet), true)), /* @__PURE__ */ import_react8.default.createElement(
+          "button",
+          {
+            onClick: () => setAddingDate(isAddingHere ? null : date),
+            className: "p-0.5 text-gray-400 hover:text-blue-600 rounded",
+            title: "Add forecast item on this date"
+          },
+          isAddingHere ? /* @__PURE__ */ import_react8.default.createElement(X, { size: 12 }) : /* @__PURE__ */ import_react8.default.createElement(Plus, { size: 12 })
+        ))),
+        /* @__PURE__ */ import_react8.default.createElement("div", { className: "divide-y divide-gray-50" }, items.map((p, i) => /* @__PURE__ */ import_react8.default.createElement(
+          "div",
+          {
+            key: `${p.forecast_item_id ?? p.recurring_item_id}-${i}`,
+            className: "px-4 py-2.5 flex items-center gap-3"
+          },
+          /* @__PURE__ */ import_react8.default.createElement("div", { className: "flex-1 min-w-0 flex items-center gap-2" }, /* @__PURE__ */ import_react8.default.createElement("span", { className: "text-sm text-gray-800" }, p.name), p.item_type === "forecast" && /* @__PURE__ */ import_react8.default.createElement("span", { className: "text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-medium shrink-0" }, "forecast"), p.creditor && /* @__PURE__ */ import_react8.default.createElement("span", { className: "text-xs text-gray-400" }, p.creditor)),
+          p.item_type === "recurring" && /* @__PURE__ */ import_react8.default.createElement("span", { className: "text-xs text-gray-400 shrink-0" }, FREQUENCY_LABEL[p.frequency] ?? p.frequency),
+          /* @__PURE__ */ import_react8.default.createElement("span", { className: `text-sm font-mono shrink-0 ${p.amount >= 0 ? "text-green-600" : "text-red-600"}` }, p.amount >= 0 ? "+" : "\u2212", formatCurrency(Math.abs(p.amount), true)),
+          p.item_type === "forecast" && p.forecast_item_id && /* @__PURE__ */ import_react8.default.createElement(
+            "button",
+            {
+              onClick: () => handleDeleteForecast(p.forecast_item_id, p.name),
+              className: "p-0.5 text-gray-300 hover:text-red-500 rounded shrink-0",
+              title: "Remove forecast item"
+            },
+            /* @__PURE__ */ import_react8.default.createElement(X, { size: 12 })
+          )
+        ))),
+        isAddingHere && /* @__PURE__ */ import_react8.default.createElement("div", { className: "px-4 pb-3" }, /* @__PURE__ */ import_react8.default.createElement(
+          QuickAddForecast,
+          {
+            defaultDate: date,
+            accounts,
+            onSave: handleAddForecast,
+            onCancel: () => setAddingDate(null)
+          }
+        ))
+      );
+    })));
+  }
+
+  // projects/benes-finance/frontend/components/RecurringItems.tsx
+  var import_react9 = __toESM(require_react());
+  var FREQUENCIES = ["weekly", "biweekly", "monthly", "every_4_weeks", "annually", "one_time"];
+  var TAG_COLORS = [
+    "bg-blue-100 text-blue-700",
+    "bg-purple-100 text-purple-700",
+    "bg-emerald-100 text-emerald-700",
+    "bg-amber-100 text-amber-700",
+    "bg-rose-100 text-rose-700",
+    "bg-cyan-100 text-cyan-700",
+    "bg-indigo-100 text-indigo-700",
+    "bg-orange-100 text-orange-700"
+  ];
+  function tagColor(tag) {
+    let h = 0;
+    for (let i = 0; i < tag.length; i++) h = h * 31 + tag.charCodeAt(i) >>> 0;
+    return TAG_COLORS[h % TAG_COLORS.length];
+  }
+  function TagChip({ tag, onRemove, onClick, active }) {
+    return /* @__PURE__ */ import_react9.default.createElement(
+      "span",
+      {
+        onClick,
+        className: `inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium leading-none
+        ${tagColor(tag)} ${onClick ? "cursor-pointer hover:opacity-80" : ""}
+        ${active ? "ring-2 ring-offset-1 ring-current" : ""}`
+      },
+      tag,
+      onRemove && /* @__PURE__ */ import_react9.default.createElement(
+        "button",
+        {
+          onClick: (e) => {
+            e.stopPropagation();
+            onRemove();
+          },
+          className: "hover:opacity-60 leading-none",
+          "aria-label": `Remove tag ${tag}`
+        },
+        /* @__PURE__ */ import_react9.default.createElement(X, { size: 10 })
+      )
+    );
+  }
+  function TagEditor({ itemId, tags, onUpdate }) {
+    const [input, setInput] = (0, import_react9.useState)("");
+    const [suggestions, setSuggestions] = (0, import_react9.useState)([]);
+    const inputRef = (0, import_react9.useRef)(null);
+    (0, import_react9.useEffect)(() => {
+      api.recurring.allTags().then(setSuggestions).catch(() => {
+      });
+    }, []);
+    async function addTag(tag) {
+      const trimmed = tag.trim();
+      if (!trimmed || tags.includes(trimmed)) {
+        setInput("");
+        return;
+      }
+      try {
+        const updated = await api.recurring.addTag(itemId, trimmed);
+        onUpdate(updated);
+        setInput("");
+      } catch {
+      }
+    }
+    async function removeTag(tag) {
+      try {
+        const updated = await api.recurring.removeTag(itemId, tag);
+        onUpdate(updated);
+      } catch {
+      }
+    }
+    const filtered = suggestions.filter((s) => !tags.includes(s) && s.toLowerCase().includes(input.toLowerCase()));
+    return /* @__PURE__ */ import_react9.default.createElement("div", { className: "flex flex-wrap items-center gap-1.5" }, tags.map((t) => /* @__PURE__ */ import_react9.default.createElement(TagChip, { key: t, tag: t, onRemove: () => removeTag(t) })), /* @__PURE__ */ import_react9.default.createElement("div", { className: "relative" }, /* @__PURE__ */ import_react9.default.createElement(
+      "input",
+      {
+        ref: inputRef,
+        type: "text",
+        placeholder: "Add tag\u2026",
+        value: input,
+        onChange: (e) => setInput(e.target.value),
+        onKeyDown: (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            addTag(input);
+          }
+          if (e.key === "Escape") setInput("");
+        },
+        className: "border border-dashed border-gray-300 rounded px-2 py-0.5 text-xs w-28 focus:outline-none focus:border-blue-400"
+      }
+    ), input && filtered.length > 0 && /* @__PURE__ */ import_react9.default.createElement("div", { className: "absolute top-full left-0 mt-1 z-10 bg-white border border-gray-200 rounded shadow-md min-w-[140px]" }, filtered.slice(0, 8).map((s) => /* @__PURE__ */ import_react9.default.createElement(
+      "button",
+      {
+        key: s,
+        onMouseDown: (e) => {
+          e.preventDefault();
+          addTag(s);
+        },
+        className: "w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 flex items-center gap-2"
+      },
+      /* @__PURE__ */ import_react9.default.createElement(TagChip, { tag: s })
+    )))));
+  }
+  function ItemForm({ initial, budgetItems, accounts, onSave, onCancel, onToggleActive, onDelete }) {
+    const [name, setName] = (0, import_react9.useState)(initial?.name ?? "");
+    const [amount, setAmount] = (0, import_react9.useState)(initial?.amount != null ? String(initial.amount) : "");
+    const [frequency, setFrequency] = (0, import_react9.useState)(initial?.frequency ?? "monthly");
+    const [budgetId, setBudgetId] = (0, import_react9.useState)(initial?.budget_item_id ?? "");
+    const [accountId, setAccountId] = (0, import_react9.useState)(initial?.account_id ?? "");
+    const [startDate, setStartDate] = (0, import_react9.useState)(initial?.projected_start_date ?? "");
+    const [stopDate, setStopDate] = (0, import_react9.useState)(initial?.projected_stop_date ?? "");
+    const [notes, setNotes] = (0, import_react9.useState)(initial?.notes ?? "");
+    const [saving, setSaving] = (0, import_react9.useState)(false);
+    const [err, setErr] = (0, import_react9.useState)("");
+    const isCreate = !initial;
+    const accent = isCreate ? "bg-green-50 border-green-100" : "bg-amber-50 border-amber-100";
+    const btnCls = isCreate ? "bg-green-600 hover:bg-green-700 text-white" : "bg-amber-600 hover:bg-amber-700 text-white";
+    const byCategory = budgetItems.reduce((acc, b) => {
+      (acc[b.category_name] ??= []).push(b);
+      return acc;
+    }, {});
+    async function handleSave() {
+      if (!name.trim()) {
+        setErr("Name is required");
+        return;
+      }
+      if (amount === "" || isNaN(parseFloat(amount))) {
+        setErr("Amount is required");
+        return;
+      }
+      setSaving(true);
+      setErr("");
+      try {
+        const body = {
+          name: name.trim(),
+          amount: parseFloat(amount),
+          frequency,
+          budget_item_id: budgetId || null,
+          account_id: accountId || null,
+          projected_start_date: startDate || null,
+          projected_stop_date: stopDate || null,
+          notes: notes.trim() || null
+        };
+        const result = initial ? await api.recurring.update(initial.recurring_item_id, body) : await api.recurring.create(body);
+        onSave(result);
+      } catch (e) {
+        setErr(e.message);
+      } finally {
+        setSaving(false);
+      }
+    }
+    return /* @__PURE__ */ import_react9.default.createElement("div", { className: `border-t px-4 py-3 space-y-2.5 ${accent}` }, /* @__PURE__ */ import_react9.default.createElement("div", { className: "flex items-center gap-2.5 flex-wrap" }, /* @__PURE__ */ import_react9.default.createElement(
+      "input",
+      {
+        type: "text",
+        placeholder: "Name",
+        value: name,
+        onChange: (e) => setName(e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm flex-1 min-w-40 focus:outline-none focus:ring-1 focus:ring-blue-400"
+      }
+    ), /* @__PURE__ */ import_react9.default.createElement("label", { className: "text-xs text-gray-500 flex items-center gap-1.5 shrink-0" }, "Amount", /* @__PURE__ */ import_react9.default.createElement(
+      "input",
+      {
+        type: "number",
+        step: "0.01",
+        placeholder: "\u2212100.00",
+        value: amount,
+        onChange: (e) => setAmount(e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm w-28 font-mono focus:outline-none focus:ring-1 focus:ring-blue-400"
+      }
+    )), /* @__PURE__ */ import_react9.default.createElement(
+      "select",
+      {
+        value: frequency,
+        onChange: (e) => setFrequency(e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-400"
+      },
+      FREQUENCIES.map((f) => /* @__PURE__ */ import_react9.default.createElement("option", { key: f, value: f }, FREQUENCY_LABEL[f]))
+    ), /* @__PURE__ */ import_react9.default.createElement("span", { className: "text-xs text-gray-400" }, "negative = expense")), /* @__PURE__ */ import_react9.default.createElement("div", { className: "flex items-center gap-2.5 flex-wrap" }, /* @__PURE__ */ import_react9.default.createElement("label", { className: "text-xs text-gray-500 flex items-center gap-1.5" }, "Budget item", /* @__PURE__ */ import_react9.default.createElement(
+      "select",
+      {
+        value: budgetId,
+        onChange: (e) => setBudgetId(e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-400"
+      },
+      /* @__PURE__ */ import_react9.default.createElement("option", { value: "" }, "\u2014 none \u2014"),
+      Object.entries(byCategory).map(([cat, items]) => /* @__PURE__ */ import_react9.default.createElement("optgroup", { key: cat, label: cat }, items.map((b) => /* @__PURE__ */ import_react9.default.createElement("option", { key: b.budget_item_id, value: b.budget_item_id }, b.name))))
+    )), /* @__PURE__ */ import_react9.default.createElement("label", { className: "text-xs text-gray-500 flex items-center gap-1.5" }, "Account", /* @__PURE__ */ import_react9.default.createElement(
+      "select",
+      {
+        value: accountId,
+        onChange: (e) => setAccountId(e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-400"
+      },
+      /* @__PURE__ */ import_react9.default.createElement("option", { value: "" }, "\u2014 none \u2014"),
+      accounts.map((a) => /* @__PURE__ */ import_react9.default.createElement("option", { key: a.account_id, value: a.account_id }, a.creditor))
+    )), /* @__PURE__ */ import_react9.default.createElement("label", { className: "text-xs text-gray-500 flex items-center gap-1.5" }, "Start", /* @__PURE__ */ import_react9.default.createElement(
+      "input",
+      {
+        type: "date",
+        value: startDate,
+        onChange: (e) => setStartDate(e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+      }
+    )), /* @__PURE__ */ import_react9.default.createElement("label", { className: "text-xs text-gray-500 flex items-center gap-1.5" }, "Stop", /* @__PURE__ */ import_react9.default.createElement(
+      "input",
+      {
+        type: "date",
+        value: stopDate,
+        onChange: (e) => setStopDate(e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+      }
+    )), /* @__PURE__ */ import_react9.default.createElement(
+      "input",
+      {
+        type: "text",
+        placeholder: "Notes (optional)",
+        value: notes,
+        onChange: (e) => setNotes(e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm flex-1 min-w-36 focus:outline-none focus:ring-1 focus:ring-blue-400"
+      }
+    )), initial && /* @__PURE__ */ import_react9.default.createElement("div", { className: "flex items-center gap-2 flex-wrap" }, /* @__PURE__ */ import_react9.default.createElement(Tag, { size: 12, className: "text-gray-400 shrink-0" }), /* @__PURE__ */ import_react9.default.createElement(TagEditor, { itemId: initial.recurring_item_id, tags: initial.tags, onUpdate: onSave })), /* @__PURE__ */ import_react9.default.createElement("div", { className: "flex items-center gap-2" }, /* @__PURE__ */ import_react9.default.createElement(
+      "button",
+      {
+        onClick: handleSave,
+        disabled: saving,
+        className: `text-sm px-3 py-1 rounded disabled:opacity-50 ${btnCls}`
+      },
+      saving ? "Saving\u2026" : isCreate ? "Add" : "Save"
+    ), /* @__PURE__ */ import_react9.default.createElement("button", { onClick: onCancel, className: "text-gray-400 hover:text-gray-600" }, /* @__PURE__ */ import_react9.default.createElement(X, { size: 16 })), !isCreate && /* @__PURE__ */ import_react9.default.createElement("div", { className: "ml-auto flex items-center gap-2" }, onToggleActive && /* @__PURE__ */ import_react9.default.createElement(
+      "button",
+      {
+        onClick: onToggleActive,
+        className: "text-xs text-gray-500 hover:text-gray-800 border border-gray-300 rounded px-2 py-1"
+      },
+      initial?.is_active ? "Deactivate" : "Reactivate"
+    ), onDelete && /* @__PURE__ */ import_react9.default.createElement(
+      "button",
+      {
+        onClick: onDelete,
+        className: "text-xs text-red-500 hover:text-red-700 border border-red-200 rounded px-2 py-1"
+      },
+      "Delete"
+    )), err && /* @__PURE__ */ import_react9.default.createElement("span", { className: "text-red-600 text-xs ml-2" }, err)));
+  }
+  function ItemRow({ item, budgetItems, accounts, expanded, onToggle, onUpdate, onDelete, onTagClick }) {
+    const budgetName = budgetItems.find((b) => b.budget_item_id === item.budget_item_id)?.name;
+    async function handleToggleActive() {
+      try {
+        const updated = await api.recurring.update(item.recurring_item_id, { is_active: item.is_active ? 0 : 1 });
+        onUpdate(updated);
+      } catch {
+      }
+    }
+    async function handleDelete() {
+      if (!confirm(`Delete "${item.name}"? This cannot be undone.`)) return;
+      try {
+        await api.recurring.delete(item.recurring_item_id);
+        onDelete(item.recurring_item_id);
+      } catch {
+      }
+    }
+    return /* @__PURE__ */ import_react9.default.createElement(import_react9.default.Fragment, null, /* @__PURE__ */ import_react9.default.createElement(
+      "tr",
+      {
+        onClick: onToggle,
+        className: `border-b border-gray-50 cursor-pointer hover:bg-gray-50 ${expanded ? "bg-amber-50" : ""} ${item.tags.length > 0 ? "" : "last:border-0"}`
+      },
+      /* @__PURE__ */ import_react9.default.createElement("td", { className: "px-4 py-2.5 font-medium text-gray-800" }, item.name),
+      /* @__PURE__ */ import_react9.default.createElement("td", { className: "px-4 py-2.5 text-gray-500 text-xs" }, FREQUENCY_LABEL[item.frequency] ?? item.frequency),
+      /* @__PURE__ */ import_react9.default.createElement("td", { className: `px-4 py-2.5 text-right font-mono text-sm ${item.amount < 0 ? "text-red-600" : "text-green-600"}` }, item.amount < 0 ? "\u2212" : "+", formatCurrency(Math.abs(item.amount), true)),
+      /* @__PURE__ */ import_react9.default.createElement("td", { className: `px-4 py-2.5 text-right font-mono text-xs ${item.effective_monthly < 0 ? "text-red-400" : "text-green-500"}` }, item.effective_monthly < 0 ? "\u2212" : "+", formatCurrency(Math.abs(item.effective_monthly), true)),
+      /* @__PURE__ */ import_react9.default.createElement("td", { className: "px-4 py-2.5 text-gray-400 text-xs" }, budgetName ?? "\u2014"),
+      /* @__PURE__ */ import_react9.default.createElement("td", { className: "px-4 py-2.5 text-gray-400 text-xs whitespace-nowrap" }, item.projected_start_date ? formatDate(item.projected_start_date) : "\u2014", item.projected_stop_date ? ` \u2192 ${formatDate(item.projected_stop_date)}` : "")
+    ), item.tags.length > 0 && !expanded && /* @__PURE__ */ import_react9.default.createElement("tr", { className: `border-b border-gray-50 last:border-0 ${expanded ? "bg-amber-50" : ""}` }, /* @__PURE__ */ import_react9.default.createElement("td", { colSpan: 6, className: "px-4 pb-2 pt-0" }, /* @__PURE__ */ import_react9.default.createElement("div", { className: "flex flex-wrap gap-1", onClick: (e) => e.stopPropagation() }, item.tags.map((t) => /* @__PURE__ */ import_react9.default.createElement(TagChip, { key: t, tag: t, onClick: () => onTagClick(t) }))))), expanded && /* @__PURE__ */ import_react9.default.createElement("tr", { className: "border-b border-amber-100" }, /* @__PURE__ */ import_react9.default.createElement("td", { colSpan: 6, className: "p-0" }, /* @__PURE__ */ import_react9.default.createElement(
+      ItemForm,
+      {
+        initial: item,
+        budgetItems,
+        accounts,
+        onSave: onUpdate,
+        onCancel: onToggle,
+        onToggleActive: handleToggleActive,
+        onDelete: handleDelete
+      }
+    ))));
+  }
+  function GroupedView({ items, budgetItems, accounts, expandedId, onToggle, onUpdate, onDelete, onTagClick }) {
+    const groupMap = {};
+    for (const item of items) {
+      const placed = /* @__PURE__ */ new Set();
+      for (const t of item.tags) {
+        const col = t.indexOf(":");
+        const group = col > 0 ? t.slice(col + 1).trim() : t;
+        if (!placed.has(group)) {
+          (groupMap[group] ??= []).push(item);
+          placed.add(group);
+        }
+      }
+      if (item.tags.length === 0) (groupMap["(untagged)"] ??= []).push(item);
+    }
+    const TABLE_HEAD = /* @__PURE__ */ import_react9.default.createElement("thead", null, /* @__PURE__ */ import_react9.default.createElement("tr", { className: "border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide" }, /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Name"), /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Frequency"), /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Amount"), /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Monthly"), /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Budget item"), /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Period")));
+    return /* @__PURE__ */ import_react9.default.createElement("div", { className: "space-y-4" }, Object.entries(groupMap).sort(([a], [b]) => a.localeCompare(b)).map(([group, groupItems]) => {
+      const subtotal = groupItems.reduce((s, i) => s + i.effective_monthly, 0);
+      return /* @__PURE__ */ import_react9.default.createElement("div", { key: group, className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react9.default.createElement("div", { className: "px-4 py-2.5 border-b border-gray-100 flex items-center justify-between" }, /* @__PURE__ */ import_react9.default.createElement("span", { className: "text-sm font-medium text-gray-700" }, group), /* @__PURE__ */ import_react9.default.createElement("span", { className: `text-xs font-mono font-medium ${subtotal < 0 ? "text-red-600" : "text-green-700"}` }, subtotal < 0 ? "\u2212" : "+", formatCurrency(Math.abs(subtotal), true), "/mo")), /* @__PURE__ */ import_react9.default.createElement("table", { className: "w-full text-sm" }, TABLE_HEAD, /* @__PURE__ */ import_react9.default.createElement("tbody", null, groupItems.map((item) => /* @__PURE__ */ import_react9.default.createElement(
+        ItemRow,
+        {
+          key: item.recurring_item_id,
+          item,
+          budgetItems,
+          accounts,
+          expanded: expandedId === item.recurring_item_id,
+          onToggle: () => onToggle(item.recurring_item_id),
+          onUpdate,
+          onDelete,
+          onTagClick
+        }
+      )))));
+    }));
+  }
+  function RecurringItems() {
+    const [items, setItems] = (0, import_react9.useState)([]);
+    const [budgetItems, setBudgetItems] = (0, import_react9.useState)([]);
+    const [accounts, setAccounts] = (0, import_react9.useState)([]);
+    const [showCreate, setShowCreate] = (0, import_react9.useState)(false);
+    const [expandedId, setExpandedId] = (0, import_react9.useState)(null);
+    const [error, setError] = (0, import_react9.useState)(null);
+    const [tagFilter, setTagFilter] = (0, import_react9.useState)(null);
+    const [groupPrefix, setGroupPrefix] = (0, import_react9.useState)(null);
+    (0, import_react9.useEffect)(() => {
+      Promise.all([api.recurring.listAll(), api.budget.items(), api.accounts.list()]).then(([r, bi, a]) => {
+        setItems(r);
+        setBudgetItems(bi);
+        setAccounts(a);
+      }).catch((e) => setError(e.message));
+    }, []);
+    function toggle(id) {
+      setExpandedId((prev) => prev === id ? null : id);
+      setShowCreate(false);
+    }
+    function handleCreate(item) {
+      setItems((prev) => [item, ...prev].sort((a, b) => a.name.localeCompare(b.name)));
+      setShowCreate(false);
+    }
+    function handleUpdate(updated) {
+      setItems((prev) => prev.map((i) => i.recurring_item_id === updated.recurring_item_id ? updated : i));
+      setExpandedId(null);
+    }
+    function handleDelete(id) {
+      setItems((prev) => prev.filter((i) => i.recurring_item_id !== id));
+      setExpandedId(null);
+    }
+    function handleTagClick(tag) {
+      setTagFilter((prev) => prev === tag ? null : tag);
+      setGroupPrefix(null);
+    }
+    function handleExport() {
+      const date = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+      const rows = items.map((item) => {
+        const budget = budgetItems.find((b) => b.budget_item_id === item.budget_item_id);
+        return [
+          item.name,
+          item.amount.toFixed(2),
+          FREQUENCY_LABEL[item.frequency] ?? item.frequency,
+          item.effective_monthly.toFixed(2),
+          budget?.name ?? "",
+          item.projected_start_date ?? "",
+          item.projected_stop_date ?? "",
+          item.is_active ? "active" : "inactive",
+          item.tags.join(", "),
+          item.notes ?? ""
+        ];
+      });
+      downloadCsv(
+        `recurring-items-${date}.csv`,
+        ["Name", "Amount", "Frequency", "Monthly Effective", "Budget Item", "Start", "Stop", "Status", "Tags", "Notes"],
+        rows
+      );
+    }
+    if (error) return /* @__PURE__ */ import_react9.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    const active = items.filter((i) => i.is_active);
+    const inactive = items.filter((i) => !i.is_active);
+    const prefixSet = /* @__PURE__ */ new Set();
+    for (const item of active) {
+      for (const t of item.tags) {
+        const col = t.indexOf(":");
+        if (col > 0) prefixSet.add(t.slice(0, col).trim());
+      }
+    }
+    const prefixes = [...prefixSet].sort();
+    const allActiveTags = [...new Set(active.flatMap((i) => i.tags))].sort();
+    const filteredActive = tagFilter ? active.filter((i) => i.tags.includes(tagFilter)) : active;
+    const TABLE_HEAD = /* @__PURE__ */ import_react9.default.createElement("thead", null, /* @__PURE__ */ import_react9.default.createElement("tr", { className: "border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide" }, /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Name"), /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Frequency"), /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Amount"), /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Monthly"), /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Budget item"), /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Period")));
+    const rowProps = {
+      budgetItems,
+      accounts,
+      onUpdate: handleUpdate,
+      onDelete: handleDelete,
+      onTagClick: handleTagClick
+    };
+    return /* @__PURE__ */ import_react9.default.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ import_react9.default.createElement("div", { className: "flex items-center gap-3 flex-wrap" }, /* @__PURE__ */ import_react9.default.createElement("h1", { className: "text-lg font-semibold text-gray-900" }, "Recurring Items"), prefixes.length > 0 && /* @__PURE__ */ import_react9.default.createElement(
+      "select",
+      {
+        value: groupPrefix ?? "",
+        onChange: (e) => {
+          setGroupPrefix(e.target.value || null);
+          setTagFilter(null);
+        },
+        className: "border border-gray-200 rounded px-2 py-1 text-xs text-gray-600 bg-white focus:outline-none"
+      },
+      /* @__PURE__ */ import_react9.default.createElement("option", { value: "" }, "Flat list"),
+      prefixes.map((p) => /* @__PURE__ */ import_react9.default.createElement("option", { key: p, value: p }, "Group by: ", p))
+    ), /* @__PURE__ */ import_react9.default.createElement("div", { className: "ml-auto flex items-center gap-2" }, items.length > 0 && /* @__PURE__ */ import_react9.default.createElement(
+      "button",
+      {
+        onClick: handleExport,
+        className: "flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50"
+      },
+      /* @__PURE__ */ import_react9.default.createElement(Download, { size: 12 }),
+      " CSV"
+    ), /* @__PURE__ */ import_react9.default.createElement(
+      "button",
+      {
+        onClick: () => {
+          setShowCreate(true);
+          setExpandedId(null);
+        },
+        className: "flex items-center gap-1.5 bg-green-600 text-white text-sm px-3 py-1.5 rounded hover:bg-green-700"
+      },
+      /* @__PURE__ */ import_react9.default.createElement(Plus, { size: 14 }),
+      " Add Item"
+    ))), allActiveTags.length > 0 && /* @__PURE__ */ import_react9.default.createElement("div", { className: "flex items-center gap-2 flex-wrap" }, /* @__PURE__ */ import_react9.default.createElement(Tag, { size: 12, className: "text-gray-400 shrink-0" }), allActiveTags.map((t) => /* @__PURE__ */ import_react9.default.createElement(TagChip, { key: t, tag: t, onClick: () => handleTagClick(t), active: tagFilter === t })), tagFilter && /* @__PURE__ */ import_react9.default.createElement("button", { onClick: () => setTagFilter(null), className: "text-xs text-gray-400 hover:text-gray-600 ml-1" }, "Clear filter")), groupPrefix && !tagFilter ? /* @__PURE__ */ import_react9.default.createElement(
+      GroupedView,
+      {
+        items: active.filter((i) => i.tags.some((t) => t.startsWith(groupPrefix + ":")) || groupPrefix === ""),
+        ...rowProps
+      }
+    ) : /* @__PURE__ */ import_react9.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react9.default.createElement("div", { className: "px-4 py-3 border-b border-gray-100 flex items-center gap-2" }, /* @__PURE__ */ import_react9.default.createElement("h2", { className: "text-sm font-medium text-gray-700" }, "Active (", filteredActive.length, tagFilter ? ` filtered by "${tagFilter}"` : "", ")")), showCreate && /* @__PURE__ */ import_react9.default.createElement(
+      ItemForm,
+      {
+        budgetItems,
+        accounts,
+        onSave: handleCreate,
+        onCancel: () => setShowCreate(false)
+      }
+    ), /* @__PURE__ */ import_react9.default.createElement("table", { className: "w-full text-sm" }, TABLE_HEAD, /* @__PURE__ */ import_react9.default.createElement("tbody", null, filteredActive.map((item) => /* @__PURE__ */ import_react9.default.createElement(
+      ItemRow,
+      {
+        key: item.recurring_item_id,
+        item,
+        ...rowProps,
+        expanded: expandedId === item.recurring_item_id,
+        onToggle: () => toggle(item.recurring_item_id)
+      }
+    )), filteredActive.length === 0 && !showCreate && /* @__PURE__ */ import_react9.default.createElement("tr", null, /* @__PURE__ */ import_react9.default.createElement("td", { colSpan: 6, className: "px-4 py-8 text-center text-gray-400 italic" }, tagFilter ? `No active items tagged "${tagFilter}".` : "No active recurring items."))))), inactive.length > 0 && /* @__PURE__ */ import_react9.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden opacity-70" }, /* @__PURE__ */ import_react9.default.createElement("div", { className: "px-4 py-3 border-b border-gray-100" }, /* @__PURE__ */ import_react9.default.createElement("h2", { className: "text-sm font-medium text-gray-500" }, "Inactive (", inactive.length, ")")), /* @__PURE__ */ import_react9.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react9.default.createElement("thead", null, /* @__PURE__ */ import_react9.default.createElement("tr", { className: "border-b border-gray-100 text-xs text-gray-400 uppercase tracking-wide" }, /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Name"), /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Frequency"), /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Amount"), /* @__PURE__ */ import_react9.default.createElement("th", { className: "px-4 py-2 text-left font-medium", colSpan: 3 }, "Ended"))), /* @__PURE__ */ import_react9.default.createElement("tbody", null, inactive.map((item) => /* @__PURE__ */ import_react9.default.createElement(
+      ItemRow,
+      {
+        key: item.recurring_item_id,
+        item,
+        ...rowProps,
+        expanded: expandedId === item.recurring_item_id,
+        onToggle: () => toggle(item.recurring_item_id)
+      }
+    ))))));
+  }
+
+  // projects/benes-finance/frontend/components/DebtPriority.tsx
+  var import_react10 = __toESM(require_react());
+  function sorted(items, mode) {
+    return [...items].sort((a, b) => {
+      if (mode === "avalanche") {
+        if (a.interest_rate_pct == null && b.interest_rate_pct == null) return 0;
+        if (a.interest_rate_pct == null) return 1;
+        if (b.interest_rate_pct == null) return -1;
+        return b.interest_rate_pct - a.interest_rate_pct;
+      } else {
+        return a.current_balance - b.current_balance;
+      }
+    });
+  }
+  function formatPayoffDate(d) {
+    if (!d) return "\u2014";
+    const [y, m] = d.split("-").map(Number);
+    return new Date(y, m - 1).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  }
+  function aprColor(rate) {
+    if (rate >= 100) return "text-red-700 font-semibold";
+    if (rate >= 30) return "text-orange-600 font-semibold";
+    return "text-gray-900";
+  }
+  function DebtPriority() {
+    const [items, setItems] = (0, import_react10.useState)([]);
+    const [mode, setMode] = (0, import_react10.useState)("avalanche");
+    const [error, setError] = (0, import_react10.useState)("");
+    (0, import_react10.useEffect)(() => {
+      api.debtPriority().then(setItems).catch((e) => setError(e.message));
+    }, []);
+    if (error) return /* @__PURE__ */ import_react10.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    if (!items.length) return /* @__PURE__ */ import_react10.default.createElement("p", { className: "text-gray-400 text-sm" }, "Loading\u2026");
+    const display = sorted(items, mode);
+    const missingApr = items.filter((i) => i.interest_rate_pct == null).length;
+    const totalBalance = items.reduce((s, i) => s + i.current_balance, 0);
+    const totalPayment = items.reduce((s, i) => s + (i.monthly_payment ?? 0), 0);
+    const totalInterest = items.reduce((s, i) => s + (i.monthly_interest ?? 0), 0);
+    function handleExport() {
+      const date = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+      downloadCsv(
+        `debt-summary-${date}.csv`,
+        ["Rank", "Creditor", "Type", "Balance", "APR %", "Monthly Payment", "Monthly Interest", "Payoff ETA", "Deadline"],
+        [
+          ...sorted(items, mode).map((item, i) => [
+            i + 1,
+            item.creditor,
+            item.account_type.replace(/_/g, " "),
+            item.current_balance.toFixed(2),
+            item.interest_rate_pct ?? "",
+            item.monthly_payment?.toFixed(2) ?? "",
+            item.monthly_interest?.toFixed(2) ?? "",
+            item.payoff_date ?? "",
+            item.payoff_date_est ?? ""
+          ]),
+          [],
+          ["", "TOTAL", "", totalBalance.toFixed(2), "", totalPayment.toFixed(2), totalInterest.toFixed(2), "", ""]
+        ]
+      );
+    }
+    return /* @__PURE__ */ import_react10.default.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ import_react10.default.createElement("div", { className: "flex items-baseline gap-4" }, /* @__PURE__ */ import_react10.default.createElement("h1", { className: "text-lg font-semibold text-gray-900" }, "Debt Priority"), /* @__PURE__ */ import_react10.default.createElement("div", { className: "flex rounded border border-gray-200 overflow-hidden text-sm" }, ["avalanche", "snowball"].map((m) => /* @__PURE__ */ import_react10.default.createElement(
+      "button",
+      {
+        key: m,
+        onClick: () => setMode(m),
+        className: `px-3 py-1 capitalize ${mode === m ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-50"}`
+      },
+      m
+    ))), /* @__PURE__ */ import_react10.default.createElement("span", { className: "text-xs text-gray-400" }, mode === "avalanche" ? "Highest APR first \u2014 minimizes total interest paid" : "Lowest balance first \u2014 fastest wins"), /* @__PURE__ */ import_react10.default.createElement(
+      "button",
+      {
+        onClick: handleExport,
+        className: "ml-auto flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50"
+      },
+      /* @__PURE__ */ import_react10.default.createElement(Download, { size: 12 }),
+      " CSV"
+    )), /* @__PURE__ */ import_react10.default.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-4" }, [
+      { label: "Total Debt", value: formatCurrency(totalBalance) },
+      { label: "Monthly Payments", value: formatCurrency(totalPayment) },
+      { label: "Monthly Interest", value: formatCurrency(totalInterest) }
+    ].map(({ label, value }) => /* @__PURE__ */ import_react10.default.createElement("div", { key: label, className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react10.default.createElement("p", { className: "text-xs text-gray-500" }, label), /* @__PURE__ */ import_react10.default.createElement("p", { className: "text-xl font-mono font-semibold text-gray-900 mt-0.5" }, value)))), missingApr > 0 && /* @__PURE__ */ import_react10.default.createElement("div", { className: "flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2" }, /* @__PURE__ */ import_react10.default.createElement(TriangleAlert, { size: 14 }), missingApr, " account", missingApr > 1 ? "s" : "", " missing APR \u2014 avalanche ranking is incomplete. Update via Accounts page."), /* @__PURE__ */ import_react10.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react10.default.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ import_react10.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react10.default.createElement("thead", null, /* @__PURE__ */ import_react10.default.createElement("tr", { className: "border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide" }, /* @__PURE__ */ import_react10.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "#"), /* @__PURE__ */ import_react10.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Creditor"), /* @__PURE__ */ import_react10.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Type"), /* @__PURE__ */ import_react10.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Balance"), /* @__PURE__ */ import_react10.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "APR"), /* @__PURE__ */ import_react10.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Monthly Pmt"), /* @__PURE__ */ import_react10.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Monthly Interest"), /* @__PURE__ */ import_react10.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Payoff ETA"))), /* @__PURE__ */ import_react10.default.createElement("tbody", null, display.map((item, i) => /* @__PURE__ */ import_react10.default.createElement("tr", { key: item.account_id, className: "border-b border-gray-50 hover:bg-gray-50" }, /* @__PURE__ */ import_react10.default.createElement("td", { className: "px-4 py-2.5 text-gray-400 font-mono text-xs" }, i + 1), /* @__PURE__ */ import_react10.default.createElement("td", { className: "px-4 py-2.5 font-medium text-gray-900" }, item.creditor), /* @__PURE__ */ import_react10.default.createElement("td", { className: "px-4 py-2.5 text-gray-500 capitalize" }, item.account_type.replace(/_/g, " ")), /* @__PURE__ */ import_react10.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono text-gray-900" }, formatCurrency(item.current_balance)), /* @__PURE__ */ import_react10.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono" }, item.interest_rate_pct != null ? /* @__PURE__ */ import_react10.default.createElement("span", { className: aprColor(item.interest_rate_pct) }, item.interest_rate_pct.toFixed(1), "%") : /* @__PURE__ */ import_react10.default.createElement("span", { className: "text-gray-300 flex items-center justify-end gap-1" }, /* @__PURE__ */ import_react10.default.createElement(TriangleAlert, { size: 12 }), "\u2014")), /* @__PURE__ */ import_react10.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono text-gray-700" }, item.monthly_payment ? formatCurrency(item.monthly_payment) : "\u2014"), /* @__PURE__ */ import_react10.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono text-red-600" }, item.monthly_interest != null ? formatCurrency(item.monthly_interest) : "\u2014"), /* @__PURE__ */ import_react10.default.createElement("td", { className: "px-4 py-2.5 text-right text-gray-700" }, /* @__PURE__ */ import_react10.default.createElement("div", { className: "flex items-center justify-end gap-1.5" }, item.payoff_date_est ? /* @__PURE__ */ import_react10.default.createElement("span", { title: "Manually set estimate" }, item.payoff_date_est) : formatPayoffDate(item.payoff_date), item.extra_payments?.length > 0 && /* @__PURE__ */ import_react10.default.createElement(
+      "span",
+      {
+        className: "text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-medium",
+        title: `Includes ${item.extra_payments.length} extra payment${item.extra_payments.length > 1 ? "s" : ""} totaling ${formatCurrency(item.extra_payments.reduce((s, p) => s + Math.abs(p.amount), 0))}`
+      },
+      "+extra"
+    ))))))))));
+  }
+
+  // projects/benes-finance/frontend/components/DebtCascade.tsx
+  var import_react11 = __toESM(require_react());
+  function futureBalance(balance, ratePct, payment, months) {
+    if (months <= 0) return balance;
+    const r = ratePct != null ? ratePct / 100 / 12 : 0;
+    if (r === 0) return Math.max(0, balance - payment * months);
+    return balance * Math.pow(1 + r, months) - payment * (Math.pow(1 + r, months) - 1) / r;
+  }
+  function amortize(balance, ratePct, payment) {
+    if (balance <= 0 || payment <= 0) return { months: null, totalInterest: null };
+    const r = ratePct != null ? ratePct / 100 / 12 : 0;
+    if (r === 0) return { months: balance / payment, totalInterest: 0 };
+    if (payment <= balance * r) return { months: null, totalInterest: null };
+    const months = -Math.log(1 - r * balance / payment) / Math.log(1 + r);
+    return { months, totalInterest: payment * months - balance };
+  }
+  function computeCascade(items) {
+    const results = [];
+    let freedPool = 0;
+    let freedAtMonth = 0;
+    for (let i = 0; i < items.length; i++) {
+      const { current_balance: B, interest_rate_pct: rate, monthly_payment } = items[i];
+      const P = monthly_payment ?? 0;
+      const baseline = amortize(B, rate, P);
+      let cascadeMonths = baseline.months;
+      let cascadeInterest = baseline.totalInterest;
+      if (i > 0 && freedPool > 0 && P > 0) {
+        const balAtOffset = futureBalance(B, rate, P, freedAtMonth);
+        if (balAtOffset > 0) {
+          const phase2 = amortize(balAtOffset, rate, P + freedPool);
+          if (phase2.months != null) {
+            cascadeMonths = freedAtMonth + phase2.months;
+            const principalPhase1 = B - balAtOffset;
+            const r = rate != null ? rate / 100 / 12 : 0;
+            const interestPhase1 = r === 0 ? 0 : P * freedAtMonth - principalPhase1;
+            cascadeInterest = interestPhase1 + (phase2.totalInterest ?? 0);
+          }
+        }
+      }
+      const monthsSaved = baseline.months != null && cascadeMonths != null ? baseline.months - cascadeMonths : null;
+      const interestSaved = baseline.totalInterest != null && cascadeInterest != null ? baseline.totalInterest - cascadeInterest : null;
+      results.push({
+        account_id: items[i].account_id,
+        creditor: items[i].creditor,
+        current_balance: B,
+        interest_rate_pct: rate,
+        base_payment: P,
+        peak_payment: P + freedPool,
+        baseline_months: baseline.months,
+        cascade_months: cascadeMonths,
+        baseline_interest: baseline.totalInterest,
+        cascade_interest: cascadeInterest,
+        interest_saved: interestSaved,
+        months_saved: monthsSaved
+      });
+      freedPool += P;
+      freedAtMonth = cascadeMonths ?? (baseline.months ?? freedAtMonth);
+    }
+    return results;
+  }
+  function monthsToDate(months) {
+    if (months == null) return "\u2014";
+    const d = /* @__PURE__ */ new Date();
+    d.setMonth(d.getMonth() + Math.ceil(months));
+    return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  }
+  function DebtCascade() {
+    const [items, setItems] = (0, import_react11.useState)([]);
+    const [order, setOrder] = (0, import_react11.useState)([]);
+    const [error, setError] = (0, import_react11.useState)("");
+    const [dragging, setDragging] = (0, import_react11.useState)(null);
+    const [dragOver, setDragOver] = (0, import_react11.useState)(null);
+    (0, import_react11.useEffect)(() => {
+      api.debtPriority().then((data2) => {
+        const avalanche = [...data2].sort((a, b) => {
+          if (a.interest_rate_pct == null) return 1;
+          if (b.interest_rate_pct == null) return -1;
+          return b.interest_rate_pct - a.interest_rate_pct;
+        });
+        setItems(data2);
+        setOrder(avalanche.map((i) => i.account_id));
+      }).catch((e) => setError(e.message));
+    }, []);
+    if (error) return /* @__PURE__ */ import_react11.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    if (!items.length) return /* @__PURE__ */ import_react11.default.createElement("p", { className: "text-gray-400 text-sm" }, "Loading\u2026");
+    const itemMap = Object.fromEntries(items.map((i) => [i.account_id, i]));
+    const ordered = order.map((id) => itemMap[id]).filter(Boolean);
+    const cascade = computeCascade(ordered);
+    const totalInterestSaved = cascade.reduce((s, r) => s + (r.interest_saved ?? 0), 0);
+    const lastResult = cascade[cascade.length - 1];
+    const monthsSavedOverall = lastResult?.baseline_months != null && lastResult?.cascade_months != null ? Math.round(lastResult.baseline_months - lastResult.cascade_months) : null;
+    const missingPayment = cascade.filter((r) => r.base_payment === 0).length;
+    function handleDragStart(idx) {
+      setDragging(idx);
+    }
+    function handleDragOver(e, idx) {
+      e.preventDefault();
+      setDragOver(idx);
+    }
+    function handleDrop(e) {
+      e.preventDefault();
+      if (dragging == null || dragOver == null || dragging === dragOver) {
+        setDragging(null);
+        setDragOver(null);
+        return;
+      }
+      const newOrder = [...order];
+      const [moved] = newOrder.splice(dragging, 1);
+      newOrder.splice(dragOver, 0, moved);
+      setOrder(newOrder);
+      setDragging(null);
+      setDragOver(null);
+    }
+    function handleDragEnd() {
+      setDragging(null);
+      setDragOver(null);
+    }
+    return /* @__PURE__ */ import_react11.default.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ import_react11.default.createElement("div", { className: "flex items-baseline gap-4" }, /* @__PURE__ */ import_react11.default.createElement("h1", { className: "text-lg font-semibold text-gray-900" }, "Payoff Cascade"), /* @__PURE__ */ import_react11.default.createElement("span", { className: "text-xs text-gray-400" }, "Drag to reorder \u2014 freed payments roll into the next debt when one pays off")), /* @__PURE__ */ import_react11.default.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-4" }, /* @__PURE__ */ import_react11.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react11.default.createElement("p", { className: "text-xs text-gray-500" }, "Debt-free (cascade)"), /* @__PURE__ */ import_react11.default.createElement("p", { className: "text-xl font-mono font-semibold text-gray-900 mt-0.5" }, monthsToDate(lastResult?.cascade_months ?? null))), /* @__PURE__ */ import_react11.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react11.default.createElement("p", { className: "text-xs text-gray-500" }, "Interest Saved"), /* @__PURE__ */ import_react11.default.createElement("p", { className: "text-xl font-mono font-semibold text-green-700 mt-0.5" }, totalInterestSaved > 0 ? formatCurrency(totalInterestSaved) : "\u2014")), /* @__PURE__ */ import_react11.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react11.default.createElement("p", { className: "text-xs text-gray-500" }, "Months Faster"), /* @__PURE__ */ import_react11.default.createElement("p", { className: "text-xl font-mono font-semibold text-blue-700 mt-0.5" }, monthsSavedOverall != null && monthsSavedOverall > 0 ? `${monthsSavedOverall} mo` : "\u2014"))), missingPayment > 0 && /* @__PURE__ */ import_react11.default.createElement("div", { className: "flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2" }, /* @__PURE__ */ import_react11.default.createElement(TriangleAlert, { size: 14 }), missingPayment, " account", missingPayment > 1 ? "s have" : " has", " no monthly payment set \u2014 cascade stops at that point. Add a recurring payment via the Recurring page."), /* @__PURE__ */ import_react11.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react11.default.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ import_react11.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react11.default.createElement("thead", null, /* @__PURE__ */ import_react11.default.createElement("tr", { className: "border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide" }, /* @__PURE__ */ import_react11.default.createElement("th", { className: "px-2 py-2 w-8" }), /* @__PURE__ */ import_react11.default.createElement("th", { className: "px-3 py-2 text-left font-medium" }, "#"), /* @__PURE__ */ import_react11.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Creditor"), /* @__PURE__ */ import_react11.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Balance"), /* @__PURE__ */ import_react11.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "APR"), /* @__PURE__ */ import_react11.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Min Pmt"), /* @__PURE__ */ import_react11.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Peak Pmt"), /* @__PURE__ */ import_react11.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Baseline"), /* @__PURE__ */ import_react11.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Cascade"), /* @__PURE__ */ import_react11.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Saved"))), /* @__PURE__ */ import_react11.default.createElement("tbody", null, cascade.map((row, i) => /* @__PURE__ */ import_react11.default.createElement(
+      "tr",
+      {
+        key: row.account_id,
+        draggable: true,
+        onDragStart: () => handleDragStart(i),
+        onDragOver: (e) => handleDragOver(e, i),
+        onDrop: handleDrop,
+        onDragEnd: handleDragEnd,
+        className: [
+          "border-b border-gray-50 transition-colors",
+          dragging === i ? "opacity-40 bg-gray-50" : "hover:bg-gray-50",
+          dragOver === i && dragging !== i ? "border-t-2 border-blue-400" : ""
+        ].join(" ")
+      },
+      /* @__PURE__ */ import_react11.default.createElement("td", { className: "px-2 py-2.5 text-gray-300 cursor-grab" }, /* @__PURE__ */ import_react11.default.createElement(GripVertical, { size: 14 })),
+      /* @__PURE__ */ import_react11.default.createElement("td", { className: "px-3 py-2.5 text-gray-400 font-mono text-xs" }, i + 1),
+      /* @__PURE__ */ import_react11.default.createElement("td", { className: "px-4 py-2.5 font-medium text-gray-900" }, row.creditor),
+      /* @__PURE__ */ import_react11.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono text-gray-900" }, formatCurrency(row.current_balance)),
+      /* @__PURE__ */ import_react11.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono text-gray-700" }, row.interest_rate_pct != null ? `${row.interest_rate_pct.toFixed(1)}%` : /* @__PURE__ */ import_react11.default.createElement("span", { className: "text-gray-300" }, "\u2014")),
+      /* @__PURE__ */ import_react11.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono text-gray-600" }, row.base_payment > 0 ? formatCurrency(row.base_payment) : /* @__PURE__ */ import_react11.default.createElement("span", { className: "text-gray-300" }, "\u2014")),
+      /* @__PURE__ */ import_react11.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono" }, row.peak_payment > row.base_payment ? /* @__PURE__ */ import_react11.default.createElement("span", { className: "text-blue-700 font-semibold" }, formatCurrency(row.peak_payment)) : /* @__PURE__ */ import_react11.default.createElement("span", { className: "text-gray-400" }, formatCurrency(row.base_payment))),
+      /* @__PURE__ */ import_react11.default.createElement("td", { className: "px-4 py-2.5 text-right text-gray-400" }, monthsToDate(row.baseline_months)),
+      /* @__PURE__ */ import_react11.default.createElement("td", { className: "px-4 py-2.5 text-right text-gray-900 font-medium" }, monthsToDate(row.cascade_months)),
+      /* @__PURE__ */ import_react11.default.createElement("td", { className: "px-4 py-2.5 text-right" }, row.months_saved != null && row.months_saved > 0.5 ? /* @__PURE__ */ import_react11.default.createElement("span", { className: "text-green-700 text-xs font-medium" }, "\u2212", Math.round(row.months_saved), " mo") : /* @__PURE__ */ import_react11.default.createElement("span", { className: "text-gray-300" }, "\u2014"))
+    )))))));
+  }
+
+  // projects/benes-finance/frontend/components/CashFlowStress.tsx
+  var import_react12 = __toESM(require_react());
+  function mondayOf(d) {
+    const day = d.getDay();
+    const m = new Date(d);
+    m.setDate(d.getDate() + (day === 0 ? -6 : 1 - day));
+    return m;
+  }
+  function isoDate(d) {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  }
+  function buildWeeks(payments, startBalance, numWeeks) {
+    const monday = mondayOf(/* @__PURE__ */ new Date());
+    const weeks = Array.from({ length: numWeeks }, (_, i) => {
+      const ws = new Date(monday);
+      ws.setDate(monday.getDate() + i * 7);
+      const we = new Date(ws);
+      we.setDate(ws.getDate() + 6);
+      return { weekStart: isoDate(ws), weekEnd: isoDate(we), income: 0, outflow: 0, net: 0, balance: 0, isStress: false, payments: [] };
+    });
+    for (const p of payments) {
+      const idx = weeks.findIndex((w) => p.due_date >= w.weekStart && p.due_date <= w.weekEnd);
+      if (idx >= 0) {
+        if (p.amount > 0) weeks[idx].income += p.amount;
+        else weeks[idx].outflow += Math.abs(p.amount);
+        weeks[idx].payments.push(p);
+      }
+    }
+    let balance = startBalance;
+    for (const w of weeks) {
+      w.net = w.income - w.outflow;
+      balance += w.net;
+      w.balance = balance;
+      w.isStress = balance < 0;
+    }
+    return weeks;
+  }
+  function BalanceChart({ weeks }) {
+    if (weeks.length < 2) return null;
+    const W = 1e3, H = 100, PX = 6, PY = 8;
+    const balances = weeks.map((w) => w.balance);
+    const minBal = Math.min(0, ...balances);
+    const maxBal = Math.max(0, ...balances, 1);
+    const range = maxBal - minBal;
+    const cx = (i) => PX + i / (weeks.length - 1) * (W - 2 * PX);
+    const cy = (b) => PY + (1 - (b - minBal) / range) * (H - 2 * PY);
+    const zeroY = cy(0);
+    const line = weeks.map((w, i) => `${cx(i).toFixed(1)},${cy(w.balance).toFixed(1)}`).join(" ");
+    const stress = weeks.some((w) => w.balance < 0) ? `M ${cx(0).toFixed(1)},${zeroY.toFixed(1)} L ${weeks.map((w, i) => `${cx(i).toFixed(1)},${Math.max(cy(w.balance), zeroY).toFixed(1)}`).join(" L ")} L ${cx(weeks.length - 1).toFixed(1)},${zeroY.toFixed(1)} Z` : null;
+    return /* @__PURE__ */ import_react12.default.createElement("svg", { viewBox: `0 0 ${W} ${H}`, className: "w-full h-20", preserveAspectRatio: "none" }, stress && /* @__PURE__ */ import_react12.default.createElement("path", { d: stress, fill: "rgba(239,68,68,0.15)" }), /* @__PURE__ */ import_react12.default.createElement("line", { x1: PX, y1: zeroY, x2: W - PX, y2: zeroY, stroke: "#ef4444", strokeDasharray: "6,3", strokeWidth: 1.5 }), /* @__PURE__ */ import_react12.default.createElement("polyline", { points: line, fill: "none", stroke: "#3b82f6", strokeWidth: 2, strokeLinejoin: "round" }));
+  }
+  function formatWeekRange(start, end) {
+    const s = /* @__PURE__ */ new Date(start + "T12:00:00");
+    const e = /* @__PURE__ */ new Date(end + "T12:00:00");
+    const fmt = (d) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    return `${fmt(s)} \u2013 ${fmt(e)}`;
+  }
+  function Bar({ value, max, color }) {
+    const pct = max > 0 ? Math.min(100, value / max * 100) : 0;
+    return /* @__PURE__ */ import_react12.default.createElement("div", { className: "flex items-center justify-end gap-2" }, /* @__PURE__ */ import_react12.default.createElement("div", { className: "w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden" }, /* @__PURE__ */ import_react12.default.createElement("div", { className: `h-full rounded-full ${color}`, style: { width: `${pct}%` } })), /* @__PURE__ */ import_react12.default.createElement("span", { className: "font-mono text-xs w-20 text-right tabular-nums" }, value > 0 ? formatCurrency(value) : /* @__PURE__ */ import_react12.default.createElement("span", { className: "text-gray-300" }, "\u2014")));
+  }
+  function CashFlowStress() {
+    const [payments, setPayments] = (0, import_react12.useState)([]);
+    const [loading, setLoading] = (0, import_react12.useState)(true);
+    const [error, setError] = (0, import_react12.useState)("");
+    const [startBalance, setStartBalance] = (0, import_react12.useState)("0");
+    const [numWeeks, setNumWeeks] = (0, import_react12.useState)(13);
+    const [expandedWeek, setExpandedWeek] = (0, import_react12.useState)(null);
+    (0, import_react12.useEffect)(() => {
+      api.scheduled.list(182).then((data2) => {
+        setPayments(data2);
+        setLoading(false);
+      }).catch((e) => {
+        setError(e.message);
+        setLoading(false);
+      });
+    }, []);
+    if (loading) return /* @__PURE__ */ import_react12.default.createElement("p", { className: "text-gray-400 text-sm" }, "Loading\u2026");
+    if (error) return /* @__PURE__ */ import_react12.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    const startBal = parseFloat(startBalance) || 0;
+    const weeks = buildWeeks(payments, startBal, numWeeks);
+    const stressCount = weeks.filter((w) => w.isStress).length;
+    const totalIncome = weeks.reduce((s, w) => s + w.income, 0);
+    const totalOutflow = weeks.reduce((s, w) => s + w.outflow, 0);
+    const maxIncome = Math.max(...weeks.map((w) => w.income), 1);
+    const maxOutflow = Math.max(...weeks.map((w) => w.outflow), 1);
+    return /* @__PURE__ */ import_react12.default.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ import_react12.default.createElement("div", { className: "flex items-baseline gap-4 flex-wrap" }, /* @__PURE__ */ import_react12.default.createElement("h1", { className: "text-lg font-semibold text-gray-900" }, "Cash Flow Stress"), /* @__PURE__ */ import_react12.default.createElement("div", { className: "flex items-center gap-3" }, /* @__PURE__ */ import_react12.default.createElement("label", { className: "text-xs text-gray-500 flex items-center gap-1.5" }, "Starting balance", /* @__PURE__ */ import_react12.default.createElement(
+      "input",
+      {
+        type: "number",
+        step: "100",
+        value: startBalance,
+        onChange: (e) => setStartBalance(e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm w-28 font-mono focus:outline-none focus:ring-1 focus:ring-blue-400"
+      }
+    )), /* @__PURE__ */ import_react12.default.createElement("div", { className: "flex rounded border border-gray-200 overflow-hidden text-sm" }, [13, 26].map((n) => /* @__PURE__ */ import_react12.default.createElement(
+      "button",
+      {
+        key: n,
+        onClick: () => setNumWeeks(n),
+        className: `px-3 py-1 ${numWeeks === n ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-50"}`
+      },
+      n,
+      "w"
+    ))))), /* @__PURE__ */ import_react12.default.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-4" }, /* @__PURE__ */ import_react12.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react12.default.createElement("p", { className: "text-xs text-gray-500" }, "Total Inflow (", numWeeks, "w)"), /* @__PURE__ */ import_react12.default.createElement("p", { className: "text-xl font-mono font-semibold text-green-700 mt-0.5" }, formatCurrency(totalIncome))), /* @__PURE__ */ import_react12.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react12.default.createElement("p", { className: "text-xs text-gray-500" }, "Total Outflow (", numWeeks, "w)"), /* @__PURE__ */ import_react12.default.createElement("p", { className: "text-xl font-mono font-semibold text-red-600 mt-0.5" }, formatCurrency(totalOutflow))), /* @__PURE__ */ import_react12.default.createElement("div", { className: `rounded-lg border px-4 py-3 ${stressCount > 0 ? "bg-red-50 border-red-200" : "bg-white border-gray-200"}` }, /* @__PURE__ */ import_react12.default.createElement("p", { className: "text-xs text-gray-500" }, "Stress Weeks"), /* @__PURE__ */ import_react12.default.createElement("p", { className: `text-xl font-mono font-semibold mt-0.5 ${stressCount > 0 ? "text-red-700" : "text-gray-400"}` }, stressCount > 0 ? `${stressCount} of ${numWeeks}` : "None \u2713"))), /* @__PURE__ */ import_react12.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react12.default.createElement("p", { className: "text-xs text-gray-500 mb-2" }, "Projected balance \u2014 red zone = negative"), /* @__PURE__ */ import_react12.default.createElement(BalanceChart, { weeks })), /* @__PURE__ */ import_react12.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react12.default.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ import_react12.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react12.default.createElement("thead", null, /* @__PURE__ */ import_react12.default.createElement("tr", { className: "border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide" }, /* @__PURE__ */ import_react12.default.createElement("th", { className: "px-3 py-2 w-6" }), /* @__PURE__ */ import_react12.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Week"), /* @__PURE__ */ import_react12.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Income"), /* @__PURE__ */ import_react12.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Outflow"), /* @__PURE__ */ import_react12.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Net"), /* @__PURE__ */ import_react12.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Balance"))), /* @__PURE__ */ import_react12.default.createElement("tbody", null, weeks.map((w) => {
+      const isExpanded = expandedWeek === w.weekStart;
+      const stress = w.isStress;
+      return /* @__PURE__ */ import_react12.default.createElement(import_react12.default.Fragment, { key: w.weekStart }, /* @__PURE__ */ import_react12.default.createElement(
+        "tr",
+        {
+          onClick: () => setExpandedWeek(isExpanded ? null : w.weekStart),
+          className: `border-b cursor-pointer transition-colors ${stress ? "bg-red-50 border-red-100 hover:bg-red-100" : "border-gray-50 hover:bg-gray-50"}`
+        },
+        /* @__PURE__ */ import_react12.default.createElement("td", { className: "px-3 py-2.5 text-gray-300" }, w.payments.length > 0 ? isExpanded ? /* @__PURE__ */ import_react12.default.createElement(ChevronDown, { size: 13 }) : /* @__PURE__ */ import_react12.default.createElement(ChevronRight, { size: 13 }) : null),
+        /* @__PURE__ */ import_react12.default.createElement("td", { className: "px-4 py-2.5 text-gray-700 whitespace-nowrap" }, /* @__PURE__ */ import_react12.default.createElement("div", { className: "flex items-center gap-2" }, stress && /* @__PURE__ */ import_react12.default.createElement(TriangleAlert, { size: 13, className: "text-red-500 shrink-0" }), formatWeekRange(w.weekStart, w.weekEnd))),
+        /* @__PURE__ */ import_react12.default.createElement("td", { className: "px-4 py-2.5" }, /* @__PURE__ */ import_react12.default.createElement(Bar, { value: w.income, max: maxIncome, color: "bg-green-500" })),
+        /* @__PURE__ */ import_react12.default.createElement("td", { className: "px-4 py-2.5" }, /* @__PURE__ */ import_react12.default.createElement(Bar, { value: w.outflow, max: maxOutflow, color: "bg-red-400" })),
+        /* @__PURE__ */ import_react12.default.createElement("td", { className: `px-4 py-2.5 text-right font-mono text-xs tabular-nums ${w.net >= 0 ? "text-green-700" : "text-red-600"}` }, w.net >= 0 ? "+" : "", formatCurrency(w.net)),
+        /* @__PURE__ */ import_react12.default.createElement("td", { className: `px-4 py-2.5 text-right font-mono font-medium tabular-nums ${w.balance < 0 ? "text-red-700" : "text-gray-900"}` }, formatCurrency(w.balance))
+      ), isExpanded && w.payments.length > 0 && /* @__PURE__ */ import_react12.default.createElement("tr", { className: `border-b ${stress ? "border-red-100" : "border-gray-50"}` }, /* @__PURE__ */ import_react12.default.createElement("td", { colSpan: 6, className: `px-8 py-2 ${stress ? "bg-red-50" : "bg-gray-50"}` }, /* @__PURE__ */ import_react12.default.createElement("div", { className: "flex flex-wrap gap-x-6 gap-y-1" }, [...w.payments].sort((a, b) => a.amount - b.amount).map((p, i) => /* @__PURE__ */ import_react12.default.createElement("span", { key: i, className: "text-xs text-gray-600 flex items-center gap-1.5" }, /* @__PURE__ */ import_react12.default.createElement("span", { className: `w-1.5 h-1.5 rounded-full shrink-0 ${p.amount > 0 ? "bg-green-500" : "bg-red-400"}` }), p.name, /* @__PURE__ */ import_react12.default.createElement("span", { className: `font-mono tabular-nums ${p.amount > 0 ? "text-green-700" : "text-red-600"}` }, p.amount > 0 ? "+" : "", formatCurrency(p.amount)), /* @__PURE__ */ import_react12.default.createElement("span", { className: "text-gray-400" }, p.due_date)))))));
+    }))))));
+  }
+
+  // projects/benes-finance/frontend/components/BudgetVariance.tsx
+  var import_react13 = __toESM(require_react());
+  function currentMonth() {
+    const d = /* @__PURE__ */ new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  }
+  function shiftMonth(month, delta) {
+    const [y, m] = month.split("-").map(Number);
+    const d = new Date(y, m - 1 + delta, 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  }
+  function formatMonth(month) {
+    const [y, m] = month.split("-").map(Number);
+    return new Date(y, m - 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  }
+  function SpendBar({ actual, budgeted }) {
+    if (budgeted === 0 && actual === 0) return /* @__PURE__ */ import_react13.default.createElement("div", { className: "w-20" });
+    const over = actual > budgeted && budgeted > 0;
+    const pct = budgeted > 0 ? Math.min(actual / budgeted, 1) * 100 : 100;
+    return /* @__PURE__ */ import_react13.default.createElement("div", { className: "w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden" }, /* @__PURE__ */ import_react13.default.createElement(
+      "div",
+      {
+        className: `h-full rounded-full transition-all ${over ? "bg-red-500" : actual > 0 ? "bg-green-500" : ""}`,
+        style: { width: `${pct}%` }
+      }
+    ));
+  }
+  function Variance({ actual, budgeted }) {
+    if (budgeted === 0) {
+      return actual > 0 ? /* @__PURE__ */ import_react13.default.createElement("span", { className: "text-red-600 text-xs font-medium" }, "+", formatCurrency(actual), " unbudgeted") : null;
+    }
+    const v = actual - budgeted;
+    if (Math.abs(v) < 0.01) return /* @__PURE__ */ import_react13.default.createElement("span", { className: "text-gray-400 text-xs" }, "on track");
+    return /* @__PURE__ */ import_react13.default.createElement("span", { className: `text-xs font-medium ${v > 0 ? "text-red-600" : "text-green-700"}` }, v > 0 ? "+" : "", formatCurrency(v), " ", v > 0 ? "over" : "under");
+  }
+  function ItemRow2({ item }) {
+    return /* @__PURE__ */ import_react13.default.createElement("tr", { className: "border-b border-gray-50 hover:bg-gray-50" }, /* @__PURE__ */ import_react13.default.createElement("td", { className: "pl-8 pr-4 py-2 text-gray-700" }, item.item_name), /* @__PURE__ */ import_react13.default.createElement("td", { className: "px-4 py-2" }, /* @__PURE__ */ import_react13.default.createElement(SpendBar, { actual: item.actual_amount, budgeted: item.budgeted_monthly })), /* @__PURE__ */ import_react13.default.createElement("td", { className: "px-4 py-2 text-right font-mono text-xs text-gray-400 tabular-nums" }, item.budgeted_monthly > 0 ? formatCurrency(item.budgeted_monthly) : /* @__PURE__ */ import_react13.default.createElement("span", { className: "text-gray-200" }, "\u2014")), /* @__PURE__ */ import_react13.default.createElement("td", { className: "px-4 py-2 text-right font-mono text-xs text-gray-900 tabular-nums" }, item.actual_amount > 0 ? formatCurrency(item.actual_amount) : /* @__PURE__ */ import_react13.default.createElement("span", { className: "text-gray-300" }, "\u2014")), /* @__PURE__ */ import_react13.default.createElement("td", { className: "px-4 py-2 text-right" }, /* @__PURE__ */ import_react13.default.createElement(Variance, { actual: item.actual_amount, budgeted: item.budgeted_monthly })), /* @__PURE__ */ import_react13.default.createElement("td", { className: "px-4 py-2 text-right text-gray-400 text-xs tabular-nums" }, item.tx_count > 0 ? item.tx_count : /* @__PURE__ */ import_react13.default.createElement("span", { className: "text-gray-200" }, "\u2014")));
+  }
+  function CategorySection({ cat }) {
+    const [collapsed, setCollapsed] = (0, import_react13.useState)(false);
+    const variance = cat.actual - cat.budgeted;
+    const over = variance > 0.01 && cat.budgeted > 0;
+    const under = variance < -0.01 && cat.budgeted > 0;
+    return /* @__PURE__ */ import_react13.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react13.default.createElement(
+      "button",
+      {
+        onClick: () => setCollapsed((c) => !c),
+        className: "w-full px-4 py-2.5 flex items-center justify-between bg-gray-50 border-b border-gray-100 hover:bg-gray-100 transition-colors"
+      },
+      /* @__PURE__ */ import_react13.default.createElement("span", { className: "text-sm font-medium text-gray-800" }, cat.category_name),
+      /* @__PURE__ */ import_react13.default.createElement("span", { className: "flex items-center gap-4 text-xs" }, /* @__PURE__ */ import_react13.default.createElement("span", { className: "text-gray-400" }, formatCurrency(cat.budgeted), " budgeted"), /* @__PURE__ */ import_react13.default.createElement("span", { className: "text-gray-700 font-mono font-medium" }, formatCurrency(cat.actual), " actual"), cat.budgeted > 0 && /* @__PURE__ */ import_react13.default.createElement("span", { className: `font-medium ${over ? "text-red-600" : under ? "text-green-700" : "text-gray-400"}` }, over ? "+" : "", formatCurrency(variance)), /* @__PURE__ */ import_react13.default.createElement(ChevronLeft, { size: 14, className: `text-gray-400 transition-transform ${collapsed ? "-rotate-90" : "rotate-90"}` }))
+    ), !collapsed && /* @__PURE__ */ import_react13.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react13.default.createElement("tbody", null, cat.items.map((item) => /* @__PURE__ */ import_react13.default.createElement(ItemRow2, { key: item.budget_item_id, item }))), cat.items.length > 1 && /* @__PURE__ */ import_react13.default.createElement("tfoot", null, /* @__PURE__ */ import_react13.default.createElement("tr", { className: "border-t border-gray-100 bg-gray-50" }, /* @__PURE__ */ import_react13.default.createElement("td", { className: "pl-8 pr-4 py-2 text-xs text-gray-500 font-medium" }, "Total"), /* @__PURE__ */ import_react13.default.createElement("td", { className: "px-4 py-2" }, /* @__PURE__ */ import_react13.default.createElement(SpendBar, { actual: cat.actual, budgeted: cat.budgeted })), /* @__PURE__ */ import_react13.default.createElement("td", { className: "px-4 py-2 text-right font-mono text-xs text-gray-500 tabular-nums" }, cat.budgeted > 0 ? formatCurrency(cat.budgeted) : "\u2014"), /* @__PURE__ */ import_react13.default.createElement("td", { className: "px-4 py-2 text-right font-mono text-xs text-gray-900 font-medium tabular-nums" }, formatCurrency(cat.actual)), /* @__PURE__ */ import_react13.default.createElement("td", { className: "px-4 py-2 text-right" }, /* @__PURE__ */ import_react13.default.createElement(Variance, { actual: cat.actual, budgeted: cat.budgeted })), /* @__PURE__ */ import_react13.default.createElement("td", { className: "px-4 py-2" })))));
+  }
+  function BudgetVariance() {
+    const [month, setMonth] = (0, import_react13.useState)(currentMonth);
+    const [data2, setData] = (0, import_react13.useState)(null);
+    const [loading, setLoading] = (0, import_react13.useState)(true);
+    const [error, setError] = (0, import_react13.useState)("");
+    (0, import_react13.useEffect)(() => {
+      setLoading(true);
+      api.budget.variance(month).then((d) => {
+        setData(d);
+        setLoading(false);
+      }).catch((e) => {
+        setError(e.message);
+        setLoading(false);
+      });
+    }, [month]);
+    const totalBudgeted = data2?.categories.reduce((s, c) => s + c.budgeted, 0) ?? 0;
+    const totalActual = data2?.categories.reduce((s, c) => s + c.actual, 0) ?? 0;
+    const totalVariance = totalActual - totalBudgeted;
+    const isFuture = month > currentMonth();
+    function handleExport() {
+      if (!data2) return;
+      const rows = [];
+      for (const cat of data2.categories) {
+        for (const item of cat.items) {
+          rows.push([
+            cat.category_name,
+            item.item_name,
+            item.budgeted_monthly.toFixed(2),
+            item.actual_amount.toFixed(2),
+            (item.actual_amount - item.budgeted_monthly).toFixed(2),
+            item.tx_count
+          ]);
+        }
+        rows.push([cat.category_name, "SUBTOTAL", cat.budgeted.toFixed(2), cat.actual.toFixed(2), (cat.actual - cat.budgeted).toFixed(2), ""]);
+        rows.push([]);
+      }
+      rows.push(["TOTAL", "", totalBudgeted.toFixed(2), totalActual.toFixed(2), totalVariance.toFixed(2), ""]);
+      downloadCsv(
+        `budget-variance-${month}.csv`,
+        ["Category", "Budget Item", "Budgeted", "Actual", "Variance", "Transactions"],
+        rows
+      );
+    }
+    return /* @__PURE__ */ import_react13.default.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ import_react13.default.createElement("div", { className: "flex items-center gap-4" }, /* @__PURE__ */ import_react13.default.createElement("h1", { className: "text-lg font-semibold text-gray-900" }, "Budget Variance"), /* @__PURE__ */ import_react13.default.createElement("div", { className: "flex items-center gap-1" }, /* @__PURE__ */ import_react13.default.createElement(
+      "button",
+      {
+        onClick: () => setMonth((m) => shiftMonth(m, -1)),
+        className: "p-1 rounded hover:bg-gray-100 text-gray-500"
+      },
+      /* @__PURE__ */ import_react13.default.createElement(ChevronLeft, { size: 16 })
+    ), /* @__PURE__ */ import_react13.default.createElement("span", { className: "text-sm font-medium text-gray-700 w-36 text-center" }, formatMonth(month)), /* @__PURE__ */ import_react13.default.createElement(
+      "button",
+      {
+        onClick: () => setMonth((m) => shiftMonth(m, 1)),
+        disabled: !isFuture && month >= currentMonth(),
+        className: "p-1 rounded hover:bg-gray-100 text-gray-500 disabled:opacity-30"
+      },
+      /* @__PURE__ */ import_react13.default.createElement(ChevronRight, { size: 16 })
+    )), isFuture && /* @__PURE__ */ import_react13.default.createElement("span", { className: "text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded px-2 py-0.5" }, "Future month \u2014 actuals will be $0"), data2 && /* @__PURE__ */ import_react13.default.createElement(
+      "button",
+      {
+        onClick: handleExport,
+        className: "ml-auto flex items-center gap-1.5 text-xs text-gray-500 border border-gray-200 rounded px-2 py-1 hover:bg-gray-50"
+      },
+      /* @__PURE__ */ import_react13.default.createElement(Download, { size: 12 }),
+      " CSV"
+    )), /* @__PURE__ */ import_react13.default.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-4" }, /* @__PURE__ */ import_react13.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react13.default.createElement("p", { className: "text-xs text-gray-500" }, "Budgeted"), /* @__PURE__ */ import_react13.default.createElement("p", { className: "text-xl font-mono font-semibold text-gray-700 mt-0.5" }, formatCurrency(totalBudgeted))), /* @__PURE__ */ import_react13.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react13.default.createElement("p", { className: "text-xs text-gray-500" }, "Actual"), /* @__PURE__ */ import_react13.default.createElement("p", { className: "text-xl font-mono font-semibold text-gray-900 mt-0.5" }, formatCurrency(totalActual))), /* @__PURE__ */ import_react13.default.createElement("div", { className: `rounded-lg border px-4 py-3 ${totalVariance > 0.01 ? "bg-red-50 border-red-200" : totalVariance < -0.01 ? "bg-green-50 border-green-200" : "bg-white border-gray-200"}` }, /* @__PURE__ */ import_react13.default.createElement("p", { className: "text-xs text-gray-500" }, "Variance"), /* @__PURE__ */ import_react13.default.createElement("p", { className: `text-xl font-mono font-semibold mt-0.5 ${totalVariance > 0.01 ? "text-red-700" : totalVariance < -0.01 ? "text-green-700" : "text-gray-400"}` }, totalVariance > 0 ? "+" : "", formatCurrency(totalVariance)))), data2 && data2.categories.length > 0 && /* @__PURE__ */ import_react13.default.createElement("div", { className: "grid grid-cols-[1fr_80px_96px_96px_1fr_40px] text-xs text-gray-400 uppercase tracking-wide px-4" }, /* @__PURE__ */ import_react13.default.createElement("span", null, "Item"), /* @__PURE__ */ import_react13.default.createElement("span", null), /* @__PURE__ */ import_react13.default.createElement("span", { className: "text-right" }, "Budgeted"), /* @__PURE__ */ import_react13.default.createElement("span", { className: "text-right" }, "Actual"), /* @__PURE__ */ import_react13.default.createElement("span", { className: "text-right" }, "Variance"), /* @__PURE__ */ import_react13.default.createElement("span", { className: "text-right" }, "Txns")), loading ? /* @__PURE__ */ import_react13.default.createElement("p", { className: "text-gray-400 text-sm" }, "Loading\u2026") : error ? /* @__PURE__ */ import_react13.default.createElement("p", { className: "text-red-600 text-sm" }, error) : !data2 || data2.categories.length === 0 ? /* @__PURE__ */ import_react13.default.createElement("p", { className: "text-gray-400 text-sm" }, "No budget data for this month. Classify some transactions or add recurring items.") : /* @__PURE__ */ import_react13.default.createElement("div", { className: "space-y-3" }, data2.categories.map((cat) => /* @__PURE__ */ import_react13.default.createElement(CategorySection, { key: cat.category_id, cat }))));
+  }
+
+  // projects/benes-finance/frontend/components/Rules.tsx
+  var import_react14 = __toESM(require_react());
+  var MATCH_FIELDS = ["merchant_normalized", "merchant_text"];
+  var MATCH_TYPES = ["contains", "starts_with", "exact"];
+  var CONFIDENCES = ["auto_high", "auto_medium", "auto_low"];
+  var CONF_LABEL = {
+    auto_high: "High",
+    auto_medium: "Medium",
+    auto_low: "Low"
+  };
+  var CONF_COLOR = {
+    auto_high: "text-green-700 bg-green-50",
+    auto_medium: "text-amber-700 bg-amber-50",
+    auto_low: "text-gray-600 bg-gray-100"
+  };
+  var EMPTY_FORM = {
+    pattern: "",
+    match_field: "merchant_normalized",
+    match_type: "contains",
+    budget_item_id: "",
+    confidence: "auto_high",
+    priority: 0,
+    notes: ""
+  };
+  function Rules() {
+    const [rules, setRules] = (0, import_react14.useState)([]);
+    const [budgetItems, setBudgetItems] = (0, import_react14.useState)([]);
+    const [form, setForm] = (0, import_react14.useState)(EMPTY_FORM);
+    const [adding, setAdding] = (0, import_react14.useState)(false);
+    const [addErr, setAddErr] = (0, import_react14.useState)("");
+    const [applying, setApplying] = (0, import_react14.useState)(false);
+    const [applyResult, setApplyResult] = (0, import_react14.useState)(null);
+    const [error, setError] = (0, import_react14.useState)("");
+    (0, import_react14.useEffect)(() => {
+      Promise.all([api.rules.list(), api.budget.items()]).then(([r, b]) => {
+        setRules(r);
+        setBudgetItems(b);
+      }).catch((e) => setError(e.message));
+    }, []);
+    function setF(k, v) {
+      setForm((f) => ({ ...f, [k]: v }));
+    }
+    async function handleAdd() {
+      if (!form.pattern.trim() || !form.budget_item_id) {
+        setAddErr("Pattern and budget item are required.");
+        return;
+      }
+      setAdding(true);
+      setAddErr("");
+      try {
+        const created = await api.rules.create({
+          ...form,
+          is_active: 1,
+          notes: form.notes || null
+        });
+        setRules((prev) => [created, ...prev].sort((a, b) => b.priority - a.priority));
+        setForm(EMPTY_FORM);
+      } catch (e) {
+        setAddErr(e.message);
+      } finally {
+        setAdding(false);
+      }
+    }
+    async function handleToggleActive(rule) {
+      const updated = await api.rules.update(rule.rule_id, { is_active: rule.is_active ? 0 : 1 });
+      setRules((prev) => prev.map((r) => r.rule_id === updated.rule_id ? updated : r));
+    }
+    async function handleDelete(id) {
+      await api.rules.delete(id);
+      setRules((prev) => prev.filter((r) => r.rule_id !== id));
+    }
+    async function handleApply() {
+      setApplying(true);
+      setApplyResult(null);
+      try {
+        const result = await api.rules.apply();
+        setApplyResult(result);
+      } finally {
+        setApplying(false);
+      }
+    }
+    if (error) return /* @__PURE__ */ import_react14.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    const byCategory = budgetItems.reduce((m, bi) => {
+      (m[bi.category_name] ??= []).push(bi);
+      return m;
+    }, {});
+    return /* @__PURE__ */ import_react14.default.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ import_react14.default.createElement("div", { className: "flex items-baseline gap-4" }, /* @__PURE__ */ import_react14.default.createElement("h1", { className: "text-lg font-semibold text-gray-900" }, "Classification Rules"), /* @__PURE__ */ import_react14.default.createElement("span", { className: "text-xs text-gray-400" }, "Merchant text patterns \u2192 budget items \u2014 applied to unclassified transactions"), /* @__PURE__ */ import_react14.default.createElement("div", { className: "ml-auto flex items-center gap-3" }, applyResult && /* @__PURE__ */ import_react14.default.createElement("span", { className: "flex items-center gap-1.5 text-xs text-green-700 bg-green-50 border border-green-200 rounded px-2 py-1" }, /* @__PURE__ */ import_react14.default.createElement(CircleCheckBig, { size: 12 }), applyResult.classified, " classified, ", applyResult.skipped, " unmatched"), /* @__PURE__ */ import_react14.default.createElement(
+      "button",
+      {
+        onClick: handleApply,
+        disabled: applying,
+        className: "flex items-center gap-1.5 bg-blue-600 text-white text-sm px-3 py-1.5 rounded hover:bg-blue-700 disabled:opacity-50"
+      },
+      /* @__PURE__ */ import_react14.default.createElement(Play, { size: 13 }),
+      applying ? "Applying\u2026" : "Apply Rules"
+    ))), /* @__PURE__ */ import_react14.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react14.default.createElement("p", { className: "text-xs font-medium text-gray-600 mb-3" }, "Add Rule"), /* @__PURE__ */ import_react14.default.createElement("div", { className: "flex flex-wrap items-end gap-3" }, /* @__PURE__ */ import_react14.default.createElement("label", { className: "text-xs text-gray-500 flex flex-col gap-1" }, "Pattern", /* @__PURE__ */ import_react14.default.createElement(
+      "input",
+      {
+        type: "text",
+        value: form.pattern,
+        onChange: (e) => setF("pattern", e.target.value),
+        placeholder: "e.g. walmart",
+        className: "border border-gray-300 rounded px-2 py-1 text-sm w-40 focus:outline-none focus:ring-1 focus:ring-blue-400"
+      }
+    )), /* @__PURE__ */ import_react14.default.createElement("label", { className: "text-xs text-gray-500 flex flex-col gap-1" }, "Field", /* @__PURE__ */ import_react14.default.createElement(
+      "select",
+      {
+        value: form.match_field,
+        onChange: (e) => setF("match_field", e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-400"
+      },
+      MATCH_FIELDS.map((f) => /* @__PURE__ */ import_react14.default.createElement("option", { key: f, value: f }, f === "merchant_normalized" ? "normalized name" : "raw text"))
+    )), /* @__PURE__ */ import_react14.default.createElement("label", { className: "text-xs text-gray-500 flex flex-col gap-1" }, "Match", /* @__PURE__ */ import_react14.default.createElement(
+      "select",
+      {
+        value: form.match_type,
+        onChange: (e) => setF("match_type", e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-400"
+      },
+      MATCH_TYPES.map((t) => /* @__PURE__ */ import_react14.default.createElement("option", { key: t, value: t }, t.replace("_", " ")))
+    )), /* @__PURE__ */ import_react14.default.createElement("label", { className: "text-xs text-gray-500 flex flex-col gap-1" }, "Budget Item", /* @__PURE__ */ import_react14.default.createElement(
+      "select",
+      {
+        value: form.budget_item_id,
+        onChange: (e) => setF("budget_item_id", e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-400 w-48"
+      },
+      /* @__PURE__ */ import_react14.default.createElement("option", { value: "" }, "\u2014 select \u2014"),
+      Object.entries(byCategory).map(([cat, items]) => /* @__PURE__ */ import_react14.default.createElement("optgroup", { key: cat, label: cat }, items.map((bi) => /* @__PURE__ */ import_react14.default.createElement("option", { key: bi.budget_item_id, value: bi.budget_item_id }, bi.name))))
+    )), /* @__PURE__ */ import_react14.default.createElement("label", { className: "text-xs text-gray-500 flex flex-col gap-1" }, "Confidence", /* @__PURE__ */ import_react14.default.createElement(
+      "select",
+      {
+        value: form.confidence,
+        onChange: (e) => setF("confidence", e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-400"
+      },
+      CONFIDENCES.map((c) => /* @__PURE__ */ import_react14.default.createElement("option", { key: c, value: c }, CONF_LABEL[c]))
+    )), /* @__PURE__ */ import_react14.default.createElement("label", { className: "text-xs text-gray-500 flex flex-col gap-1" }, "Priority", /* @__PURE__ */ import_react14.default.createElement(
+      "input",
+      {
+        type: "number",
+        value: form.priority,
+        onChange: (e) => setF("priority", parseInt(e.target.value) || 0),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm w-16 font-mono focus:outline-none focus:ring-1 focus:ring-blue-400"
+      }
+    )), /* @__PURE__ */ import_react14.default.createElement("div", { className: "flex flex-col gap-1" }, /* @__PURE__ */ import_react14.default.createElement("span", { className: "text-xs text-transparent" }, "."), /* @__PURE__ */ import_react14.default.createElement(
+      "button",
+      {
+        onClick: handleAdd,
+        disabled: adding,
+        className: "flex items-center gap-1.5 bg-gray-800 text-white text-sm px-3 py-1 rounded hover:bg-gray-900 disabled:opacity-50"
+      },
+      /* @__PURE__ */ import_react14.default.createElement(Plus, { size: 13 }),
+      " ",
+      adding ? "Adding\u2026" : "Add"
+    ))), addErr && /* @__PURE__ */ import_react14.default.createElement("p", { className: "text-red-600 text-xs mt-2" }, addErr)), /* @__PURE__ */ import_react14.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, rules.length === 0 ? /* @__PURE__ */ import_react14.default.createElement("p", { className: "text-gray-400 text-sm px-4 py-6 text-center" }, "No rules yet. Add one above, then click Apply Rules to classify transactions.") : /* @__PURE__ */ import_react14.default.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ import_react14.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react14.default.createElement("thead", null, /* @__PURE__ */ import_react14.default.createElement("tr", { className: "border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide" }, /* @__PURE__ */ import_react14.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Pattern"), /* @__PURE__ */ import_react14.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Field / Match"), /* @__PURE__ */ import_react14.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Budget Item"), /* @__PURE__ */ import_react14.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Category"), /* @__PURE__ */ import_react14.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Confidence"), /* @__PURE__ */ import_react14.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Priority"), /* @__PURE__ */ import_react14.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Source"), /* @__PURE__ */ import_react14.default.createElement("th", { className: "px-4 py-2 w-20" }))), /* @__PURE__ */ import_react14.default.createElement("tbody", null, rules.map((rule) => /* @__PURE__ */ import_react14.default.createElement(
+      "tr",
+      {
+        key: rule.rule_id,
+        className: `border-b border-gray-50 ${rule.is_active ? "" : "opacity-40"}`
+      },
+      /* @__PURE__ */ import_react14.default.createElement("td", { className: "px-4 py-2.5 font-mono text-gray-900" }, rule.pattern),
+      /* @__PURE__ */ import_react14.default.createElement("td", { className: "px-4 py-2.5 text-xs text-gray-500" }, rule.match_field === "merchant_normalized" ? "normalized" : "raw", " / ", rule.match_type.replace("_", " ")),
+      /* @__PURE__ */ import_react14.default.createElement("td", { className: "px-4 py-2.5 text-gray-800" }, rule.budget_item_name),
+      /* @__PURE__ */ import_react14.default.createElement("td", { className: "px-4 py-2.5 text-gray-500 text-xs" }, rule.category_name),
+      /* @__PURE__ */ import_react14.default.createElement("td", { className: "px-4 py-2.5" }, /* @__PURE__ */ import_react14.default.createElement("span", { className: `inline-flex px-1.5 py-0.5 rounded text-xs font-medium ${CONF_COLOR[rule.confidence]}` }, CONF_LABEL[rule.confidence])),
+      /* @__PURE__ */ import_react14.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono text-xs text-gray-500" }, rule.priority),
+      /* @__PURE__ */ import_react14.default.createElement("td", { className: "px-4 py-2.5 text-xs text-gray-400 capitalize" }, rule.source.replace("_", " ")),
+      /* @__PURE__ */ import_react14.default.createElement("td", { className: "px-4 py-2.5" }, /* @__PURE__ */ import_react14.default.createElement("div", { className: "flex items-center justify-end gap-2" }, /* @__PURE__ */ import_react14.default.createElement(
+        "button",
+        {
+          onClick: () => handleToggleActive(rule),
+          title: rule.is_active ? "Disable" : "Enable",
+          className: `w-8 h-4 rounded-full transition-colors ${rule.is_active ? "bg-blue-500" : "bg-gray-200"}`
+        },
+        /* @__PURE__ */ import_react14.default.createElement("span", { className: `block w-3 h-3 rounded-full bg-white shadow transition-transform mx-0.5 ${rule.is_active ? "translate-x-4" : ""}` })
+      ), /* @__PURE__ */ import_react14.default.createElement(
+        "button",
+        {
+          onClick: () => handleDelete(rule.rule_id),
+          className: "text-gray-300 hover:text-red-500 transition-colors"
+        },
+        /* @__PURE__ */ import_react14.default.createElement(Trash2, { size: 14 })
+      )))
+    )))))));
+  }
+
+  // projects/benes-finance/frontend/components/Projections.tsx
+  var import_react15 = __toESM(require_react());
+  function buildSchedule(balance, ratePct, monthlyPayment, extraPayments = []) {
+    if (balance <= 0) return [];
+    const extra_total = extraPayments.reduce((s, ep) => s + Math.abs(ep.amount), 0);
+    if (monthlyPayment <= 0 && extra_total <= 0) return [];
+    const adj_balance = Math.max(0, balance - extra_total);
+    const r = ratePct != null ? ratePct / 100 / 12 : 0;
+    if (r > 0 && monthlyPayment > 0 && adj_balance > 0 && monthlyPayment <= adj_balance * r) return [];
+    const extraByMonth = /* @__PURE__ */ new Map();
+    for (const ep of extraPayments) {
+      const ym = ep.item_date.slice(0, 7);
+      extraByMonth.set(ym, (extraByMonth.get(ym) ?? 0) + Math.abs(ep.amount));
+    }
+    const rows = [];
+    let bal = balance;
+    const now = /* @__PURE__ */ new Date();
+    while (bal > 5e-3 && rows.length < 600) {
+      const m = rows.length + 1;
+      const d = new Date(now.getFullYear(), now.getMonth() + m, 1);
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      const interest = r > 0 ? bal * r : 0;
+      const scheduled = Math.min(monthlyPayment, bal + interest);
+      const extra = extraByMonth.get(dateStr) ?? 0;
+      const payment = Math.min(scheduled + extra, bal + interest);
+      const principal = payment - interest;
+      bal = Math.max(0, bal - principal);
+      rows.push({ month: m, date: dateStr, payment, interest, principal, balance: bal });
+    }
+    return rows;
+  }
+  function formatYM2(ym) {
+    const [y, m] = ym.split("-").map(Number);
+    return new Date(y, m - 1).toLocaleDateString("en-US", { month: "short", year: "numeric" });
+  }
+  function BalanceChart2({ initialBalance, schedule }) {
+    if (!schedule.length) return null;
+    const W = 1e3, H = 80, PX = 4, PY = 6;
+    const pts = [{ balance: initialBalance }, ...schedule];
+    const cx = (i) => PX + i / (pts.length - 1) * (W - 2 * PX);
+    const cy = (b) => PY + (1 - b / initialBalance) * (H - 2 * PY);
+    const line = pts.map((p, i) => `${cx(i).toFixed(1)},${cy(p.balance).toFixed(1)}`).join(" ");
+    const zeroY = cy(0).toFixed(1);
+    const fillPath = `M ${cx(0).toFixed(1)},${zeroY} L ${line} L ${cx(pts.length - 1).toFixed(1)},${zeroY} Z`;
+    return /* @__PURE__ */ import_react15.default.createElement("svg", { viewBox: `0 0 ${W} ${H}`, className: "w-full h-16", preserveAspectRatio: "none" }, /* @__PURE__ */ import_react15.default.createElement("path", { d: fillPath, fill: "rgba(59,130,246,0.08)" }), /* @__PURE__ */ import_react15.default.createElement("polyline", { points: line, fill: "none", stroke: "#3b82f6", strokeWidth: 2, strokeLinejoin: "round" }));
+  }
+  function AccountRow({ item }) {
+    const [expanded, setExpanded] = (0, import_react15.useState)(false);
+    const extraPayments = item.extra_payments ?? [];
+    const extraTotal = extraPayments.reduce((s, ep) => s + Math.abs(ep.amount), 0);
+    const adjBalance = Math.max(0, item.current_balance - extraTotal);
+    const schedule = (0, import_react15.useMemo)(
+      () => expanded ? buildSchedule(item.current_balance, item.interest_rate_pct, item.monthly_payment ?? 0, extraPayments) : [],
+      [expanded, item.current_balance, item.interest_rate_pct, item.monthly_payment, extraPayments]
+    );
+    const noPayment = (item.monthly_payment ?? 0) === 0;
+    const rateMonthly = item.interest_rate_pct != null ? item.interest_rate_pct / 100 / 12 : 0;
+    const paymentTooLow = !noPayment && rateMonthly > 0 && (item.monthly_payment ?? 0) <= adjBalance * rateMonthly;
+    const noPayoff = adjBalance > 0 && (noPayment || paymentTooLow);
+    const totalInterest = schedule.reduce((s, r) => s + r.interest, 0);
+    const totalPaid = schedule.reduce((s, r) => s + r.payment, 0);
+    const payoffDate = schedule.at(-1)?.date ?? null;
+    return /* @__PURE__ */ import_react15.default.createElement(import_react15.default.Fragment, null, /* @__PURE__ */ import_react15.default.createElement(
+      "tr",
+      {
+        onClick: () => setExpanded((e) => !e),
+        className: `border-b cursor-pointer transition-colors ${expanded ? "bg-blue-50 border-blue-100 hover:bg-blue-100" : "border-gray-50 hover:bg-gray-50"}`
+      },
+      /* @__PURE__ */ import_react15.default.createElement("td", { className: "px-3 py-3 text-gray-300" }, expanded ? /* @__PURE__ */ import_react15.default.createElement(ChevronDown, { size: 14 }) : /* @__PURE__ */ import_react15.default.createElement(ChevronRight, { size: 14 })),
+      /* @__PURE__ */ import_react15.default.createElement("td", { className: "px-4 py-3 font-medium text-gray-900" }, item.creditor),
+      /* @__PURE__ */ import_react15.default.createElement("td", { className: "px-4 py-3 text-right font-mono text-gray-900" }, formatCurrency(item.current_balance)),
+      /* @__PURE__ */ import_react15.default.createElement("td", { className: "px-4 py-3 text-right font-mono text-gray-700" }, item.interest_rate_pct != null ? `${item.interest_rate_pct.toFixed(1)}%` : /* @__PURE__ */ import_react15.default.createElement("span", { className: "text-gray-300" }, "\u2014")),
+      /* @__PURE__ */ import_react15.default.createElement("td", { className: "px-4 py-3 text-right font-mono text-gray-700" }, item.monthly_payment ? formatCurrency(item.monthly_payment) : /* @__PURE__ */ import_react15.default.createElement("span", { className: "text-gray-300" }, "\u2014")),
+      /* @__PURE__ */ import_react15.default.createElement("td", { className: "px-4 py-3 text-right text-gray-500" }, noPayoff ? /* @__PURE__ */ import_react15.default.createElement("span", { className: "flex items-center justify-end gap-1 text-red-500 text-xs" }, /* @__PURE__ */ import_react15.default.createElement(TriangleAlert, { size: 11 }), "no payoff") : item.months_to_payoff != null ? `${Math.ceil(item.months_to_payoff)} mo` : "\u2014"),
+      /* @__PURE__ */ import_react15.default.createElement("td", { className: "px-4 py-3 text-right text-gray-700" }, item.payoff_date_est ? /* @__PURE__ */ import_react15.default.createElement("span", { title: "Manually set estimate" }, item.payoff_date_est) : item.payoff_date ? formatYM2(item.payoff_date) : /* @__PURE__ */ import_react15.default.createElement("span", { className: "text-gray-300" }, "\u2014"))
+    ), expanded && /* @__PURE__ */ import_react15.default.createElement("tr", { className: "border-b border-blue-100" }, /* @__PURE__ */ import_react15.default.createElement("td", { colSpan: 7, className: "bg-blue-50 px-6 py-4" }, noPayoff ? /* @__PURE__ */ import_react15.default.createElement("p", { className: "text-sm text-red-600" }, noPayment ? "No monthly payment linked \u2014 add one via the Accounts or Recurring page." : "Monthly payment is too low to cover monthly interest. Balance will grow indefinitely.") : /* @__PURE__ */ import_react15.default.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ import_react15.default.createElement("div", { className: "flex flex-wrap gap-6 text-xs text-gray-600" }, /* @__PURE__ */ import_react15.default.createElement("span", null, "Months: ", /* @__PURE__ */ import_react15.default.createElement("strong", { className: "text-gray-900" }, schedule.length)), /* @__PURE__ */ import_react15.default.createElement("span", null, "Payoff: ", /* @__PURE__ */ import_react15.default.createElement("strong", { className: "text-gray-900" }, payoffDate ? formatYM2(payoffDate) : "\u2014")), /* @__PURE__ */ import_react15.default.createElement("span", null, "Total interest: ", /* @__PURE__ */ import_react15.default.createElement("strong", { className: "font-mono text-red-600" }, formatCurrency(totalInterest))), /* @__PURE__ */ import_react15.default.createElement("span", null, "Total paid: ", /* @__PURE__ */ import_react15.default.createElement("strong", { className: "font-mono text-gray-900" }, formatCurrency(totalPaid))), /* @__PURE__ */ import_react15.default.createElement("span", { className: "text-gray-400" }, "Interest is ", totalPaid > 0 ? `${(totalInterest / totalPaid * 100).toFixed(0)}%` : "\u2014", " of total payments"), extraPayments.length > 0 && /* @__PURE__ */ import_react15.default.createElement("span", { className: "text-green-700" }, "Extra payments: ", /* @__PURE__ */ import_react15.default.createElement("strong", { className: "font-mono" }, formatCurrency(extraTotal)), /* @__PURE__ */ import_react15.default.createElement("span", { className: "text-green-500 ml-1" }, "(", extraPayments.length, " scheduled)"))), /* @__PURE__ */ import_react15.default.createElement("div", { className: "bg-white rounded border border-blue-100 px-3 pt-2 pb-1" }, /* @__PURE__ */ import_react15.default.createElement("p", { className: "text-xs text-gray-400 mb-1" }, "Balance over time"), /* @__PURE__ */ import_react15.default.createElement(BalanceChart2, { initialBalance: item.current_balance, schedule })), /* @__PURE__ */ import_react15.default.createElement("div", { className: "max-h-60 overflow-y-auto rounded border border-blue-100 bg-white" }, /* @__PURE__ */ import_react15.default.createElement("table", { className: "w-full text-xs" }, /* @__PURE__ */ import_react15.default.createElement("thead", { className: "sticky top-0 bg-white border-b border-gray-100 z-10" }, /* @__PURE__ */ import_react15.default.createElement("tr", { className: "text-gray-400 uppercase tracking-wide" }, /* @__PURE__ */ import_react15.default.createElement("th", { className: "px-3 py-1.5 text-right font-medium" }, "#"), /* @__PURE__ */ import_react15.default.createElement("th", { className: "px-3 py-1.5 text-left  font-medium" }, "Date"), /* @__PURE__ */ import_react15.default.createElement("th", { className: "px-3 py-1.5 text-right font-medium" }, "Payment"), /* @__PURE__ */ import_react15.default.createElement("th", { className: "px-3 py-1.5 text-right font-medium" }, "Interest"), /* @__PURE__ */ import_react15.default.createElement("th", { className: "px-3 py-1.5 text-right font-medium" }, "Principal"), /* @__PURE__ */ import_react15.default.createElement("th", { className: "px-3 py-1.5 text-right font-medium" }, "Balance"))), /* @__PURE__ */ import_react15.default.createElement("tbody", null, schedule.map((row) => /* @__PURE__ */ import_react15.default.createElement("tr", { key: row.month, className: "border-b border-gray-50 hover:bg-gray-50" }, /* @__PURE__ */ import_react15.default.createElement("td", { className: "px-3 py-1.5 text-right font-mono text-gray-400" }, row.month), /* @__PURE__ */ import_react15.default.createElement("td", { className: "px-3 py-1.5 text-gray-700" }, formatYM2(row.date)), /* @__PURE__ */ import_react15.default.createElement("td", { className: "px-3 py-1.5 text-right font-mono text-gray-700 tabular-nums" }, formatCurrency(row.payment)), /* @__PURE__ */ import_react15.default.createElement("td", { className: "px-3 py-1.5 text-right font-mono text-red-500  tabular-nums" }, formatCurrency(row.interest)), /* @__PURE__ */ import_react15.default.createElement("td", { className: "px-3 py-1.5 text-right font-mono text-green-700 tabular-nums" }, formatCurrency(row.principal)), /* @__PURE__ */ import_react15.default.createElement("td", { className: "px-3 py-1.5 text-right font-mono text-gray-900 tabular-nums" }, formatCurrency(row.balance)))))))))));
+  }
+  function Projections() {
+    const [items, setItems] = (0, import_react15.useState)([]);
+    const [loading, setLoading] = (0, import_react15.useState)(true);
+    const [error, setError] = (0, import_react15.useState)("");
+    (0, import_react15.useEffect)(() => {
+      api.debtPriority().then((data2) => {
+        setItems(data2);
+        setLoading(false);
+      }).catch((e) => {
+        setError(e.message);
+        setLoading(false);
+      });
+    }, []);
+    if (loading) return /* @__PURE__ */ import_react15.default.createElement("p", { className: "text-gray-400 text-sm" }, "Loading\u2026");
+    if (error) return /* @__PURE__ */ import_react15.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    if (!items.length) return /* @__PURE__ */ import_react15.default.createElement("p", { className: "text-gray-400 text-sm" }, "No active debt accounts found.");
+    const totalDebt = items.reduce((s, i) => s + i.current_balance, 0);
+    const latestPayoff = items.map((i) => i.payoff_date).filter(Boolean).sort().at(-1);
+    return /* @__PURE__ */ import_react15.default.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ import_react15.default.createElement("div", { className: "flex items-baseline gap-4" }, /* @__PURE__ */ import_react15.default.createElement("h1", { className: "text-lg font-semibold text-gray-900" }, "Payoff Projections"), /* @__PURE__ */ import_react15.default.createElement("span", { className: "text-xs text-gray-400" }, "Click any account to see month-by-month amortization")), /* @__PURE__ */ import_react15.default.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-4" }, /* @__PURE__ */ import_react15.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react15.default.createElement("p", { className: "text-xs text-gray-500" }, "Total Active Debt"), /* @__PURE__ */ import_react15.default.createElement("p", { className: "text-xl font-mono font-semibold text-gray-900 mt-0.5" }, formatCurrency(totalDebt))), /* @__PURE__ */ import_react15.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react15.default.createElement("p", { className: "text-xs text-gray-500" }, "Debt-Free Date (last to pay off)"), /* @__PURE__ */ import_react15.default.createElement("p", { className: "text-xl font-mono font-semibold text-gray-900 mt-0.5" }, latestPayoff ? formatYM2(latestPayoff) : "\u2014"))), /* @__PURE__ */ import_react15.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react15.default.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ import_react15.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react15.default.createElement("thead", null, /* @__PURE__ */ import_react15.default.createElement("tr", { className: "border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide" }, /* @__PURE__ */ import_react15.default.createElement("th", { className: "px-3 py-2 w-6" }), /* @__PURE__ */ import_react15.default.createElement("th", { className: "px-4 py-2 text-left  font-medium" }, "Creditor"), /* @__PURE__ */ import_react15.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Balance"), /* @__PURE__ */ import_react15.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "APR"), /* @__PURE__ */ import_react15.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Monthly Pmt"), /* @__PURE__ */ import_react15.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Months Left"), /* @__PURE__ */ import_react15.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Payoff Date"))), /* @__PURE__ */ import_react15.default.createElement("tbody", null, items.map((item) => /* @__PURE__ */ import_react15.default.createElement(AccountRow, { key: item.account_id, item })))))));
+  }
+
+  // projects/benes-finance/frontend/components/AuditLog.tsx
+  var import_react16 = __toESM(require_react());
+  var ACTION_STYLES = {
+    created: "bg-green-50 text-green-700 border-green-200",
+    updated: "bg-blue-50  text-blue-700  border-blue-200",
+    deleted: "bg-red-50   text-red-600   border-red-200"
+  };
+  var SOURCE_STYLES = {
+    user: "bg-purple-50 text-purple-700",
+    rule: "bg-amber-50  text-amber-700",
+    import: "bg-gray-100  text-gray-600"
+  };
+  function relativeTime(iso) {
+    const diff = Date.now() - new Date(iso).getTime();
+    const mins = Math.floor(diff / 6e4);
+    const hours = Math.floor(diff / 36e5);
+    const days = Math.floor(diff / 864e5);
+    if (mins < 1) return "just now";
+    if (mins < 60) return `${mins}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+    return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+  function Change({ entry }) {
+    if (entry.action === "created") {
+      return /* @__PURE__ */ import_react16.default.createElement("span", { className: "text-xs text-gray-700" }, "\u2192 ", /* @__PURE__ */ import_react16.default.createElement("strong", null, entry.budget_item_name ?? entry.budget_item_id), entry.new_allocated_amount != null && /* @__PURE__ */ import_react16.default.createElement("span", { className: "text-gray-500" }, " (", formatCurrency(Math.abs(entry.new_allocated_amount)), ")"));
+    }
+    if (entry.action === "deleted") {
+      return /* @__PURE__ */ import_react16.default.createElement("span", { className: "text-xs text-gray-500 line-through" }, entry.budget_item_name ?? entry.budget_item_id, entry.old_allocated_amount != null && /* @__PURE__ */ import_react16.default.createElement("span", null, " (", formatCurrency(Math.abs(entry.old_allocated_amount)), ")"));
+    }
+    return /* @__PURE__ */ import_react16.default.createElement("span", { className: "text-xs text-gray-700" }, /* @__PURE__ */ import_react16.default.createElement("span", { className: "text-gray-400 line-through mr-1" }, entry.old_budget_item_name ?? entry.old_budget_item_id ?? "?"), "\u2192 ", /* @__PURE__ */ import_react16.default.createElement("strong", null, entry.budget_item_name ?? entry.budget_item_id));
+  }
+  function AuditLog() {
+    const [entries, setEntries] = (0, import_react16.useState)([]);
+    const [loading, setLoading] = (0, import_react16.useState)(true);
+    const [error, setError] = (0, import_react16.useState)("");
+    const [filterAction, setFilterAction] = (0, import_react16.useState)("");
+    const [filterSource, setFilterSource] = (0, import_react16.useState)("");
+    const [offset, setOffset] = (0, import_react16.useState)(0);
+    const PAGE = 100;
+    const load = (0, import_react16.useCallback)(() => {
+      setLoading(true);
+      api.audit.list({
+        action: filterAction || void 0,
+        changed_by: filterSource || void 0,
+        limit: PAGE,
+        offset
+      }).then((data2) => {
+        setEntries(data2);
+        setLoading(false);
+      }).catch((e) => {
+        setError(e.message);
+        setLoading(false);
+      });
+    }, [filterAction, filterSource, offset]);
+    (0, import_react16.useEffect)(() => {
+      load();
+    }, [load]);
+    function applyFilter(action, source) {
+      setFilterAction(action);
+      setFilterSource(source);
+      setOffset(0);
+    }
+    if (error) return /* @__PURE__ */ import_react16.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    return /* @__PURE__ */ import_react16.default.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ import_react16.default.createElement("div", { className: "flex items-baseline gap-4" }, /* @__PURE__ */ import_react16.default.createElement("h1", { className: "text-lg font-semibold text-gray-900" }, "Classification Audit Trail"), /* @__PURE__ */ import_react16.default.createElement("span", { className: "text-xs text-gray-400" }, "Every change to transaction budget item assignments")), /* @__PURE__ */ import_react16.default.createElement("div", { className: "flex items-center gap-3 flex-wrap" }, /* @__PURE__ */ import_react16.default.createElement("div", { className: "flex items-center gap-1 text-xs text-gray-500" }, "Action:", ["", "created", "updated", "deleted"].map((v) => /* @__PURE__ */ import_react16.default.createElement(
+      "button",
+      {
+        key: v,
+        onClick: () => applyFilter(v, filterSource),
+        className: `px-2 py-0.5 rounded border text-xs transition-colors ${filterAction === v ? "bg-gray-800 text-white border-gray-800" : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"}`
+      },
+      v || "all"
+    ))), /* @__PURE__ */ import_react16.default.createElement("div", { className: "flex items-center gap-1 text-xs text-gray-500" }, "Source:", ["", "user", "rule", "import"].map((v) => /* @__PURE__ */ import_react16.default.createElement(
+      "button",
+      {
+        key: v,
+        onClick: () => applyFilter(filterAction, v),
+        className: `px-2 py-0.5 rounded border text-xs transition-colors ${filterSource === v ? "bg-gray-800 text-white border-gray-800" : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"}`
+      },
+      v || "all"
+    ))), /* @__PURE__ */ import_react16.default.createElement("span", { className: "ml-auto text-xs text-gray-400" }, loading ? "Loading\u2026" : `${entries.length} entries`)), /* @__PURE__ */ import_react16.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, !loading && entries.length === 0 ? /* @__PURE__ */ import_react16.default.createElement("p", { className: "text-gray-400 text-sm px-4 py-8 text-center" }, "No audit entries found.") : /* @__PURE__ */ import_react16.default.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ import_react16.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react16.default.createElement("thead", null, /* @__PURE__ */ import_react16.default.createElement("tr", { className: "border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide" }, /* @__PURE__ */ import_react16.default.createElement("th", { className: "px-4 py-2 text-left  font-medium" }, "When"), /* @__PURE__ */ import_react16.default.createElement("th", { className: "px-4 py-2 text-left  font-medium" }, "Transaction"), /* @__PURE__ */ import_react16.default.createElement("th", { className: "px-4 py-2 text-left  font-medium" }, "Action"), /* @__PURE__ */ import_react16.default.createElement("th", { className: "px-4 py-2 text-left  font-medium" }, "Change"), /* @__PURE__ */ import_react16.default.createElement("th", { className: "px-4 py-2 text-left  font-medium" }, "Source"), /* @__PURE__ */ import_react16.default.createElement("th", { className: "px-4 py-2 text-left  font-medium" }, "Category"))), /* @__PURE__ */ import_react16.default.createElement("tbody", null, entries.map((entry) => /* @__PURE__ */ import_react16.default.createElement("tr", { key: entry.log_id, className: "border-b border-gray-50 hover:bg-gray-50" }, /* @__PURE__ */ import_react16.default.createElement("td", { className: "px-4 py-2.5 text-xs text-gray-500 whitespace-nowrap", title: entry.created_at }, relativeTime(entry.created_at)), /* @__PURE__ */ import_react16.default.createElement("td", { className: "px-4 py-2.5 max-w-xs" }, /* @__PURE__ */ import_react16.default.createElement("p", { className: "text-gray-900 truncate text-xs font-medium" }, entry.merchant_normalized || entry.merchant_text || entry.transaction_id), entry.transaction_date && /* @__PURE__ */ import_react16.default.createElement("p", { className: "text-gray-400 text-xs" }, entry.transaction_date, entry.transaction_amount != null && /* @__PURE__ */ import_react16.default.createElement("span", { className: `ml-2 font-mono ${entry.transaction_amount < 0 ? "text-red-500" : "text-green-600"}` }, formatCurrency(Math.abs(entry.transaction_amount))))), /* @__PURE__ */ import_react16.default.createElement("td", { className: "px-4 py-2.5" }, /* @__PURE__ */ import_react16.default.createElement("span", { className: `inline-flex px-1.5 py-0.5 rounded border text-xs font-medium ${ACTION_STYLES[entry.action] ?? ""}` }, entry.action)), /* @__PURE__ */ import_react16.default.createElement("td", { className: "px-4 py-2.5" }, /* @__PURE__ */ import_react16.default.createElement(Change, { entry })), /* @__PURE__ */ import_react16.default.createElement("td", { className: "px-4 py-2.5" }, entry.changed_by && /* @__PURE__ */ import_react16.default.createElement("span", { className: `inline-flex px-1.5 py-0.5 rounded text-xs font-medium ${SOURCE_STYLES[entry.changed_by] ?? ""}` }, entry.changed_by)), /* @__PURE__ */ import_react16.default.createElement("td", { className: "px-4 py-2.5 text-xs text-gray-400" }, entry.category_name ?? "\u2014"))))))), (offset > 0 || entries.length === PAGE) && /* @__PURE__ */ import_react16.default.createElement("div", { className: "flex justify-center gap-3" }, /* @__PURE__ */ import_react16.default.createElement(
+      "button",
+      {
+        onClick: () => setOffset((o) => Math.max(0, o - PAGE)),
+        disabled: offset === 0,
+        className: "px-3 py-1 text-xs border border-gray-200 rounded hover:bg-gray-50 disabled:opacity-40"
+      },
+      "\u2190 Previous"
+    ), /* @__PURE__ */ import_react16.default.createElement("span", { className: "text-xs text-gray-400 self-center" }, "Page ", Math.floor(offset / PAGE) + 1), /* @__PURE__ */ import_react16.default.createElement(
+      "button",
+      {
+        onClick: () => setOffset((o) => o + PAGE),
+        disabled: entries.length < PAGE,
+        className: "px-3 py-1 text-xs border border-gray-200 rounded hover:bg-gray-50 disabled:opacity-40"
+      },
+      "Next \u2192"
+    )));
+  }
+
+  // projects/benes-finance/frontend/components/IncomeScenarios.tsx
+  var import_react17 = __toESM(require_react());
+  function isoToday() {
+    const d = /* @__PURE__ */ new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  }
+  function monthLabel(offset, from) {
+    const d = /* @__PURE__ */ new Date(from + "T12:00:00");
+    d.setMonth(d.getMonth() + offset);
+    return d.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
+  }
+  function IncomeScenarios() {
+    const [recurring, setRecurring] = (0, import_react17.useState)([]);
+    const [summary, setSummary] = (0, import_react17.useState)(null);
+    const [error, setError] = (0, import_react17.useState)(null);
+    const [enabledIds, setEnabledIds] = (0, import_react17.useState)(/* @__PURE__ */ new Set());
+    const [hypotheticals, setHypotheticals] = (0, import_react17.useState)([]);
+    const [scenarioDate, setScenarioDate] = (0, import_react17.useState)(isoToday());
+    const [startingBalance, setStartingBalance] = (0, import_react17.useState)("0");
+    (0, import_react17.useEffect)(() => {
+      Promise.all([api.recurring.list(), api.summary()]).then(([r, s]) => {
+        setRecurring(r);
+        setSummary(s);
+        setEnabledIds(new Set(r.filter((i) => i.effective_monthly > 0).map((i) => i.recurring_item_id)));
+      }).catch((e) => setError(e.message));
+    }, []);
+    if (error) return /* @__PURE__ */ import_react17.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    if (!summary) return /* @__PURE__ */ import_react17.default.createElement("p", { className: "text-gray-400 text-sm" }, "Loading\u2026");
+    const incomeItems = recurring.filter((r) => r.effective_monthly > 0);
+    function toggleId(id) {
+      setEnabledIds((prev) => {
+        const next = new Set(prev);
+        next.has(id) ? next.delete(id) : next.add(id);
+        return next;
+      });
+    }
+    function addHypothetical() {
+      setHypotheticals((prev) => [...prev, { id: crypto.randomUUID(), name: "", amount: "" }]);
+    }
+    function updateHypothetical(id, field, value) {
+      setHypotheticals((prev) => prev.map((h) => h.id === id ? { ...h, [field]: value } : h));
+    }
+    function removeHypothetical(id) {
+      setHypotheticals((prev) => prev.filter((h) => h.id !== id));
+    }
+    const baselineIncome = incomeItems.reduce((s, i) => s + i.effective_monthly, 0);
+    const scenarioIncome = incomeItems.filter((i) => enabledIds.has(i.recurring_item_id)).reduce((s, i) => s + i.effective_monthly, 0) + hypotheticals.reduce((s, h) => s + (parseFloat(h.amount) || 0), 0);
+    const monthlyExpenses = summary.monthly_recurring_by_category.reduce((s, c) => s + c.total_effective_monthly, 0);
+    const baselineNet = baselineIncome + monthlyExpenses;
+    const scenarioNet = scenarioIncome + monthlyExpenses;
+    const startBal = parseFloat(startingBalance) || 0;
+    function monthsToDepletion(net) {
+      if (net >= 0) return "\u2014";
+      if (startBal <= 0) return "immediately";
+      const months = startBal / Math.abs(net);
+      return `${months.toFixed(1)} mo`;
+    }
+    const NUM_MONTHS = 12;
+    const projection = Array.from({ length: NUM_MONTHS }, (_, i) => {
+      const label = monthLabel(i, scenarioDate);
+      const isScenario = true;
+      const bBal = startBal + baselineNet * (i + 1);
+      const sBal = startBal + scenarioNet * (i + 1);
+      return { label, baselineBal: bBal, scenarioBal: sBal };
+    });
+    const incomeDiff = scenarioIncome - baselineIncome;
+    const netDiff = scenarioNet - baselineNet;
+    return /* @__PURE__ */ import_react17.default.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ import_react17.default.createElement("h1", { className: "text-lg font-semibold text-gray-900" }, "Income Scenarios"), /* @__PURE__ */ import_react17.default.createElement("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6" }, /* @__PURE__ */ import_react17.default.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ import_react17.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react17.default.createElement("div", { className: "px-4 py-3 border-b border-gray-100" }, /* @__PURE__ */ import_react17.default.createElement("h2", { className: "text-sm font-medium text-gray-700" }, "Income Sources"), /* @__PURE__ */ import_react17.default.createElement("p", { className: "text-xs text-gray-400 mt-0.5" }, "Toggle off income to model a reduced-income scenario")), /* @__PURE__ */ import_react17.default.createElement("div", { className: "divide-y divide-gray-50" }, incomeItems.map((item) => /* @__PURE__ */ import_react17.default.createElement("label", { key: item.recurring_item_id, className: "flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50" }, /* @__PURE__ */ import_react17.default.createElement(
+      "input",
+      {
+        type: "checkbox",
+        checked: enabledIds.has(item.recurring_item_id),
+        onChange: () => toggleId(item.recurring_item_id),
+        className: "rounded border-gray-300 text-blue-600 focus:ring-blue-400"
+      }
+    ), /* @__PURE__ */ import_react17.default.createElement("span", { className: `flex-1 text-sm ${enabledIds.has(item.recurring_item_id) ? "text-gray-800" : "text-gray-400 line-through"}` }, item.name), /* @__PURE__ */ import_react17.default.createElement("span", { className: "font-mono text-sm text-green-700" }, formatCurrency(item.effective_monthly), "/mo"))), incomeItems.length === 0 && /* @__PURE__ */ import_react17.default.createElement("p", { className: "px-4 py-3 text-sm text-gray-400 italic" }, "No income items found \u2014 add them in Recurring.")), hypotheticals.length > 0 && /* @__PURE__ */ import_react17.default.createElement("div", { className: "border-t border-dashed border-gray-200 divide-y divide-gray-50" }, hypotheticals.map((h) => /* @__PURE__ */ import_react17.default.createElement("div", { key: h.id, className: "flex items-center gap-2 px-4 py-2.5" }, /* @__PURE__ */ import_react17.default.createElement(
+      "input",
+      {
+        type: "text",
+        placeholder: "Income name\u2026",
+        value: h.name,
+        onChange: (e) => updateHypothetical(h.id, "name", e.target.value),
+        className: "flex-1 border border-gray-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+      }
+    ), /* @__PURE__ */ import_react17.default.createElement("div", { className: "flex items-center border border-gray-200 rounded overflow-hidden" }, /* @__PURE__ */ import_react17.default.createElement("span", { className: "px-2 text-xs text-gray-400 bg-gray-50 border-r border-gray-200" }, "$"), /* @__PURE__ */ import_react17.default.createElement(
+      "input",
+      {
+        type: "number",
+        min: "0",
+        step: "50",
+        placeholder: "0",
+        value: h.amount,
+        onChange: (e) => updateHypothetical(h.id, "amount", e.target.value),
+        className: "w-24 px-2 py-1 text-sm font-mono focus:outline-none"
+      }
+    ), /* @__PURE__ */ import_react17.default.createElement("span", { className: "px-2 text-xs text-gray-400 bg-gray-50 border-l border-gray-200" }, "/mo")), /* @__PURE__ */ import_react17.default.createElement("button", { onClick: () => removeHypothetical(h.id), className: "text-gray-300 hover:text-red-500 shrink-0" }, /* @__PURE__ */ import_react17.default.createElement(Trash2, { size: 14 }))))), /* @__PURE__ */ import_react17.default.createElement("div", { className: "px-4 py-3 border-t border-gray-100" }, /* @__PURE__ */ import_react17.default.createElement(
+      "button",
+      {
+        onClick: addHypothetical,
+        className: "flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800"
+      },
+      /* @__PURE__ */ import_react17.default.createElement(CirclePlus, { size: 13 }),
+      " Add hypothetical income (e.g. new job)"
+    ))), /* @__PURE__ */ import_react17.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-4 space-y-3" }, /* @__PURE__ */ import_react17.default.createElement("h2", { className: "text-sm font-medium text-gray-700" }, "Scenario Settings"), /* @__PURE__ */ import_react17.default.createElement("label", { className: "flex items-center justify-between gap-3 text-sm text-gray-600" }, /* @__PURE__ */ import_react17.default.createElement("span", null, "Scenario start date"), /* @__PURE__ */ import_react17.default.createElement(
+      "input",
+      {
+        type: "date",
+        value: scenarioDate,
+        onChange: (e) => setScenarioDate(e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+      }
+    )), /* @__PURE__ */ import_react17.default.createElement("label", { className: "flex items-center justify-between gap-3 text-sm text-gray-600" }, /* @__PURE__ */ import_react17.default.createElement("span", null, "Starting cash balance"), /* @__PURE__ */ import_react17.default.createElement("div", { className: "flex items-center border border-gray-300 rounded overflow-hidden" }, /* @__PURE__ */ import_react17.default.createElement("span", { className: "px-2 text-xs text-gray-400 bg-gray-50 border-r border-gray-200" }, "$"), /* @__PURE__ */ import_react17.default.createElement(
+      "input",
+      {
+        type: "number",
+        min: "0",
+        step: "100",
+        value: startingBalance,
+        onChange: (e) => setStartingBalance(e.target.value),
+        className: "w-28 px-2 py-1 text-sm font-mono focus:outline-none"
+      }
+    ))))), /* @__PURE__ */ import_react17.default.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ import_react17.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react17.default.createElement("div", { className: "px-4 py-3 border-b border-gray-100" }, /* @__PURE__ */ import_react17.default.createElement("h2", { className: "text-sm font-medium text-gray-700" }, "Monthly Comparison")), /* @__PURE__ */ import_react17.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react17.default.createElement("thead", null, /* @__PURE__ */ import_react17.default.createElement("tr", { className: "border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide" }, /* @__PURE__ */ import_react17.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }), /* @__PURE__ */ import_react17.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Baseline"), /* @__PURE__ */ import_react17.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Scenario"), /* @__PURE__ */ import_react17.default.createElement("th", { className: "px-4 py-2 text-right font-medium text-gray-400" }, "\u0394"))), /* @__PURE__ */ import_react17.default.createElement("tbody", null, /* @__PURE__ */ import_react17.default.createElement("tr", { className: "border-b border-gray-50" }, /* @__PURE__ */ import_react17.default.createElement("td", { className: "px-4 py-2.5 text-gray-600" }, "Monthly Income"), /* @__PURE__ */ import_react17.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono text-green-700" }, formatCurrency(baselineIncome)), /* @__PURE__ */ import_react17.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono text-green-700" }, formatCurrency(scenarioIncome)), /* @__PURE__ */ import_react17.default.createElement("td", { className: `px-4 py-2.5 text-right font-mono text-xs ${incomeDiff >= 0 ? "text-green-600" : "text-red-500"}` }, incomeDiff >= 0 ? "+" : "", formatCurrency(incomeDiff))), /* @__PURE__ */ import_react17.default.createElement("tr", { className: "border-b border-gray-50" }, /* @__PURE__ */ import_react17.default.createElement("td", { className: "px-4 py-2.5 text-gray-600" }, "Monthly Expenses"), /* @__PURE__ */ import_react17.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono text-red-600" }, "\u2212", formatCurrency(Math.abs(monthlyExpenses))), /* @__PURE__ */ import_react17.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono text-red-600" }, "\u2212", formatCurrency(Math.abs(monthlyExpenses))), /* @__PURE__ */ import_react17.default.createElement("td", { className: "px-4 py-2.5 text-right font-mono text-xs text-gray-300" }, "\u2014")), /* @__PURE__ */ import_react17.default.createElement("tr", { className: "border-b border-gray-100 font-medium" }, /* @__PURE__ */ import_react17.default.createElement("td", { className: "px-4 py-2.5 text-gray-800" }, "Net / Month"), /* @__PURE__ */ import_react17.default.createElement("td", { className: `px-4 py-2.5 text-right font-mono ${baselineNet >= 0 ? "text-green-700" : "text-red-700"}` }, baselineNet >= 0 ? "+" : "\u2212", formatCurrency(Math.abs(baselineNet))), /* @__PURE__ */ import_react17.default.createElement("td", { className: `px-4 py-2.5 text-right font-mono ${scenarioNet >= 0 ? "text-green-700" : "text-red-700"}` }, scenarioNet >= 0 ? "+" : "\u2212", formatCurrency(Math.abs(scenarioNet))), /* @__PURE__ */ import_react17.default.createElement("td", { className: `px-4 py-2.5 text-right font-mono text-xs ${netDiff >= 0 ? "text-green-600" : "text-red-500"}` }, netDiff >= 0 ? "+" : "", formatCurrency(netDiff))), /* @__PURE__ */ import_react17.default.createElement("tr", { className: "border-b border-gray-50 text-xs text-gray-500" }, /* @__PURE__ */ import_react17.default.createElement("td", { className: "px-4 py-2 text-gray-500" }, "Annual Net"), /* @__PURE__ */ import_react17.default.createElement("td", { className: `px-4 py-2 text-right font-mono ${baselineNet >= 0 ? "text-green-700" : "text-red-600"}` }, baselineNet >= 0 ? "+" : "\u2212", formatCurrency(Math.abs(baselineNet * 12))), /* @__PURE__ */ import_react17.default.createElement("td", { className: `px-4 py-2 text-right font-mono ${scenarioNet >= 0 ? "text-green-700" : "text-red-600"}` }, scenarioNet >= 0 ? "+" : "\u2212", formatCurrency(Math.abs(scenarioNet * 12))), /* @__PURE__ */ import_react17.default.createElement("td", { className: "px-4 py-2" })), startBal > 0 && /* @__PURE__ */ import_react17.default.createElement("tr", { className: "text-xs" }, /* @__PURE__ */ import_react17.default.createElement("td", { className: "px-4 py-2 text-gray-500" }, "Cash runway"), /* @__PURE__ */ import_react17.default.createElement("td", { className: `px-4 py-2 text-right font-mono ${baselineNet >= 0 ? "text-gray-400" : "text-amber-600"}` }, monthsToDepletion(baselineNet)), /* @__PURE__ */ import_react17.default.createElement("td", { className: `px-4 py-2 text-right font-mono ${scenarioNet >= 0 ? "text-gray-400" : "text-amber-600"}` }, monthsToDepletion(scenarioNet)), /* @__PURE__ */ import_react17.default.createElement("td", { className: "px-4 py-2" }))))), /* @__PURE__ */ import_react17.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react17.default.createElement("div", { className: "px-4 py-3 border-b border-gray-100" }, /* @__PURE__ */ import_react17.default.createElement("h2", { className: "text-sm font-medium text-gray-700" }, "Expenses by Category"), /* @__PURE__ */ import_react17.default.createElement("p", { className: "text-xs text-gray-400 mt-0.5" }, "Same under both scenarios")), /* @__PURE__ */ import_react17.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react17.default.createElement("tbody", null, summary.monthly_recurring_by_category.map((cat) => /* @__PURE__ */ import_react17.default.createElement("tr", { key: cat.category_id, className: "border-b border-gray-50 last:border-0" }, /* @__PURE__ */ import_react17.default.createElement("td", { className: "px-4 py-2 text-gray-700" }, cat.category_name), /* @__PURE__ */ import_react17.default.createElement("td", { className: "px-4 py-2 text-right font-mono text-red-600" }, formatCurrency(Math.abs(cat.total_effective_monthly)))))))))), /* @__PURE__ */ import_react17.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react17.default.createElement("div", { className: "px-4 py-3 border-b border-gray-100" }, /* @__PURE__ */ import_react17.default.createElement("h2", { className: "text-sm font-medium text-gray-700" }, "12-Month Cash Projection"), /* @__PURE__ */ import_react17.default.createElement("p", { className: "text-xs text-gray-400 mt-0.5" }, "From ", scenarioDate, ", starting balance ", formatCurrency(startBal), ". Assumes no one-time changes.")), /* @__PURE__ */ import_react17.default.createElement("div", { className: "overflow-x-auto" }, /* @__PURE__ */ import_react17.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react17.default.createElement("thead", null, /* @__PURE__ */ import_react17.default.createElement("tr", { className: "border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wide" }, /* @__PURE__ */ import_react17.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Month"), /* @__PURE__ */ import_react17.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Baseline Balance"), /* @__PURE__ */ import_react17.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Scenario Balance"), /* @__PURE__ */ import_react17.default.createElement("th", { className: "px-4 py-2 text-right font-medium text-gray-400" }, "\u0394"))), /* @__PURE__ */ import_react17.default.createElement("tbody", null, projection.map(({ label, baselineBal, scenarioBal }) => {
+      const diff = scenarioBal - baselineBal;
+      return /* @__PURE__ */ import_react17.default.createElement("tr", { key: label, className: "border-b border-gray-50 last:border-0" }, /* @__PURE__ */ import_react17.default.createElement("td", { className: "px-4 py-2 text-gray-600" }, label), /* @__PURE__ */ import_react17.default.createElement("td", { className: `px-4 py-2 text-right font-mono text-xs ${baselineBal < 0 ? "text-red-600" : "text-gray-700"}` }, baselineBal < 0 ? "\u2212" : "", formatCurrency(Math.abs(baselineBal))), /* @__PURE__ */ import_react17.default.createElement("td", { className: `px-4 py-2 text-right font-mono text-xs ${scenarioBal < 0 ? "text-red-600" : "text-gray-700"}` }, scenarioBal < 0 ? "\u2212" : "", formatCurrency(Math.abs(scenarioBal))), /* @__PURE__ */ import_react17.default.createElement("td", { className: `px-4 py-2 text-right font-mono text-xs ${diff >= 0 ? "text-green-600" : "text-red-500"}` }, diff >= 0 ? "+" : "", formatCurrency(diff)));
+    }))))));
+  }
+
+  // projects/benes-finance/frontend/components/Forecast.tsx
+  var import_react18 = __toESM(require_react());
+  function todayStr2() {
+    const d = /* @__PURE__ */ new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  }
+  function formatItemDate(dateStr) {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    });
+  }
+  var EMPTY_FORM2 = { name: "", amount: "", item_date: todayStr2(), account_id: "", notes: "", is_extra_debt_payment: false };
+  function ItemForm2({
+    initial,
+    accounts,
+    onSave,
+    onCancel,
+    saving
+  }) {
+    const [form, setForm] = (0, import_react18.useState)(initial);
+    const nameRef = (0, import_react18.useRef)(null);
+    (0, import_react18.useEffect)(() => {
+      nameRef.current?.focus();
+    }, []);
+    const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+    function handleAccountChange(e) {
+      const val = e.target.value;
+      setForm((f) => ({ ...f, account_id: val, is_extra_debt_payment: val ? f.is_extra_debt_payment : false }));
+    }
+    return /* @__PURE__ */ import_react18.default.createElement("div", { className: "bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3" }, /* @__PURE__ */ import_react18.default.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3" }, /* @__PURE__ */ import_react18.default.createElement("div", null, /* @__PURE__ */ import_react18.default.createElement("label", { className: "block text-xs text-gray-500 mb-1" }, "Name *"), /* @__PURE__ */ import_react18.default.createElement(
+      "input",
+      {
+        ref: nameRef,
+        className: "w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400",
+        value: form.name,
+        onChange: set("name"),
+        placeholder: "e.g. Bonus payment"
+      }
+    )), /* @__PURE__ */ import_react18.default.createElement("div", null, /* @__PURE__ */ import_react18.default.createElement("label", { className: "block text-xs text-gray-500 mb-1" }, "Amount * (negative = expense)"), /* @__PURE__ */ import_react18.default.createElement(
+      "input",
+      {
+        type: "number",
+        step: "0.01",
+        className: "w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-blue-400",
+        value: form.amount,
+        onChange: set("amount"),
+        placeholder: "-500.00"
+      }
+    )), /* @__PURE__ */ import_react18.default.createElement("div", null, /* @__PURE__ */ import_react18.default.createElement("label", { className: "block text-xs text-gray-500 mb-1" }, "Date *"), /* @__PURE__ */ import_react18.default.createElement(
+      "input",
+      {
+        type: "date",
+        className: "w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400",
+        value: form.item_date,
+        onChange: set("item_date")
+      }
+    )), /* @__PURE__ */ import_react18.default.createElement("div", null, /* @__PURE__ */ import_react18.default.createElement("label", { className: "block text-xs text-gray-500 mb-1" }, "Account (optional)"), /* @__PURE__ */ import_react18.default.createElement(
+      "select",
+      {
+        className: "w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400",
+        value: form.account_id,
+        onChange: handleAccountChange
+      },
+      /* @__PURE__ */ import_react18.default.createElement("option", { value: "" }, "\u2014 none \u2014"),
+      accounts.map((a) => /* @__PURE__ */ import_react18.default.createElement("option", { key: a.account_id, value: a.account_id }, a.creditor))
+    ))), form.account_id && /* @__PURE__ */ import_react18.default.createElement("label", { className: "flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none" }, /* @__PURE__ */ import_react18.default.createElement(
+      "input",
+      {
+        type: "checkbox",
+        checked: form.is_extra_debt_payment,
+        onChange: (e) => setForm((f) => ({ ...f, is_extra_debt_payment: e.target.checked })),
+        className: "rounded"
+      }
+    ), "Apply to debt payoff", /* @__PURE__ */ import_react18.default.createElement("span", { className: "text-xs text-gray-400" }, "(updates payoff dates on Debt & Projections pages)")), /* @__PURE__ */ import_react18.default.createElement("div", null, /* @__PURE__ */ import_react18.default.createElement("label", { className: "block text-xs text-gray-500 mb-1" }, "Notes"), /* @__PURE__ */ import_react18.default.createElement(
+      "textarea",
+      {
+        rows: 2,
+        className: "w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 resize-none",
+        value: form.notes,
+        onChange: set("notes"),
+        placeholder: "Optional notes\u2026"
+      }
+    )), /* @__PURE__ */ import_react18.default.createElement("div", { className: "flex gap-2 justify-end" }, /* @__PURE__ */ import_react18.default.createElement(
+      "button",
+      {
+        onClick: onCancel,
+        className: "px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-100"
+      },
+      "Cancel"
+    ), /* @__PURE__ */ import_react18.default.createElement(
+      "button",
+      {
+        disabled: saving || !form.name.trim() || !form.amount || !form.item_date,
+        onClick: () => onSave(form),
+        className: "px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 flex items-center gap-1.5"
+      },
+      /* @__PURE__ */ import_react18.default.createElement(Check, { size: 14 }),
+      " Save"
+    )));
+  }
+  function Forecast() {
+    const [items, setItems] = (0, import_react18.useState)([]);
+    const [accounts, setAccounts] = (0, import_react18.useState)([]);
+    const [loading, setLoading] = (0, import_react18.useState)(true);
+    const [error, setError] = (0, import_react18.useState)(null);
+    const [showAll, setShowAll] = (0, import_react18.useState)(false);
+    const [showCreate, setShowCreate] = (0, import_react18.useState)(false);
+    const [editingId, setEditingId] = (0, import_react18.useState)(null);
+    const [saving, setSaving] = (0, import_react18.useState)(false);
+    const today = todayStr2();
+    function load() {
+      return Promise.all([
+        api.forecast.list(false),
+        api.accounts.list()
+      ]).then(([its, accs]) => {
+        setItems(its);
+        setAccounts(accs);
+      }).catch((e) => setError(e.message)).finally(() => setLoading(false));
+    }
+    (0, import_react18.useEffect)(() => {
+      load();
+    }, []);
+    const displayed = showAll ? items : items.filter((i) => i.is_active === 1);
+    const upcoming = displayed.filter((i) => i.item_date >= today);
+    const past = displayed.filter((i) => i.item_date < today);
+    const upcomingIncome = upcoming.filter((i) => i.amount > 0).reduce((s, i) => s + i.amount, 0);
+    const upcomingExpense = upcoming.filter((i) => i.amount < 0).reduce((s, i) => s + i.amount, 0);
+    const upcomingNet = upcomingIncome + upcomingExpense;
+    async function handleCreate(form) {
+      setSaving(true);
+      try {
+        const created = await api.forecast.create({
+          name: form.name.trim(),
+          amount: parseFloat(form.amount),
+          item_date: form.item_date,
+          account_id: form.account_id || null,
+          notes: form.notes.trim() || null,
+          is_extra_debt_payment: form.is_extra_debt_payment ? 1 : 0
+        });
+        setItems((prev) => [...prev, created].sort((a, b) => a.item_date.localeCompare(b.item_date)));
+        setShowCreate(false);
+      } catch (e) {
+        alert(e.message);
+      } finally {
+        setSaving(false);
+      }
+    }
+    async function handleEdit(id, form) {
+      setSaving(true);
+      try {
+        const updated = await api.forecast.update(id, {
+          name: form.name.trim(),
+          amount: parseFloat(form.amount),
+          item_date: form.item_date,
+          account_id: form.account_id || null,
+          notes: form.notes.trim() || null,
+          is_extra_debt_payment: form.is_extra_debt_payment ? 1 : 0
+        });
+        setItems((prev) => prev.map((i) => i.forecast_item_id === id ? updated : i).sort((a, b) => a.item_date.localeCompare(b.item_date)));
+        setEditingId(null);
+      } catch (e) {
+        alert(e.message);
+      } finally {
+        setSaving(false);
+      }
+    }
+    async function handleDelete(id, name) {
+      if (!confirm(`Delete "${name}"?`)) return;
+      try {
+        await api.forecast.delete(id);
+        setItems((prev) => prev.filter((i) => i.forecast_item_id !== id));
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+    function toFormState(item) {
+      return {
+        name: item.name,
+        amount: String(item.amount),
+        item_date: item.item_date,
+        account_id: item.account_id ?? "",
+        notes: item.notes ?? "",
+        is_extra_debt_payment: item.is_extra_debt_payment === 1
+      };
+    }
+    if (loading) return /* @__PURE__ */ import_react18.default.createElement("p", { className: "text-gray-400 text-sm" }, "Loading\u2026");
+    if (error) return /* @__PURE__ */ import_react18.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    return /* @__PURE__ */ import_react18.default.createElement("div", { className: "space-y-5" }, /* @__PURE__ */ import_react18.default.createElement("div", { className: "flex items-center gap-3 flex-wrap" }, /* @__PURE__ */ import_react18.default.createElement("h1", { className: "text-lg font-semibold text-gray-900" }, "Forecast"), /* @__PURE__ */ import_react18.default.createElement("p", { className: "text-sm text-gray-500" }, "One-time projected income & expenses"), /* @__PURE__ */ import_react18.default.createElement("div", { className: "ml-auto flex items-center gap-2" }, /* @__PURE__ */ import_react18.default.createElement("label", { className: "flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer" }, /* @__PURE__ */ import_react18.default.createElement("input", { type: "checkbox", checked: showAll, onChange: (e) => setShowAll(e.target.checked), className: "rounded" }), "Show past"), /* @__PURE__ */ import_react18.default.createElement(
+      "button",
+      {
+        onClick: () => {
+          setShowCreate(true);
+          setEditingId(null);
+        },
+        className: "flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+      },
+      /* @__PURE__ */ import_react18.default.createElement(Plus, { size: 14 }),
+      " Add Item"
+    ))), upcoming.length > 0 && /* @__PURE__ */ import_react18.default.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-3 gap-3" }, /* @__PURE__ */ import_react18.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react18.default.createElement("p", { className: "text-xs text-gray-500 uppercase tracking-wide mb-1" }, "Upcoming Income"), /* @__PURE__ */ import_react18.default.createElement("p", { className: "text-lg font-semibold text-green-600 font-mono" }, formatCurrency(upcomingIncome))), /* @__PURE__ */ import_react18.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react18.default.createElement("p", { className: "text-xs text-gray-500 uppercase tracking-wide mb-1" }, "Upcoming Expenses"), /* @__PURE__ */ import_react18.default.createElement("p", { className: "text-lg font-semibold text-red-600 font-mono" }, formatCurrency(Math.abs(upcomingExpense)))), /* @__PURE__ */ import_react18.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 px-4 py-3" }, /* @__PURE__ */ import_react18.default.createElement("p", { className: "text-xs text-gray-500 uppercase tracking-wide mb-1" }, "Net"), /* @__PURE__ */ import_react18.default.createElement("p", { className: `text-lg font-semibold font-mono ${upcomingNet >= 0 ? "text-green-700" : "text-red-700"}` }, upcomingNet >= 0 ? "+" : "\u2212", formatCurrency(Math.abs(upcomingNet))))), showCreate && /* @__PURE__ */ import_react18.default.createElement(
+      ItemForm2,
+      {
+        initial: { ...EMPTY_FORM2, item_date: today },
+        accounts,
+        onSave: handleCreate,
+        onCancel: () => setShowCreate(false),
+        saving
+      }
+    ), displayed.length === 0 ? /* @__PURE__ */ import_react18.default.createElement("div", { className: "text-center text-gray-400 italic text-sm py-12" }, "No forecast items yet. Add one to see it on the Schedule and Cash Flow pages.") : /* @__PURE__ */ import_react18.default.createElement("div", { className: "space-y-6" }, upcoming.length > 0 && /* @__PURE__ */ import_react18.default.createElement(
+      ItemSection,
+      {
+        title: "Upcoming",
+        items: upcoming,
+        accounts,
+        today,
+        editingId,
+        saving,
+        onEdit: (id) => setEditingId(id),
+        onEditSave: handleEdit,
+        onEditCancel: () => setEditingId(null),
+        onDelete: handleDelete,
+        toFormState,
+        formatDate: formatItemDate,
+        isPast: false
+      }
+    ), showAll && past.length > 0 && /* @__PURE__ */ import_react18.default.createElement(
+      ItemSection,
+      {
+        title: "Past",
+        items: [...past].reverse(),
+        accounts,
+        today,
+        editingId,
+        saving,
+        onEdit: (id) => setEditingId(id),
+        onEditSave: handleEdit,
+        onEditCancel: () => setEditingId(null),
+        onDelete: handleDelete,
+        toFormState,
+        formatDate: formatItemDate,
+        isPast: true
+      }
+    )));
+  }
+  function ItemSection({
+    title,
+    items,
+    accounts,
+    editingId,
+    saving,
+    onEdit,
+    onEditSave,
+    onEditCancel,
+    onDelete,
+    toFormState,
+    formatDate: formatDate3,
+    isPast
+  }) {
+    return /* @__PURE__ */ import_react18.default.createElement("div", null, /* @__PURE__ */ import_react18.default.createElement("h2", { className: `text-xs font-semibold uppercase tracking-wider mb-2 ${isPast ? "text-gray-400" : "text-gray-600"}` }, title), /* @__PURE__ */ import_react18.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden divide-y divide-gray-50" }, items.map((item) => /* @__PURE__ */ import_react18.default.createElement(import_react18.default.Fragment, { key: item.forecast_item_id }, editingId === item.forecast_item_id ? /* @__PURE__ */ import_react18.default.createElement("div", { className: "p-3" }, /* @__PURE__ */ import_react18.default.createElement(
+      ItemForm2,
+      {
+        initial: toFormState(item),
+        accounts,
+        onSave: (f) => onEditSave(item.forecast_item_id, f),
+        onCancel: onEditCancel,
+        saving
+      }
+    )) : /* @__PURE__ */ import_react18.default.createElement("div", { className: `flex items-center gap-3 px-4 py-3 ${isPast ? "opacity-50" : ""}` }, /* @__PURE__ */ import_react18.default.createElement("div", { className: "flex-1 min-w-0" }, /* @__PURE__ */ import_react18.default.createElement("span", { className: "text-sm text-gray-800" }, item.name), item.creditor && /* @__PURE__ */ import_react18.default.createElement("span", { className: "ml-2 text-xs text-gray-400" }, item.creditor), item.is_extra_debt_payment === 1 && /* @__PURE__ */ import_react18.default.createElement("span", { className: "ml-1.5 text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-medium" }, "debt payoff"), item.notes && /* @__PURE__ */ import_react18.default.createElement("p", { className: "text-xs text-gray-400 mt-0.5 truncate" }, item.notes)), /* @__PURE__ */ import_react18.default.createElement("span", { className: "text-xs text-gray-400 shrink-0" }, formatDate3(item.item_date)), /* @__PURE__ */ import_react18.default.createElement("span", { className: `text-sm font-mono shrink-0 ${item.amount >= 0 ? "text-green-600" : "text-red-600"}` }, item.amount >= 0 ? "+" : "\u2212", formatCurrency(Math.abs(item.amount), true)), /* @__PURE__ */ import_react18.default.createElement("div", { className: "flex items-center gap-1 shrink-0" }, /* @__PURE__ */ import_react18.default.createElement(
+      "button",
+      {
+        onClick: () => onEdit(item.forecast_item_id),
+        className: "p-1 text-gray-400 hover:text-blue-600 rounded"
+      },
+      /* @__PURE__ */ import_react18.default.createElement(Pencil, { size: 13 })
+    ), /* @__PURE__ */ import_react18.default.createElement(
+      "button",
+      {
+        onClick: () => onDelete(item.forecast_item_id, item.name),
+        className: "p-1 text-gray-400 hover:text-red-600 rounded"
+      },
+      /* @__PURE__ */ import_react18.default.createElement(Trash2, { size: 13 })
+    )))))));
+  }
+
+  // projects/benes-finance/frontend/components/FeatureRequests.tsx
+  var import_react19 = __toESM(require_react());
+  var STATUS_CONFIG = {
+    open: { label: "Open", cls: "bg-blue-100 text-blue-800" },
+    in_progress: { label: "In Progress", cls: "bg-yellow-100 text-yellow-800" },
+    done: { label: "Done", cls: "bg-green-100 text-green-800" },
+    declined: { label: "Declined", cls: "bg-gray-100 text-gray-500" }
+  };
+  function StatusBadge2({ status }) {
+    const { label, cls } = STATUS_CONFIG[status] ?? STATUS_CONFIG.open;
+    return /* @__PURE__ */ import_react19.default.createElement("span", { className: `text-xs px-2 py-0.5 rounded-full font-medium ${cls}` }, label);
+  }
+  function formatDate2(s) {
+    return new Date(s).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
+  var EMPTY_CREATE = { title: "", description: "", submitted_by: "" };
+  function FeatureRequests() {
+    const [requests, setRequests] = (0, import_react19.useState)([]);
+    const [loading, setLoading] = (0, import_react19.useState)(true);
+    const [error, setError] = (0, import_react19.useState)(null);
+    const [showCreate, setShowCreate] = (0, import_react19.useState)(false);
+    const [createForm, setCreateForm] = (0, import_react19.useState)(EMPTY_CREATE);
+    const [creating, setCreating] = (0, import_react19.useState)(false);
+    const [editingId, setEditingId] = (0, import_react19.useState)(null);
+    const [editForm, setEditForm] = (0, import_react19.useState)({ status: "open", github_issue_number: "" });
+    const [syncing, setSyncing] = (0, import_react19.useState)(false);
+    const [syncMsg, setSyncMsg] = (0, import_react19.useState)(null);
+    (0, import_react19.useEffect)(() => {
+      api.featureRequests.list().then(setRequests).catch((e) => setError(e.message)).finally(() => setLoading(false));
+    }, []);
+    async function handleCreate(e) {
+      e.preventDefault();
+      if (!createForm.title.trim()) return;
+      setCreating(true);
+      try {
+        const r = await api.featureRequests.create({
+          title: createForm.title.trim(),
+          description: createForm.description.trim() || void 0,
+          submitted_by: createForm.submitted_by.trim() || void 0
+        });
+        setRequests((prev) => [r, ...prev]);
+        setCreateForm(EMPTY_CREATE);
+        setShowCreate(false);
+      } catch (e2) {
+        alert(e2.message);
+      } finally {
+        setCreating(false);
+      }
+    }
+    function startEdit(r) {
+      setEditingId(r.request_id);
+      setEditForm({
+        status: r.status,
+        github_issue_number: r.github_issue_number != null ? String(r.github_issue_number) : ""
+      });
+    }
+    async function saveEdit(id) {
+      try {
+        const updated = await api.featureRequests.update(id, {
+          status: editForm.status,
+          github_issue_number: editForm.github_issue_number ? parseInt(editForm.github_issue_number) : void 0
+        });
+        setRequests((prev) => prev.map((r) => r.request_id === id ? updated : r));
+        setEditingId(null);
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+    async function handleDelete(id, title) {
+      if (!confirm(`Delete "${title}"?`)) return;
+      try {
+        await api.featureRequests.delete(id);
+        setRequests((prev) => prev.filter((r) => r.request_id !== id));
+      } catch (e) {
+        alert(e.message);
+      }
+    }
+    async function handleSync() {
+      setSyncing(true);
+      setSyncMsg(null);
+      try {
+        const result = await api.featureRequests.sync();
+        const parts = [];
+        if (result.updated > 0) parts.push(`updated ${result.updated} linked issue${result.updated !== 1 ? "s" : ""}`);
+        if (result.imported > 0) parts.push(`imported ${result.imported} new issue${result.imported !== 1 ? "s" : ""} from GitHub`);
+        if (parts.length === 0) parts.push("nothing new");
+        setSyncMsg(`Sync complete \u2014 ${parts.join(", ")}.`);
+        const refreshed = await api.featureRequests.list();
+        setRequests(refreshed);
+      } catch (e) {
+        setSyncMsg(`Sync failed: ${e.message}`);
+      } finally {
+        setSyncing(false);
+      }
+    }
+    const open = requests.filter((r) => r.status === "open");
+    const inProgress = requests.filter((r) => r.status === "in_progress");
+    const done = requests.filter((r) => r.status === "done");
+    const declined = requests.filter((r) => r.status === "declined");
+    if (loading) return /* @__PURE__ */ import_react19.default.createElement("p", { className: "text-gray-400 text-sm" }, "Loading\u2026");
+    if (error) return /* @__PURE__ */ import_react19.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    return /* @__PURE__ */ import_react19.default.createElement("div", { className: "space-y-5" }, /* @__PURE__ */ import_react19.default.createElement("div", { className: "flex items-center gap-3 flex-wrap" }, /* @__PURE__ */ import_react19.default.createElement("div", null, /* @__PURE__ */ import_react19.default.createElement("h1", { className: "text-lg font-semibold text-gray-900" }, "Feature Requests"), /* @__PURE__ */ import_react19.default.createElement("p", { className: "text-sm text-gray-500 mt-0.5" }, "Submit and track feature ideas \u2014 no GitHub account needed.")), /* @__PURE__ */ import_react19.default.createElement("div", { className: "ml-auto flex items-center gap-2" }, /* @__PURE__ */ import_react19.default.createElement(
+      "a",
+      {
+        href: "https://github.com/nickbenes/bills-tracker/issues",
+        target: "_blank",
+        rel: "noreferrer",
+        className: "flex items-center gap-1.5 px-2.5 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+      },
+      /* @__PURE__ */ import_react19.default.createElement(ExternalLink, { size: 13 }),
+      " GitHub Issues"
+    ), /* @__PURE__ */ import_react19.default.createElement(
+      "button",
+      {
+        onClick: handleSync,
+        disabled: syncing,
+        className: "flex items-center gap-1.5 px-2.5 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+      },
+      /* @__PURE__ */ import_react19.default.createElement(RefreshCw, { size: 13, className: syncing ? "animate-spin" : "" }),
+      " Sync GitHub"
+    ), /* @__PURE__ */ import_react19.default.createElement(
+      "button",
+      {
+        onClick: () => setShowCreate((v) => !v),
+        className: `flex items-center gap-1.5 px-3 py-1.5 text-sm rounded ${showCreate ? "bg-gray-200 text-gray-700" : "bg-blue-600 text-white hover:bg-blue-700"}`
+      },
+      showCreate ? /* @__PURE__ */ import_react19.default.createElement(X, { size: 13 }) : /* @__PURE__ */ import_react19.default.createElement(Plus, { size: 13 }),
+      " New Request"
+    ))), syncMsg && /* @__PURE__ */ import_react19.default.createElement("p", { className: `text-sm px-3 py-2 rounded ${syncMsg.startsWith("Sync failed") ? "bg-red-50 text-red-700" : "bg-green-50 text-green-700"}` }, syncMsg), showCreate && /* @__PURE__ */ import_react19.default.createElement("form", { onSubmit: handleCreate, className: "bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3" }, /* @__PURE__ */ import_react19.default.createElement("p", { className: "text-sm font-medium text-gray-700" }, "Submit a feature request"), /* @__PURE__ */ import_react19.default.createElement("div", null, /* @__PURE__ */ import_react19.default.createElement("label", { className: "block text-xs text-gray-500 mb-1" }, "Title *"), /* @__PURE__ */ import_react19.default.createElement(
+      "input",
+      {
+        className: "w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400",
+        value: createForm.title,
+        onChange: (e) => setCreateForm((f) => ({ ...f, title: e.target.value })),
+        placeholder: "What would you like to see?",
+        required: true,
+        autoFocus: true
+      }
+    )), /* @__PURE__ */ import_react19.default.createElement("div", null, /* @__PURE__ */ import_react19.default.createElement("label", { className: "block text-xs text-gray-500 mb-1" }, "Description"), /* @__PURE__ */ import_react19.default.createElement(
+      "textarea",
+      {
+        rows: 3,
+        className: "w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 resize-none",
+        value: createForm.description,
+        onChange: (e) => setCreateForm((f) => ({ ...f, description: e.target.value })),
+        placeholder: "More details, examples, or context\u2026"
+      }
+    )), /* @__PURE__ */ import_react19.default.createElement("div", null, /* @__PURE__ */ import_react19.default.createElement("label", { className: "block text-xs text-gray-500 mb-1" }, "Your name (optional)"), /* @__PURE__ */ import_react19.default.createElement(
+      "input",
+      {
+        className: "w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400",
+        value: createForm.submitted_by,
+        onChange: (e) => setCreateForm((f) => ({ ...f, submitted_by: e.target.value })),
+        placeholder: "e.g. Nick, Maureen\u2026"
+      }
+    )), /* @__PURE__ */ import_react19.default.createElement("div", { className: "flex gap-2 justify-end" }, /* @__PURE__ */ import_react19.default.createElement(
+      "button",
+      {
+        type: "button",
+        onClick: () => setShowCreate(false),
+        className: "px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-100"
+      },
+      "Cancel"
+    ), /* @__PURE__ */ import_react19.default.createElement(
+      "button",
+      {
+        type: "submit",
+        disabled: creating,
+        className: "px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 flex items-center gap-1.5"
+      },
+      /* @__PURE__ */ import_react19.default.createElement(Check, { size: 14 }),
+      " Submit"
+    ))), requests.length === 0 ? /* @__PURE__ */ import_react19.default.createElement("div", { className: "text-center text-gray-400 italic text-sm py-12" }, "No feature requests yet. Be the first to submit one!") : /* @__PURE__ */ import_react19.default.createElement("div", { className: "space-y-6" }, [
+      { label: "Open", items: open },
+      { label: "In Progress", items: inProgress },
+      { label: "Done", items: done },
+      { label: "Declined", items: declined }
+    ].filter((s) => s.items.length > 0).map(({ label, items }) => /* @__PURE__ */ import_react19.default.createElement("div", { key: label }, /* @__PURE__ */ import_react19.default.createElement("h2", { className: "text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2" }, label, " (", items.length, ")"), /* @__PURE__ */ import_react19.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden divide-y divide-gray-50" }, items.map((r) => /* @__PURE__ */ import_react19.default.createElement("div", { key: r.request_id, className: "p-4" }, editingId === r.request_id ? /* @__PURE__ */ import_react19.default.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ import_react19.default.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-3" }, /* @__PURE__ */ import_react19.default.createElement("div", null, /* @__PURE__ */ import_react19.default.createElement("label", { className: "block text-xs text-gray-500 mb-1" }, "Status"), /* @__PURE__ */ import_react19.default.createElement(
+      "select",
+      {
+        className: "w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400",
+        value: editForm.status,
+        onChange: (e) => setEditForm((f) => ({ ...f, status: e.target.value }))
+      },
+      Object.entries(STATUS_CONFIG).map(([v, { label: label2 }]) => /* @__PURE__ */ import_react19.default.createElement("option", { key: v, value: v }, label2))
+    )), /* @__PURE__ */ import_react19.default.createElement("div", null, /* @__PURE__ */ import_react19.default.createElement("label", { className: "block text-xs text-gray-500 mb-1" }, "GitHub Issue # (optional)"), /* @__PURE__ */ import_react19.default.createElement(
+      "input",
+      {
+        type: "number",
+        className: "w-full border border-gray-300 rounded px-2 py-1.5 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-blue-400",
+        value: editForm.github_issue_number,
+        onChange: (e) => setEditForm((f) => ({ ...f, github_issue_number: e.target.value })),
+        placeholder: "e.g. 30"
+      }
+    ))), /* @__PURE__ */ import_react19.default.createElement("div", { className: "flex gap-2 justify-end" }, /* @__PURE__ */ import_react19.default.createElement(
+      "button",
+      {
+        onClick: () => setEditingId(null),
+        className: "px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-100"
+      },
+      "Cancel"
+    ), /* @__PURE__ */ import_react19.default.createElement(
+      "button",
+      {
+        onClick: () => saveEdit(r.request_id),
+        className: "px-3 py-1.5 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-1"
+      },
+      /* @__PURE__ */ import_react19.default.createElement(Check, { size: 12 }),
+      " Save"
+    ))) : /* @__PURE__ */ import_react19.default.createElement("div", { className: "flex items-start gap-3" }, /* @__PURE__ */ import_react19.default.createElement("div", { className: "flex-1 min-w-0" }, /* @__PURE__ */ import_react19.default.createElement("div", { className: "flex items-center gap-2 flex-wrap" }, /* @__PURE__ */ import_react19.default.createElement("span", { className: "text-sm font-medium text-gray-900" }, r.title), /* @__PURE__ */ import_react19.default.createElement(StatusBadge2, { status: r.status }), r.github_issue_number && /* @__PURE__ */ import_react19.default.createElement(
+      "a",
+      {
+        href: r.github_issue_url ?? `https://github.com/nickbenes/bills-tracker/issues/${r.github_issue_number}`,
+        target: "_blank",
+        rel: "noreferrer",
+        className: "flex items-center gap-0.5 text-xs text-blue-600 hover:underline"
+      },
+      "#",
+      r.github_issue_number,
+      r.github_issue_status === "closed" && /* @__PURE__ */ import_react19.default.createElement("span", { className: "ml-1 text-[10px] bg-purple-100 text-purple-700 px-1 rounded" }, "closed"),
+      /* @__PURE__ */ import_react19.default.createElement(ExternalLink, { size: 10, className: "inline ml-0.5" })
+    )), r.description && /* @__PURE__ */ import_react19.default.createElement("p", { className: "text-sm text-gray-600 mt-1 whitespace-pre-wrap" }, r.description), /* @__PURE__ */ import_react19.default.createElement("div", { className: "flex items-center gap-3 mt-1.5" }, r.submitted_by && /* @__PURE__ */ import_react19.default.createElement("span", { className: "text-xs text-gray-400" }, "by ", r.submitted_by), /* @__PURE__ */ import_react19.default.createElement("span", { className: "text-xs text-gray-400" }, formatDate2(r.created_at)))), /* @__PURE__ */ import_react19.default.createElement("div", { className: "flex items-center gap-1 shrink-0" }, /* @__PURE__ */ import_react19.default.createElement(
+      "button",
+      {
+        onClick: () => startEdit(r),
+        className: "p-1 text-gray-400 hover:text-blue-600 rounded",
+        title: "Edit status / link issue"
+      },
+      /* @__PURE__ */ import_react19.default.createElement(Pencil, { size: 13 })
+    ), /* @__PURE__ */ import_react19.default.createElement(
+      "button",
+      {
+        onClick: () => handleDelete(r.request_id, r.title),
+        className: "p-1 text-gray-400 hover:text-red-600 rounded",
+        title: "Delete"
+      },
+      /* @__PURE__ */ import_react19.default.createElement(Trash2, { size: 13 })
+    ))))))))));
+  }
+
+  // projects/benes-finance/frontend/components/Tags.tsx
+  var import_react20 = __toESM(require_react());
+  var TAG_COLORS2 = [
+    "bg-blue-100 text-blue-700",
+    "bg-purple-100 text-purple-700",
+    "bg-emerald-100 text-emerald-700",
+    "bg-amber-100 text-amber-700",
+    "bg-rose-100 text-rose-700",
+    "bg-cyan-100 text-cyan-700",
+    "bg-indigo-100 text-indigo-700",
+    "bg-orange-100 text-orange-700"
+  ];
+  function tagColor2(tag) {
+    let h = 0;
+    for (let i = 0; i < tag.length; i++) h = h * 31 + tag.charCodeAt(i) >>> 0;
+    return TAG_COLORS2[h % TAG_COLORS2.length];
+  }
+  function TagPill({ tag }) {
+    return /* @__PURE__ */ import_react20.default.createElement("span", { className: `inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${tagColor2(tag)}` }, /* @__PURE__ */ import_react20.default.createElement(Tag, { size: 10 }), tag);
+  }
+  function ItemRow3({ item }) {
+    return /* @__PURE__ */ import_react20.default.createElement("div", { className: `flex items-center gap-3 px-4 py-2.5 border-b border-gray-50 last:border-0 ${!item.is_active ? "opacity-40" : ""}` }, /* @__PURE__ */ import_react20.default.createElement("span", { className: "flex-1 text-sm text-gray-800 truncate" }, item.name), !item.is_active && /* @__PURE__ */ import_react20.default.createElement("span", { className: "text-[10px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded shrink-0" }, "inactive"), /* @__PURE__ */ import_react20.default.createElement("span", { className: `text-xs font-mono shrink-0 ${item.amount < 0 ? "text-red-600" : "text-green-600"}` }, item.amount < 0 ? "\u2212" : "+", formatCurrency(Math.abs(item.amount), true)), /* @__PURE__ */ import_react20.default.createElement("span", { className: "text-xs text-gray-400 shrink-0 w-20 text-right" }, FREQUENCY_LABEL[item.frequency] ?? item.frequency));
+  }
+  function TagCard({ tag, items }) {
+    const active = items.filter((i) => i.is_active);
+    const inactive = items.filter((i) => !i.is_active);
+    const sorted2 = [...active, ...inactive];
+    const monthly = active.reduce((s, i) => s + i.effective_monthly, 0);
+    return /* @__PURE__ */ import_react20.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react20.default.createElement("div", { className: "px-4 py-2.5 border-b border-gray-100 flex items-center gap-3" }, /* @__PURE__ */ import_react20.default.createElement(TagPill, { tag }), /* @__PURE__ */ import_react20.default.createElement("span", { className: "text-xs text-gray-400" }, active.length, " active", inactive.length > 0 ? `, ${inactive.length} inactive` : ""), active.length > 0 && /* @__PURE__ */ import_react20.default.createElement("span", { className: `ml-auto text-xs font-mono font-medium ${monthly < 0 ? "text-red-600" : "text-green-700"}` }, monthly < 0 ? "\u2212" : "+", formatCurrency(Math.abs(monthly), true), "/mo")), /* @__PURE__ */ import_react20.default.createElement("div", null, sorted2.map((item) => /* @__PURE__ */ import_react20.default.createElement(ItemRow3, { key: item.recurring_item_id, item }))));
+  }
+  function PrefixSection({ prefix, tags, tagToItems }) {
+    const totalActive = tags.reduce((s, t) => s + (tagToItems.get(t) ?? []).filter((i) => i.is_active).length, 0);
+    const totalMonthly = tags.reduce((s, t) => {
+      return s + (tagToItems.get(t) ?? []).filter((i) => i.is_active).reduce((ss, i) => ss + i.effective_monthly, 0);
+    }, 0);
+    return /* @__PURE__ */ import_react20.default.createElement("div", { className: "space-y-3" }, /* @__PURE__ */ import_react20.default.createElement("div", { className: "flex items-baseline gap-3" }, /* @__PURE__ */ import_react20.default.createElement("h2", { className: "text-xs font-semibold uppercase tracking-wider text-gray-500" }, prefix ?? "Other"), /* @__PURE__ */ import_react20.default.createElement("span", { className: "text-xs text-gray-400" }, tags.length, " tag", tags.length !== 1 ? "s" : "", " \xB7 ", totalActive, " active items"), totalActive > 0 && /* @__PURE__ */ import_react20.default.createElement("span", { className: `text-xs font-mono ${totalMonthly < 0 ? "text-red-500" : "text-green-600"}` }, totalMonthly < 0 ? "\u2212" : "+", formatCurrency(Math.abs(totalMonthly), true), "/mo")), /* @__PURE__ */ import_react20.default.createElement("div", { className: "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3" }, tags.map((tag) => /* @__PURE__ */ import_react20.default.createElement(TagCard, { key: tag, tag, items: tagToItems.get(tag) ?? [] }))));
+  }
+  function Tags() {
+    const [items, setItems] = (0, import_react20.useState)([]);
+    const [loading, setLoading] = (0, import_react20.useState)(true);
+    const [error, setError] = (0, import_react20.useState)(null);
+    (0, import_react20.useEffect)(() => {
+      api.recurring.listAll().then((items2) => {
+        setItems(items2);
+        setLoading(false);
+      }).catch((e) => {
+        setError(e.message);
+        setLoading(false);
+      });
+    }, []);
+    const { tagToItems, prefixGroups, unprefixed, untaggedActive } = (0, import_react20.useMemo)(() => {
+      const tagToItems2 = /* @__PURE__ */ new Map();
+      for (const item of items) {
+        for (const tag of item.tags) {
+          if (!tagToItems2.has(tag)) tagToItems2.set(tag, []);
+          tagToItems2.get(tag).push(item);
+        }
+      }
+      const prefixGroups2 = /* @__PURE__ */ new Map();
+      const unprefixed2 = [];
+      for (const tag of [...tagToItems2.keys()].sort()) {
+        const col = tag.indexOf(":");
+        if (col > 0) {
+          const prefix = tag.slice(0, col).trim();
+          if (!prefixGroups2.has(prefix)) prefixGroups2.set(prefix, []);
+          prefixGroups2.get(prefix).push(tag);
+        } else {
+          unprefixed2.push(tag);
+        }
+      }
+      const untaggedActive2 = items.filter((i) => i.is_active && i.tags.length === 0).length;
+      return { tagToItems: tagToItems2, prefixGroups: prefixGroups2, unprefixed: unprefixed2, untaggedActive: untaggedActive2 };
+    }, [items]);
+    if (loading) return /* @__PURE__ */ import_react20.default.createElement("p", { className: "text-gray-400 text-sm" }, "Loading\u2026");
+    if (error) return /* @__PURE__ */ import_react20.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    const totalTags = tagToItems.size;
+    const taggedItems = new Set(items.filter((i) => i.tags.length > 0).map((i) => i.recurring_item_id)).size;
+    return /* @__PURE__ */ import_react20.default.createElement("div", { className: "space-y-6" }, /* @__PURE__ */ import_react20.default.createElement("div", { className: "flex items-center gap-3 flex-wrap" }, /* @__PURE__ */ import_react20.default.createElement("div", null, /* @__PURE__ */ import_react20.default.createElement("h1", { className: "text-lg font-semibold text-gray-900" }, "Tags"), /* @__PURE__ */ import_react20.default.createElement("p", { className: "text-sm text-gray-500 mt-0.5" }, totalTags, " tag", totalTags !== 1 ? "s" : "", " across ", taggedItems, " recurring item", taggedItems !== 1 ? "s" : "")), /* @__PURE__ */ import_react20.default.createElement(
+      Link,
+      {
+        to: "/recurring",
+        className: "ml-auto text-xs text-blue-600 hover:underline"
+      },
+      "Manage on Recurring \u2192"
+    )), untaggedActive > 0 && /* @__PURE__ */ import_react20.default.createElement("div", { className: "flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-2" }, /* @__PURE__ */ import_react20.default.createElement(Tag, { size: 13 }), untaggedActive, " active item", untaggedActive !== 1 ? "s have" : " has", " no tags \u2014 consider tagging", " ", /* @__PURE__ */ import_react20.default.createElement(Link, { to: "/recurring", className: "underline hover:text-amber-900" }, "on the Recurring page"), "."), totalTags === 0 ? /* @__PURE__ */ import_react20.default.createElement("div", { className: "text-center text-gray-400 italic text-sm py-16" }, "No tags yet. Add tags to recurring items on the", " ", /* @__PURE__ */ import_react20.default.createElement(Link, { to: "/recurring", className: "text-blue-500 hover:underline" }, "Recurring page"), ".") : /* @__PURE__ */ import_react20.default.createElement("div", { className: "space-y-8" }, [...prefixGroups.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([prefix, tags]) => /* @__PURE__ */ import_react20.default.createElement(PrefixSection, { key: prefix, prefix, tags, tagToItems })), unprefixed.length > 0 && /* @__PURE__ */ import_react20.default.createElement(PrefixSection, { prefix: null, tags: unprefixed, tagToItems })));
+  }
+
+  // projects/benes-finance/frontend/components/Coverage.tsx
+  var import_react21 = __toESM(require_react());
+  function StatusIcon({ status }) {
+    if (status === "ok") return /* @__PURE__ */ import_react21.default.createElement(CircleCheckBig, { size: 14, className: "text-green-500 shrink-0" });
+    if (status === "warn") return /* @__PURE__ */ import_react21.default.createElement(TriangleAlert, { size: 14, className: "text-amber-500 shrink-0" });
+    return /* @__PURE__ */ import_react21.default.createElement(CircleX, { size: 14, className: "text-red-500  shrink-0" });
+  }
+  function Section({ title, gapCount, total, children }) {
+    const [open, setOpen] = (0, import_react21.useState)(true);
+    const allOk = gapCount === 0;
+    return /* @__PURE__ */ import_react21.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react21.default.createElement(
+      "button",
+      {
+        onClick: () => setOpen((o) => !o),
+        className: "w-full flex items-center gap-3 px-4 py-3 border-b border-gray-100 hover:bg-gray-50 text-left"
+      },
+      open ? /* @__PURE__ */ import_react21.default.createElement(ChevronDown, { size: 14, className: "text-gray-400 shrink-0" }) : /* @__PURE__ */ import_react21.default.createElement(ChevronRight, { size: 14, className: "text-gray-400 shrink-0" }),
+      /* @__PURE__ */ import_react21.default.createElement("span", { className: "font-medium text-gray-800 text-sm" }, title),
+      /* @__PURE__ */ import_react21.default.createElement("span", { className: "text-xs text-gray-400" }, total, " total"),
+      /* @__PURE__ */ import_react21.default.createElement("span", { className: `ml-auto text-xs font-medium ${allOk ? "text-green-600" : "text-red-600"}` }, allOk ? "All covered" : `${gapCount} gap${gapCount !== 1 ? "s" : ""}`)
+    ), open && /* @__PURE__ */ import_react21.default.createElement("div", null, children));
+  }
+  function accountStatus(a) {
+    return a.recurring_count > 0 ? "ok" : "gap";
+  }
+  function AccountRows({ accounts }) {
+    const [gapsOnly, setGapsOnly] = (0, import_react21.useState)(false);
+    const displayed = gapsOnly ? accounts.filter((a) => accountStatus(a) !== "ok") : accounts;
+    return /* @__PURE__ */ import_react21.default.createElement(import_react21.default.Fragment, null, /* @__PURE__ */ import_react21.default.createElement("div", { className: "px-4 py-2 border-b border-gray-50 flex items-center gap-3" }, /* @__PURE__ */ import_react21.default.createElement("label", { className: "flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer" }, /* @__PURE__ */ import_react21.default.createElement("input", { type: "checkbox", checked: gapsOnly, onChange: (e) => setGapsOnly(e.target.checked), className: "rounded" }), "Show gaps only"), /* @__PURE__ */ import_react21.default.createElement("span", { className: "text-xs text-gray-400 ml-auto" }, "Fix via ", /* @__PURE__ */ import_react21.default.createElement(Link, { to: "/accounts", className: "text-blue-600 hover:underline" }, "Accounts"), " or", " ", /* @__PURE__ */ import_react21.default.createElement(Link, { to: "/recurring", className: "text-blue-600 hover:underline" }, "Recurring"))), /* @__PURE__ */ import_react21.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react21.default.createElement("thead", null, /* @__PURE__ */ import_react21.default.createElement("tr", { className: "border-b border-gray-50 text-xs text-gray-400 uppercase tracking-wide" }, /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-left font-medium w-6" }), /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Account"), /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Type"), /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Linked recurring items"))), /* @__PURE__ */ import_react21.default.createElement("tbody", null, displayed.map((a) => /* @__PURE__ */ import_react21.default.createElement("tr", { key: a.account_id, className: "border-b border-gray-50 last:border-0 hover:bg-gray-50" }, /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5" }, /* @__PURE__ */ import_react21.default.createElement(StatusIcon, { status: accountStatus(a) })), /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5 font-medium text-gray-800" }, a.creditor), /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5 text-gray-500 text-xs" }, TYPE_LABEL[a.account_type] ?? a.account_type), /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5" }, a.recurring_count > 0 ? /* @__PURE__ */ import_react21.default.createElement("span", { className: "text-xs text-green-700" }, a.recurring_count, " item", a.recurring_count !== 1 ? "s" : "") : /* @__PURE__ */ import_react21.default.createElement("span", { className: "text-xs text-red-600" }, "none")))), displayed.length === 0 && /* @__PURE__ */ import_react21.default.createElement("tr", null, /* @__PURE__ */ import_react21.default.createElement("td", { colSpan: 4, className: "px-4 py-6 text-center text-gray-400 italic text-sm" }, "No gaps \u2014 all accounts have linked recurring items.")))));
+  }
+  function recurringStatus(r) {
+    return r.budget_item_id ? "ok" : "gap";
+  }
+  function RecurringRows({ items }) {
+    const [gapsOnly, setGapsOnly] = (0, import_react21.useState)(false);
+    const displayed = gapsOnly ? items.filter((r) => recurringStatus(r) !== "ok") : items;
+    return /* @__PURE__ */ import_react21.default.createElement(import_react21.default.Fragment, null, /* @__PURE__ */ import_react21.default.createElement("div", { className: "px-4 py-2 border-b border-gray-50 flex items-center gap-3" }, /* @__PURE__ */ import_react21.default.createElement("label", { className: "flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer" }, /* @__PURE__ */ import_react21.default.createElement("input", { type: "checkbox", checked: gapsOnly, onChange: (e) => setGapsOnly(e.target.checked), className: "rounded" }), "Show gaps only"), /* @__PURE__ */ import_react21.default.createElement("span", { className: "text-xs text-gray-400 ml-auto" }, "Fix via ", /* @__PURE__ */ import_react21.default.createElement(Link, { to: "/recurring", className: "text-blue-600 hover:underline" }, "Recurring"))), /* @__PURE__ */ import_react21.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react21.default.createElement("thead", null, /* @__PURE__ */ import_react21.default.createElement("tr", { className: "border-b border-gray-50 text-xs text-gray-400 uppercase tracking-wide" }, /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-left font-medium w-6" }), /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Item"), /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Amount"), /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Frequency"), /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Budget item"))), /* @__PURE__ */ import_react21.default.createElement("tbody", null, displayed.map((r) => /* @__PURE__ */ import_react21.default.createElement("tr", { key: r.recurring_item_id, className: "border-b border-gray-50 last:border-0 hover:bg-gray-50" }, /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5" }, /* @__PURE__ */ import_react21.default.createElement(StatusIcon, { status: recurringStatus(r) })), /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5 font-medium text-gray-800" }, r.name), /* @__PURE__ */ import_react21.default.createElement("td", { className: `px-4 py-2.5 text-right font-mono text-xs ${r.amount < 0 ? "text-red-600" : "text-green-600"}` }, r.amount < 0 ? "\u2212" : "+", formatCurrency(Math.abs(r.amount), true)), /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5 text-gray-500 text-xs" }, FREQUENCY_LABEL[r.frequency] ?? r.frequency), /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5 text-xs" }, r.budget_item_name ? /* @__PURE__ */ import_react21.default.createElement("span", { className: "text-green-700" }, r.budget_item_name, " ", /* @__PURE__ */ import_react21.default.createElement("span", { className: "text-gray-400" }, "(", r.category_name, ")")) : /* @__PURE__ */ import_react21.default.createElement("span", { className: "text-red-600" }, "unlinked")))), displayed.length === 0 && /* @__PURE__ */ import_react21.default.createElement("tr", null, /* @__PURE__ */ import_react21.default.createElement("td", { colSpan: 5, className: "px-4 py-6 text-center text-gray-400 italic text-sm" }, "No gaps \u2014 all active recurring items have a budget item.")))));
+  }
+  function budgetItemStatus(b) {
+    if (b.recurring_count > 0) return "ok";
+    if (b.rule_count > 0) return "warn";
+    return "gap";
+  }
+  function BudgetItemRows({ items }) {
+    const [gapsOnly, setGapsOnly] = (0, import_react21.useState)(false);
+    const displayed = gapsOnly ? items.filter((b) => budgetItemStatus(b) !== "ok") : items;
+    const byCategory = displayed.reduce((acc, b) => {
+      (acc[b.category_name] ??= []).push(b);
+      return acc;
+    }, {});
+    return /* @__PURE__ */ import_react21.default.createElement(import_react21.default.Fragment, null, /* @__PURE__ */ import_react21.default.createElement("div", { className: "px-4 py-2 border-b border-gray-50 flex items-center gap-3" }, /* @__PURE__ */ import_react21.default.createElement("label", { className: "flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer" }, /* @__PURE__ */ import_react21.default.createElement("input", { type: "checkbox", checked: gapsOnly, onChange: (e) => setGapsOnly(e.target.checked), className: "rounded" }), "Show gaps only"), /* @__PURE__ */ import_react21.default.createElement("div", { className: "ml-auto flex items-center gap-3 text-xs text-gray-400" }, /* @__PURE__ */ import_react21.default.createElement("span", { className: "flex items-center gap-1" }, /* @__PURE__ */ import_react21.default.createElement(CircleCheckBig, { size: 11, className: "text-green-500" }), " has recurring"), /* @__PURE__ */ import_react21.default.createElement("span", { className: "flex items-center gap-1" }, /* @__PURE__ */ import_react21.default.createElement(TriangleAlert, { size: 11, className: "text-amber-500" }), " rules only"), /* @__PURE__ */ import_react21.default.createElement("span", { className: "flex items-center gap-1" }, /* @__PURE__ */ import_react21.default.createElement(CircleX, { size: 11, className: "text-red-500" }), " nothing"), /* @__PURE__ */ import_react21.default.createElement("span", null, "Fix via ", /* @__PURE__ */ import_react21.default.createElement(Link, { to: "/recurring", className: "text-blue-600 hover:underline" }, "Recurring"), " or ", /* @__PURE__ */ import_react21.default.createElement(Link, { to: "/rules", className: "text-blue-600 hover:underline" }, "Rules")))), /* @__PURE__ */ import_react21.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react21.default.createElement("thead", null, /* @__PURE__ */ import_react21.default.createElement("tr", { className: "border-b border-gray-50 text-xs text-gray-400 uppercase tracking-wide" }, /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-left font-medium w-6" }), /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Budget item"), /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-center font-medium" }, "Recurring"), /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-center font-medium" }, "Rules"))), /* @__PURE__ */ import_react21.default.createElement("tbody", null, Object.entries(byCategory).map(([cat, catItems]) => /* @__PURE__ */ import_react21.default.createElement(import_react21.default.Fragment, { key: cat }, /* @__PURE__ */ import_react21.default.createElement("tr", { className: "bg-gray-50 border-b border-gray-100" }, /* @__PURE__ */ import_react21.default.createElement("td", { colSpan: 4, className: "px-4 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wide" }, cat)), catItems.map((b) => /* @__PURE__ */ import_react21.default.createElement("tr", { key: b.budget_item_id, className: "border-b border-gray-50 last:border-0 hover:bg-gray-50" }, /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5" }, /* @__PURE__ */ import_react21.default.createElement(StatusIcon, { status: budgetItemStatus(b) })), /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5 text-gray-800" }, b.name), /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5 text-center text-xs" }, b.recurring_count > 0 ? /* @__PURE__ */ import_react21.default.createElement("span", { className: "text-green-700" }, b.recurring_count) : /* @__PURE__ */ import_react21.default.createElement("span", { className: "text-gray-300" }, "\u2014")), /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5 text-center text-xs" }, b.rule_count > 0 ? /* @__PURE__ */ import_react21.default.createElement("span", { className: "text-green-700" }, b.rule_count) : /* @__PURE__ */ import_react21.default.createElement("span", { className: "text-gray-300" }, "\u2014")))))), displayed.length === 0 && /* @__PURE__ */ import_react21.default.createElement("tr", null, /* @__PURE__ */ import_react21.default.createElement("td", { colSpan: 4, className: "px-4 py-6 text-center text-gray-400 italic text-sm" }, "No gaps \u2014 all budget items have recurring items or rules.")))));
+  }
+  function categoryStatus(c) {
+    return c.rule_count > 0 ? "ok" : "gap";
+  }
+  function CategoryRows({ categories }) {
+    const [gapsOnly, setGapsOnly] = (0, import_react21.useState)(false);
+    const displayed = gapsOnly ? categories.filter((c) => categoryStatus(c) !== "ok") : categories;
+    return /* @__PURE__ */ import_react21.default.createElement(import_react21.default.Fragment, null, /* @__PURE__ */ import_react21.default.createElement("div", { className: "px-4 py-2 border-b border-gray-50 flex items-center gap-3" }, /* @__PURE__ */ import_react21.default.createElement("label", { className: "flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer" }, /* @__PURE__ */ import_react21.default.createElement("input", { type: "checkbox", checked: gapsOnly, onChange: (e) => setGapsOnly(e.target.checked), className: "rounded" }), "Show gaps only"), /* @__PURE__ */ import_react21.default.createElement("span", { className: "text-xs text-gray-400 ml-auto" }, "Fix via ", /* @__PURE__ */ import_react21.default.createElement(Link, { to: "/rules", className: "text-blue-600 hover:underline" }, "Rules"))), /* @__PURE__ */ import_react21.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react21.default.createElement("thead", null, /* @__PURE__ */ import_react21.default.createElement("tr", { className: "border-b border-gray-50 text-xs text-gray-400 uppercase tracking-wide" }, /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-left font-medium w-6" }), /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Category"), /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-center font-medium" }, "Budget items"), /* @__PURE__ */ import_react21.default.createElement("th", { className: "px-4 py-2 text-center font-medium" }, "Rules"))), /* @__PURE__ */ import_react21.default.createElement("tbody", null, displayed.map((c) => /* @__PURE__ */ import_react21.default.createElement("tr", { key: c.category_id, className: "border-b border-gray-50 last:border-0 hover:bg-gray-50" }, /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5" }, /* @__PURE__ */ import_react21.default.createElement(StatusIcon, { status: categoryStatus(c) })), /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5 font-medium text-gray-800" }, c.name), /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5 text-center text-xs text-gray-600" }, c.item_count), /* @__PURE__ */ import_react21.default.createElement("td", { className: "px-4 py-2.5 text-center text-xs" }, c.rule_count > 0 ? /* @__PURE__ */ import_react21.default.createElement("span", { className: "text-green-700" }, c.rule_count) : /* @__PURE__ */ import_react21.default.createElement("span", { className: "text-red-600" }, "none")))), displayed.length === 0 && /* @__PURE__ */ import_react21.default.createElement("tr", null, /* @__PURE__ */ import_react21.default.createElement("td", { colSpan: 4, className: "px-4 py-6 text-center text-gray-400 italic text-sm" }, "No gaps \u2014 all categories have classification rules.")))));
+  }
+  function Coverage() {
+    const [data2, setData] = (0, import_react21.useState)(null);
+    const [loading, setLoading] = (0, import_react21.useState)(true);
+    const [error, setError] = (0, import_react21.useState)(null);
+    (0, import_react21.useEffect)(() => {
+      api.coverage().then((d) => {
+        setData(d);
+        setLoading(false);
+      }).catch((e) => {
+        setError(e.message);
+        setLoading(false);
+      });
+    }, []);
+    if (loading) return /* @__PURE__ */ import_react21.default.createElement("p", { className: "text-gray-400 text-sm" }, "Loading\u2026");
+    if (error) return /* @__PURE__ */ import_react21.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    if (!data2) return null;
+    const accountGaps = data2.accounts.filter((a) => accountStatus(a) !== "ok").length;
+    const recurringGaps = data2.recurringItems.filter((r) => recurringStatus(r) !== "ok").length;
+    const budgetGaps = data2.budgetItems.filter((b) => budgetItemStatus(b) === "gap").length;
+    const budgetWarns = data2.budgetItems.filter((b) => budgetItemStatus(b) === "warn").length;
+    const categoryGaps = data2.budgetCategories.filter((c) => categoryStatus(c) !== "ok").length;
+    const totalGaps = accountGaps + recurringGaps + budgetGaps + categoryGaps;
+    return /* @__PURE__ */ import_react21.default.createElement("div", { className: "space-y-5" }, /* @__PURE__ */ import_react21.default.createElement("div", null, /* @__PURE__ */ import_react21.default.createElement("h1", { className: "text-lg font-semibold text-gray-900" }, "Coverage"), /* @__PURE__ */ import_react21.default.createElement("p", { className: "text-sm text-gray-500 mt-0.5" }, "Entity linkage audit \u2014 see what's wired up and what isn't.")), /* @__PURE__ */ import_react21.default.createElement("div", { className: "grid grid-cols-2 sm:grid-cols-4 gap-3" }, [
+      { label: "Account gaps", count: accountGaps, total: data2.accounts.length },
+      { label: "Unclassified items", count: recurringGaps, total: data2.recurringItems.length },
+      {
+        label: "Empty budget items",
+        count: budgetGaps,
+        total: data2.budgetItems.length,
+        extra: budgetWarns > 0 ? `${budgetWarns} rules-only` : void 0
+      },
+      { label: "Categories w/o rules", count: categoryGaps, total: data2.budgetCategories.length }
+    ].map(({ label, count, total, extra }) => /* @__PURE__ */ import_react21.default.createElement("div", { key: label, className: `rounded-lg border px-3 py-2.5 ${count > 0 ? "bg-red-50 border-red-200" : "bg-green-50 border-green-200"}` }, /* @__PURE__ */ import_react21.default.createElement("p", { className: "text-xs text-gray-500" }, label), /* @__PURE__ */ import_react21.default.createElement("p", { className: `text-xl font-mono font-semibold mt-0.5 ${count > 0 ? "text-red-700" : "text-green-700"}` }, count), /* @__PURE__ */ import_react21.default.createElement("p", { className: "text-xs text-gray-400" }, "of ", total, extra ? ` \xB7 ${extra}` : "")))), totalGaps === 0 && /* @__PURE__ */ import_react21.default.createElement("div", { className: "flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded px-3 py-2" }, /* @__PURE__ */ import_react21.default.createElement(CircleCheckBig, { size: 14 }), " All entities are fully linked \u2014 nothing to fix."), /* @__PURE__ */ import_react21.default.createElement(Section, { title: "Accounts", gapCount: accountGaps, total: data2.accounts.length }, /* @__PURE__ */ import_react21.default.createElement(AccountRows, { accounts: data2.accounts })), /* @__PURE__ */ import_react21.default.createElement(Section, { title: "Recurring Items", gapCount: recurringGaps, total: data2.recurringItems.length }, /* @__PURE__ */ import_react21.default.createElement(RecurringRows, { items: data2.recurringItems })), /* @__PURE__ */ import_react21.default.createElement(Section, { title: "Budget Items", gapCount: budgetGaps + budgetWarns, total: data2.budgetItems.length }, /* @__PURE__ */ import_react21.default.createElement(BudgetItemRows, { items: data2.budgetItems })), /* @__PURE__ */ import_react21.default.createElement(Section, { title: "Budget Categories", gapCount: categoryGaps, total: data2.budgetCategories.length }, /* @__PURE__ */ import_react21.default.createElement(CategoryRows, { categories: data2.budgetCategories })));
+  }
+
+  // projects/benes-finance/frontend/components/AccountDetail.tsx
+  var import_react22 = __toESM(require_react());
+  var STATUSES2 = Object.keys(STATUS_LABEL);
+  var ACCOUNT_TYPES = [
+    "personal_loan",
+    "mortgage",
+    "credit_card",
+    "student_loan",
+    "tax_debt",
+    "auto_loan",
+    "settlement",
+    "collections",
+    "judgment",
+    "bnpl",
+    "income_source"
+  ];
+  function EditableField({
+    value,
+    placeholder,
+    onSave,
+    type = "text",
+    monospace = false
+  }) {
+    const [editing, setEditing] = (0, import_react22.useState)(false);
+    const [draft, setDraft] = (0, import_react22.useState)(value ?? "");
+    function commit() {
+      const trimmed = draft.trim();
+      onSave(trimmed === "" ? null : trimmed);
+      setEditing(false);
+    }
+    function cancel() {
+      setDraft(value ?? "");
+      setEditing(false);
+    }
+    if (!editing) {
+      return /* @__PURE__ */ import_react22.default.createElement("span", { className: "group flex items-center gap-1 min-h-[1.5rem]" }, /* @__PURE__ */ import_react22.default.createElement("span", { className: `${monospace ? "font-mono" : ""} ${value ? "text-gray-900" : "text-gray-300 italic text-xs"}` }, value ?? (placeholder ?? "\u2014")), /* @__PURE__ */ import_react22.default.createElement(
+        "button",
+        {
+          onClick: () => {
+            setDraft(value ?? "");
+            setEditing(true);
+          },
+          className: "opacity-0 group-hover:opacity-100 text-gray-300 hover:text-gray-500 transition-opacity"
+        },
+        /* @__PURE__ */ import_react22.default.createElement(Pen, { size: 11 })
+      ));
+    }
+    return /* @__PURE__ */ import_react22.default.createElement("span", { className: "flex items-center gap-1" }, /* @__PURE__ */ import_react22.default.createElement(
+      "input",
+      {
+        autoFocus: true,
+        type,
+        value: draft,
+        onChange: (e) => setDraft(e.target.value),
+        onKeyDown: (e) => {
+          if (e.key === "Enter") commit();
+          if (e.key === "Escape") cancel();
+        },
+        onBlur: commit,
+        className: `border border-blue-400 rounded px-1.5 py-0.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 ${monospace ? "font-mono" : ""}`
+      }
+    ), /* @__PURE__ */ import_react22.default.createElement("button", { onClick: commit, className: "text-green-600 hover:text-green-700" }, /* @__PURE__ */ import_react22.default.createElement(Check, { size: 13 })), /* @__PURE__ */ import_react22.default.createElement("button", { onClick: cancel, className: "text-gray-400 hover:text-gray-600" }, /* @__PURE__ */ import_react22.default.createElement(X, { size: 13 })));
+  }
+  function EditableSelect({
+    value,
+    options,
+    labelMap,
+    onSave
+  }) {
+    const [editing, setEditing] = (0, import_react22.useState)(false);
+    if (!editing) {
+      return /* @__PURE__ */ import_react22.default.createElement("span", { className: "group flex items-center gap-1" }, /* @__PURE__ */ import_react22.default.createElement("span", { className: "text-gray-900" }, labelMap?.[value] ?? value), /* @__PURE__ */ import_react22.default.createElement(
+        "button",
+        {
+          onClick: () => setEditing(true),
+          className: "opacity-0 group-hover:opacity-100 text-gray-300 hover:text-gray-500 transition-opacity"
+        },
+        /* @__PURE__ */ import_react22.default.createElement(Pen, { size: 11 })
+      ));
+    }
+    return /* @__PURE__ */ import_react22.default.createElement(
+      "select",
+      {
+        autoFocus: true,
+        value,
+        onChange: (e) => {
+          onSave(e.target.value);
+          setEditing(false);
+        },
+        onBlur: () => setEditing(false),
+        className: "border border-blue-400 rounded px-1.5 py-0.5 text-sm bg-white focus:outline-none focus:ring-1 focus:ring-blue-400"
+      },
+      options.map((o) => /* @__PURE__ */ import_react22.default.createElement("option", { key: o, value: o }, labelMap?.[o] ?? o))
+    );
+  }
+  function ContactCard({ acct, onUpdate }) {
+    async function save(field, value) {
+      const updated = await api.accounts.update(acct.account_id, { [field]: value });
+      onUpdate(updated);
+    }
+    return /* @__PURE__ */ import_react22.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 p-4 space-y-3" }, /* @__PURE__ */ import_react22.default.createElement("h3", { className: "text-xs font-semibold text-gray-400 uppercase tracking-wide" }, "Contact"), /* @__PURE__ */ import_react22.default.createElement("div", { className: "space-y-2.5 text-sm" }, /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex items-start gap-2.5" }, /* @__PURE__ */ import_react22.default.createElement(Phone, { size: 14, className: "text-gray-400 mt-0.5 shrink-0" }), /* @__PURE__ */ import_react22.default.createElement(
+      EditableField,
+      {
+        value: acct.phone,
+        placeholder: "Add phone",
+        type: "tel",
+        onSave: (v) => save("phone", v)
+      }
+    )), /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex items-start gap-2.5" }, /* @__PURE__ */ import_react22.default.createElement(Globe, { size: 14, className: "text-gray-400 mt-0.5 shrink-0" }), /* @__PURE__ */ import_react22.default.createElement("span", { className: "flex items-center gap-1" }, /* @__PURE__ */ import_react22.default.createElement(
+      EditableField,
+      {
+        value: acct.portal_url,
+        placeholder: "Add website",
+        type: "url",
+        onSave: (v) => save("portal_url", v)
+      }
+    ), acct.portal_url && /* @__PURE__ */ import_react22.default.createElement(
+      "a",
+      {
+        href: acct.portal_url,
+        target: "_blank",
+        rel: "noreferrer",
+        className: "text-gray-400 hover:text-blue-600"
+      },
+      /* @__PURE__ */ import_react22.default.createElement(ExternalLink, { size: 12 })
+    ))), /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex items-start gap-2.5" }, /* @__PURE__ */ import_react22.default.createElement(Mail, { size: 14, className: "text-gray-400 mt-0.5 shrink-0" }), /* @__PURE__ */ import_react22.default.createElement(
+      EditableField,
+      {
+        value: acct.email,
+        placeholder: "Add email",
+        type: "email",
+        onSave: (v) => save("email", v)
+      }
+    )), /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex items-start gap-2.5" }, /* @__PURE__ */ import_react22.default.createElement(Hash, { size: 14, className: "text-gray-400 mt-0.5 shrink-0" }), /* @__PURE__ */ import_react22.default.createElement(
+      EditableField,
+      {
+        value: acct.account_number,
+        placeholder: "Account #",
+        monospace: true,
+        onSave: (v) => save("account_number", v)
+      }
+    ))));
+  }
+  function FinancialCard({
+    acct,
+    monthlyPayment,
+    onUpdate
+  }) {
+    async function save(field, value) {
+      const parsed = value === null ? null : ["current_balance", "interest_rate_pct", "original_amount"].includes(field) ? parseFloat(value) : value;
+      const updated = await api.accounts.update(acct.account_id, { [field]: parsed });
+      onUpdate(updated);
+    }
+    return /* @__PURE__ */ import_react22.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 p-4 space-y-3" }, /* @__PURE__ */ import_react22.default.createElement("h3", { className: "text-xs font-semibold text-gray-400 uppercase tracking-wide" }, "Financials"), /* @__PURE__ */ import_react22.default.createElement("dl", { className: "space-y-2 text-sm" }, /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex justify-between items-center gap-2" }, /* @__PURE__ */ import_react22.default.createElement("dt", { className: "text-gray-500 shrink-0" }, "Balance"), /* @__PURE__ */ import_react22.default.createElement("dd", { className: "font-mono" }, /* @__PURE__ */ import_react22.default.createElement(
+      EditableField,
+      {
+        value: acct.current_balance != null ? String(acct.current_balance) : null,
+        placeholder: "\u2014",
+        type: "number",
+        monospace: true,
+        onSave: (v) => save("current_balance", v)
+      }
+    ))), /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex justify-between items-center gap-2" }, /* @__PURE__ */ import_react22.default.createElement("dt", { className: "text-gray-500 shrink-0" }, "As of"), /* @__PURE__ */ import_react22.default.createElement("dd", null, /* @__PURE__ */ import_react22.default.createElement(
+      EditableField,
+      {
+        value: acct.balance_date,
+        placeholder: "\u2014",
+        type: "date",
+        onSave: (v) => save("balance_date", v)
+      }
+    ))), /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex justify-between items-center gap-2" }, /* @__PURE__ */ import_react22.default.createElement("dt", { className: "text-gray-500 shrink-0" }, "APR"), /* @__PURE__ */ import_react22.default.createElement("dd", { className: "font-mono" }, acct.interest_rate_pct != null ? /* @__PURE__ */ import_react22.default.createElement(
+      EditableField,
+      {
+        value: String(acct.interest_rate_pct),
+        type: "number",
+        monospace: true,
+        onSave: (v) => save("interest_rate_pct", v)
+      }
+    ) : /* @__PURE__ */ import_react22.default.createElement(EditableField, { value: null, placeholder: "\u2014", type: "number", monospace: true, onSave: (v) => save("interest_rate_pct", v) }))), /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex justify-between items-center gap-2" }, /* @__PURE__ */ import_react22.default.createElement("dt", { className: "text-gray-500 shrink-0" }, "Original"), /* @__PURE__ */ import_react22.default.createElement("dd", { className: "font-mono" }, /* @__PURE__ */ import_react22.default.createElement(
+      EditableField,
+      {
+        value: acct.original_amount != null ? String(acct.original_amount) : null,
+        placeholder: "\u2014",
+        type: "number",
+        monospace: true,
+        onSave: (v) => save("original_amount", v)
+      }
+    ))), /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex justify-between items-center gap-2" }, /* @__PURE__ */ import_react22.default.createElement("dt", { className: "text-gray-500 shrink-0" }, "Payoff est."), /* @__PURE__ */ import_react22.default.createElement("dd", null, /* @__PURE__ */ import_react22.default.createElement(
+      EditableField,
+      {
+        value: acct.payoff_date_est,
+        placeholder: "\u2014",
+        type: "date",
+        onSave: (v) => save("payoff_date_est", v)
+      }
+    ))), monthlyPayment > 0 && /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex justify-between items-center gap-2 pt-1 border-t border-gray-100" }, /* @__PURE__ */ import_react22.default.createElement("dt", { className: "text-gray-500 shrink-0" }, "Min pmt/mo"), /* @__PURE__ */ import_react22.default.createElement("dd", { className: "font-mono text-gray-900" }, formatCurrency(monthlyPayment)))));
+  }
+  function TagsCard({ accountId, tags, onTagsChange }) {
+    const [newTag, setNewTag] = (0, import_react22.useState)("");
+    const [adding, setAdding] = (0, import_react22.useState)(false);
+    async function handleAdd() {
+      const tag = newTag.trim();
+      if (!tag) return;
+      const updated = await api.accounts.addTag(accountId, tag);
+      onTagsChange(updated);
+      setNewTag("");
+      setAdding(false);
+    }
+    async function handleRemove(tag) {
+      await api.accounts.removeTag(accountId, tag);
+      onTagsChange(tags.filter((t) => t !== tag));
+    }
+    return /* @__PURE__ */ import_react22.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 p-4 space-y-3" }, /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex items-center justify-between" }, /* @__PURE__ */ import_react22.default.createElement("h3", { className: "text-xs font-semibold text-gray-400 uppercase tracking-wide" }, "Tags"), /* @__PURE__ */ import_react22.default.createElement(
+      "button",
+      {
+        onClick: () => setAdding((a) => !a),
+        className: "text-gray-400 hover:text-gray-700"
+      },
+      /* @__PURE__ */ import_react22.default.createElement(Plus, { size: 13 })
+    )), /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex flex-wrap gap-1.5" }, tags.map((tag) => /* @__PURE__ */ import_react22.default.createElement("span", { key: tag, className: "group inline-flex items-center gap-1 bg-blue-50 text-blue-700 text-xs px-2 py-0.5 rounded-full" }, /* @__PURE__ */ import_react22.default.createElement(Tag, { size: 10 }), tag, /* @__PURE__ */ import_react22.default.createElement(
+      "button",
+      {
+        onClick: () => handleRemove(tag),
+        className: "opacity-0 group-hover:opacity-100 text-blue-400 hover:text-red-500 transition-opacity"
+      },
+      /* @__PURE__ */ import_react22.default.createElement(X, { size: 10 })
+    ))), tags.length === 0 && !adding && /* @__PURE__ */ import_react22.default.createElement("span", { className: "text-gray-300 text-xs italic" }, "No tags")), adding && /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex items-center gap-1.5" }, /* @__PURE__ */ import_react22.default.createElement(
+      "input",
+      {
+        autoFocus: true,
+        type: "text",
+        value: newTag,
+        onChange: (e) => setNewTag(e.target.value),
+        onKeyDown: (e) => {
+          if (e.key === "Enter") handleAdd();
+          if (e.key === "Escape") {
+            setAdding(false);
+            setNewTag("");
+          }
+        },
+        placeholder: "prefix:value",
+        className: "border border-gray-300 rounded px-2 py-1 text-xs flex-1 focus:outline-none focus:ring-1 focus:ring-blue-400"
+      }
+    ), /* @__PURE__ */ import_react22.default.createElement("button", { onClick: handleAdd, className: "text-green-600 hover:text-green-700" }, /* @__PURE__ */ import_react22.default.createElement(Check, { size: 13 })), /* @__PURE__ */ import_react22.default.createElement("button", { onClick: () => {
+      setAdding(false);
+      setNewTag("");
+    }, className: "text-gray-400 hover:text-gray-600" }, /* @__PURE__ */ import_react22.default.createElement(X, { size: 13 }))));
+  }
+  function NotesSection({ acct, onUpdate }) {
+    const [notes, setNotes] = (0, import_react22.useState)(acct.notes ?? "");
+    const [saving, setSaving] = (0, import_react22.useState)(false);
+    const [saved, setSaved] = (0, import_react22.useState)(false);
+    (0, import_react22.useEffect)(() => {
+      setNotes(acct.notes ?? "");
+    }, [acct.notes]);
+    async function handleBlur() {
+      const trimmed = notes.trim();
+      const current = acct.notes ?? "";
+      if (trimmed === current) return;
+      setSaving(true);
+      try {
+        const updated = await api.accounts.update(acct.account_id, { notes: trimmed || null });
+        onUpdate(updated);
+        setSaved(true);
+        setTimeout(() => setSaved(false), 1500);
+      } finally {
+        setSaving(false);
+      }
+    }
+    return /* @__PURE__ */ import_react22.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 p-4 space-y-2" }, /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex items-center justify-between" }, /* @__PURE__ */ import_react22.default.createElement("h3", { className: "text-xs font-semibold text-gray-400 uppercase tracking-wide" }, "Notes"), saving && /* @__PURE__ */ import_react22.default.createElement("span", { className: "text-xs text-gray-400" }, "Saving\u2026"), saved && !saving && /* @__PURE__ */ import_react22.default.createElement("span", { className: "text-xs text-green-600" }, "Saved")), /* @__PURE__ */ import_react22.default.createElement(
+      "textarea",
+      {
+        value: notes,
+        onChange: (e) => setNotes(e.target.value),
+        onBlur: handleBlur,
+        rows: 8,
+        placeholder: "Call notes, payment history, agreements\u2026",
+        className: "w-full text-sm text-gray-900 border border-gray-200 rounded p-2 resize-y focus:outline-none focus:ring-1 focus:ring-blue-400 placeholder:text-gray-300"
+      }
+    ));
+  }
+  function RecurringSection({ items }) {
+    if (!items.length) return /* @__PURE__ */ import_react22.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 p-4" }, /* @__PURE__ */ import_react22.default.createElement("h3", { className: "text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2" }, "Recurring Payments"), /* @__PURE__ */ import_react22.default.createElement("p", { className: "text-gray-300 text-sm italic" }, "None linked"));
+    return /* @__PURE__ */ import_react22.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react22.default.createElement("div", { className: "px-4 py-3 border-b border-gray-100" }, /* @__PURE__ */ import_react22.default.createElement("h3", { className: "text-xs font-semibold text-gray-400 uppercase tracking-wide" }, "Recurring Payments")), /* @__PURE__ */ import_react22.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react22.default.createElement("thead", null, /* @__PURE__ */ import_react22.default.createElement("tr", { className: "text-xs text-gray-400 uppercase border-b border-gray-100" }, /* @__PURE__ */ import_react22.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Name"), /* @__PURE__ */ import_react22.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Amount"), /* @__PURE__ */ import_react22.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Freq"), /* @__PURE__ */ import_react22.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Budget Item"), /* @__PURE__ */ import_react22.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Status"))), /* @__PURE__ */ import_react22.default.createElement("tbody", null, items.map((item) => /* @__PURE__ */ import_react22.default.createElement("tr", { key: item.recurring_item_id, className: "border-b border-gray-50 last:border-0" }, /* @__PURE__ */ import_react22.default.createElement("td", { className: "px-4 py-2 text-gray-800" }, item.name), /* @__PURE__ */ import_react22.default.createElement("td", { className: `px-4 py-2 text-right font-mono ${item.amount < 0 ? "text-red-600" : "text-green-700"}` }, formatCurrency(item.amount)), /* @__PURE__ */ import_react22.default.createElement("td", { className: "px-4 py-2 text-gray-500 capitalize" }, item.frequency.replace(/_/g, " ")), /* @__PURE__ */ import_react22.default.createElement("td", { className: "px-4 py-2 text-gray-500" }, item.budget_item_name ? /* @__PURE__ */ import_react22.default.createElement("span", null, item.category_name, " / ", item.budget_item_name) : /* @__PURE__ */ import_react22.default.createElement("span", { className: "text-gray-300 italic" }, "unlinked")), /* @__PURE__ */ import_react22.default.createElement("td", { className: "px-4 py-2" }, /* @__PURE__ */ import_react22.default.createElement("span", { className: `text-xs ${item.is_active ? "text-green-600" : "text-gray-400 italic"}` }, item.is_active ? "Active" : "Inactive")))))));
+  }
+  function ForecastSection({ accountId, items, onChanged }) {
+    const [adding, setAdding] = (0, import_react22.useState)(false);
+    const [name, setName] = (0, import_react22.useState)("");
+    const [amount, setAmount] = (0, import_react22.useState)("");
+    const [date, setDate] = (0, import_react22.useState)("");
+    const [saving, setSaving] = (0, import_react22.useState)(false);
+    async function handleAdd() {
+      if (!name.trim() || !amount || !date) return;
+      setSaving(true);
+      try {
+        await api.forecast.create({
+          name: name.trim(),
+          amount: parseFloat(amount),
+          item_date: date,
+          account_id: accountId
+        });
+        setName("");
+        setAmount("");
+        setDate("");
+        setAdding(false);
+        onChanged();
+      } finally {
+        setSaving(false);
+      }
+    }
+    async function handleDelete(id) {
+      await api.forecast.delete(id);
+      onChanged();
+    }
+    return /* @__PURE__ */ import_react22.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 p-4 space-y-3" }, /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex items-center justify-between" }, /* @__PURE__ */ import_react22.default.createElement("h3", { className: "text-xs font-semibold text-gray-400 uppercase tracking-wide flex items-center gap-1.5" }, /* @__PURE__ */ import_react22.default.createElement(CalendarClock, { size: 12 }), " Projected Payments"), /* @__PURE__ */ import_react22.default.createElement("button", { onClick: () => setAdding((a) => !a), className: "text-gray-400 hover:text-gray-700" }, /* @__PURE__ */ import_react22.default.createElement(Plus, { size: 13 }))), adding && /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex flex-wrap items-center gap-2 bg-blue-50 rounded p-2" }, /* @__PURE__ */ import_react22.default.createElement(
+      "input",
+      {
+        autoFocus: true,
+        type: "text",
+        value: name,
+        onChange: (e) => setName(e.target.value),
+        placeholder: "Description",
+        className: "border border-gray-300 rounded px-2 py-1 text-sm flex-1 min-w-32 focus:outline-none focus:ring-1 focus:ring-blue-400"
+      }
+    ), /* @__PURE__ */ import_react22.default.createElement(
+      "input",
+      {
+        type: "number",
+        step: "0.01",
+        value: amount,
+        onChange: (e) => setAmount(e.target.value),
+        placeholder: "Amount",
+        className: "border border-gray-300 rounded px-2 py-1 text-sm w-24 font-mono focus:outline-none focus:ring-1 focus:ring-blue-400"
+      }
+    ), /* @__PURE__ */ import_react22.default.createElement(
+      "input",
+      {
+        type: "date",
+        value: date,
+        onChange: (e) => setDate(e.target.value),
+        className: "border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+      }
+    ), /* @__PURE__ */ import_react22.default.createElement(
+      "button",
+      {
+        onClick: handleAdd,
+        disabled: saving,
+        className: "bg-blue-600 text-white text-xs px-3 py-1.5 rounded hover:bg-blue-700 disabled:opacity-50"
+      },
+      "Add"
+    ), /* @__PURE__ */ import_react22.default.createElement("button", { onClick: () => setAdding(false), className: "text-gray-400 hover:text-gray-600" }, /* @__PURE__ */ import_react22.default.createElement(X, { size: 14 }))), items.length === 0 && !adding && /* @__PURE__ */ import_react22.default.createElement("p", { className: "text-gray-300 text-sm italic" }, "No projected payments"), items.length > 0 && /* @__PURE__ */ import_react22.default.createElement("ul", { className: "space-y-1.5" }, items.map((fi) => /* @__PURE__ */ import_react22.default.createElement("li", { key: fi.forecast_item_id, className: "flex items-center justify-between gap-2 text-sm" }, /* @__PURE__ */ import_react22.default.createElement("span", { className: "text-gray-700 flex-1" }, fi.name), /* @__PURE__ */ import_react22.default.createElement("span", { className: `font-mono ${fi.amount < 0 ? "text-red-600" : "text-green-700"}` }, formatCurrency(fi.amount)), /* @__PURE__ */ import_react22.default.createElement("span", { className: "text-gray-400 text-xs" }, formatDate(fi.item_date)), /* @__PURE__ */ import_react22.default.createElement(
+      "button",
+      {
+        onClick: () => handleDelete(fi.forecast_item_id),
+        className: "text-gray-300 hover:text-red-500"
+      },
+      /* @__PURE__ */ import_react22.default.createElement(Trash2, { size: 13 })
+    )))));
+  }
+  function TransactionsSection({ accountId }) {
+    const [txns, setTxns] = (0, import_react22.useState)([]);
+    const [offset, setOffset] = (0, import_react22.useState)(0);
+    const [hasMore, setHasMore] = (0, import_react22.useState)(false);
+    const [loading, setLoading] = (0, import_react22.useState)(false);
+    const LIMIT = 25;
+    const load = (0, import_react22.useCallback)(async (off) => {
+      setLoading(true);
+      try {
+        const rows = await api.transactions.list({ account_id: accountId, limit: LIMIT + 1, offset: off });
+        const page = rows.slice(0, LIMIT);
+        setHasMore(rows.length > LIMIT);
+        setTxns(off === 0 ? page : (prev) => [...prev, ...page]);
+        setOffset(off + LIMIT);
+      } finally {
+        setLoading(false);
+      }
+    }, [accountId]);
+    (0, import_react22.useEffect)(() => {
+      load(0);
+    }, [load]);
+    return /* @__PURE__ */ import_react22.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 overflow-hidden" }, /* @__PURE__ */ import_react22.default.createElement("div", { className: "px-4 py-3 border-b border-gray-100 flex items-center justify-between" }, /* @__PURE__ */ import_react22.default.createElement("h3", { className: "text-xs font-semibold text-gray-400 uppercase tracking-wide" }, "Transactions"), /* @__PURE__ */ import_react22.default.createElement("span", { className: "text-xs text-gray-400" }, txns.length, hasMore ? "+" : "", " shown")), txns.length === 0 && !loading && /* @__PURE__ */ import_react22.default.createElement("p", { className: "px-4 py-3 text-gray-300 text-sm italic" }, "No transactions"), txns.length > 0 && /* @__PURE__ */ import_react22.default.createElement("table", { className: "w-full text-sm" }, /* @__PURE__ */ import_react22.default.createElement("thead", null, /* @__PURE__ */ import_react22.default.createElement("tr", { className: "text-xs text-gray-400 uppercase border-b border-gray-100" }, /* @__PURE__ */ import_react22.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Date"), /* @__PURE__ */ import_react22.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Merchant"), /* @__PURE__ */ import_react22.default.createElement("th", { className: "px-4 py-2 text-right font-medium" }, "Amount"), /* @__PURE__ */ import_react22.default.createElement("th", { className: "px-4 py-2 text-left font-medium" }, "Classified"))), /* @__PURE__ */ import_react22.default.createElement("tbody", null, txns.map((tx) => /* @__PURE__ */ import_react22.default.createElement("tr", { key: tx.transaction_id, className: "border-b border-gray-50 last:border-0 hover:bg-gray-50" }, /* @__PURE__ */ import_react22.default.createElement("td", { className: "px-4 py-2 text-gray-400 text-xs whitespace-nowrap" }, formatDate(tx.transaction_date)), /* @__PURE__ */ import_react22.default.createElement("td", { className: "px-4 py-2 text-gray-700 max-w-xs truncate" }, tx.merchant_normalized ?? tx.merchant_text), /* @__PURE__ */ import_react22.default.createElement("td", { className: `px-4 py-2 text-right font-mono ${tx.amount < 0 ? "text-red-600" : "text-green-700"}` }, formatCurrency(tx.amount)), /* @__PURE__ */ import_react22.default.createElement("td", { className: "px-4 py-2" }, tx.mapping_count > 0 ? /* @__PURE__ */ import_react22.default.createElement("span", { className: "text-green-600 text-xs" }, "\u2713") : /* @__PURE__ */ import_react22.default.createElement("span", { className: "text-amber-400 text-xs" }, "\u2014")))))), hasMore && /* @__PURE__ */ import_react22.default.createElement("div", { className: "px-4 py-2 border-t border-gray-100" }, /* @__PURE__ */ import_react22.default.createElement(
+      "button",
+      {
+        onClick: () => load(offset),
+        disabled: loading,
+        className: "text-xs text-blue-600 hover:text-blue-800 disabled:opacity-50"
+      },
+      loading ? "Loading\u2026" : "Load more"
+    )));
+  }
+  function AccountDetail() {
+    const { id } = useParams();
+    const [detail, setDetail] = (0, import_react22.useState)(null);
+    const [error, setError] = (0, import_react22.useState)(null);
+    const load = (0, import_react22.useCallback)(() => {
+      if (!id) return;
+      api.accounts.detail(id).then(setDetail).catch((e) => setError(e.message));
+    }, [id]);
+    (0, import_react22.useEffect)(() => {
+      load();
+    }, [load]);
+    if (error) return /* @__PURE__ */ import_react22.default.createElement("p", { className: "text-red-600 text-sm" }, error);
+    if (!detail) return /* @__PURE__ */ import_react22.default.createElement("p", { className: "text-gray-400 text-sm" }, "Loading\u2026");
+    const { account: acct, tags, recurringItems, budgetItems, forecastItems } = detail;
+    const monthlyPayment = Math.abs(
+      recurringItems.filter((i) => i.is_active && i.amount < 0).reduce((s, i) => s + i.effective_monthly, 0)
+    );
+    function handleAccountUpdate(updated) {
+      setDetail((prev) => prev ? { ...prev, account: updated } : prev);
+    }
+    async function saveCreditor(v) {
+      if (!v) return;
+      const updated = await api.accounts.update(acct.account_id, { creditor: v });
+      handleAccountUpdate(updated);
+    }
+    async function saveStatus(v) {
+      const updated = await api.accounts.update(acct.account_id, { status: v });
+      handleAccountUpdate(updated);
+    }
+    async function saveType(v) {
+      const updated = await api.accounts.update(acct.account_id, { account_type: v });
+      handleAccountUpdate(updated);
+    }
+    return /* @__PURE__ */ import_react22.default.createElement("div", { className: "space-y-5" }, /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex items-start gap-3" }, /* @__PURE__ */ import_react22.default.createElement(Link, { to: "/accounts", className: "text-gray-400 hover:text-gray-700 mt-1" }, /* @__PURE__ */ import_react22.default.createElement(ArrowLeft, { size: 16 })), /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex-1 space-y-1" }, /* @__PURE__ */ import_react22.default.createElement("div", { className: "flex items-center gap-2 flex-wrap" }, /* @__PURE__ */ import_react22.default.createElement("h1", { className: "text-xl font-semibold text-gray-900" }, /* @__PURE__ */ import_react22.default.createElement(EditableField, { value: acct.creditor, onSave: saveCreditor })), /* @__PURE__ */ import_react22.default.createElement(
+      EditableSelect,
+      {
+        value: acct.status,
+        options: STATUSES2,
+        labelMap: STATUS_LABEL,
+        onSave: saveStatus
+      }
+    ), /* @__PURE__ */ import_react22.default.createElement("span", { className: "text-gray-400 text-sm" }, /* @__PURE__ */ import_react22.default.createElement(
+      EditableSelect,
+      {
+        value: acct.account_type,
+        options: ACCOUNT_TYPES,
+        labelMap: TYPE_LABEL,
+        onSave: saveType
+      }
+    ))), acct.account_number && /* @__PURE__ */ import_react22.default.createElement("p", { className: "text-xs text-gray-400 font-mono" }, "#", acct.account_number))), /* @__PURE__ */ import_react22.default.createElement("div", { className: "grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-5 items-start" }, /* @__PURE__ */ import_react22.default.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ import_react22.default.createElement(ContactCard, { acct, onUpdate: handleAccountUpdate }), /* @__PURE__ */ import_react22.default.createElement(FinancialCard, { acct, monthlyPayment, onUpdate: handleAccountUpdate }), /* @__PURE__ */ import_react22.default.createElement(
+      TagsCard,
+      {
+        accountId: acct.account_id,
+        tags,
+        onTagsChange: (updated) => setDetail((prev) => prev ? { ...prev, tags: updated } : prev)
+      }
+    ), budgetItems.length > 0 && /* @__PURE__ */ import_react22.default.createElement("div", { className: "bg-white rounded-lg border border-gray-200 p-4 space-y-2" }, /* @__PURE__ */ import_react22.default.createElement("h3", { className: "text-xs font-semibold text-gray-400 uppercase tracking-wide" }, "Budget Items"), /* @__PURE__ */ import_react22.default.createElement("ul", { className: "space-y-1" }, budgetItems.map((bi) => /* @__PURE__ */ import_react22.default.createElement("li", { key: bi.budget_item_id, className: "text-sm text-gray-600" }, /* @__PURE__ */ import_react22.default.createElement("span", { className: "text-gray-400" }, bi.category_name, " /"), " ", bi.name))))), /* @__PURE__ */ import_react22.default.createElement("div", { className: "space-y-4" }, /* @__PURE__ */ import_react22.default.createElement(NotesSection, { acct, onUpdate: handleAccountUpdate }), /* @__PURE__ */ import_react22.default.createElement(RecurringSection, { items: recurringItems }), /* @__PURE__ */ import_react22.default.createElement(
+      ForecastSection,
+      {
+        accountId: acct.account_id,
+        items: forecastItems,
+        onChanged: load
+      }
+    ), /* @__PURE__ */ import_react22.default.createElement(TransactionsSection, { accountId: acct.account_id }))));
+  }
+
+  // projects/benes-finance/frontend/App.tsx
+  function App() {
+    return /* @__PURE__ */ import_react23.default.createElement(BrowserRouter, null, /* @__PURE__ */ import_react23.default.createElement(Routes, null, /* @__PURE__ */ import_react23.default.createElement(Route, { path: "/", element: /* @__PURE__ */ import_react23.default.createElement(Layout, null) }, /* @__PURE__ */ import_react23.default.createElement(Route, { index: true, element: /* @__PURE__ */ import_react23.default.createElement(Navigate, { to: "/dashboard", replace: true }) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "dashboard", element: /* @__PURE__ */ import_react23.default.createElement(Dashboard, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "accounts", element: /* @__PURE__ */ import_react23.default.createElement(Accounts, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "accounts/:id", element: /* @__PURE__ */ import_react23.default.createElement(AccountDetail, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "transactions", element: /* @__PURE__ */ import_react23.default.createElement(Transactions, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "recurring", element: /* @__PURE__ */ import_react23.default.createElement(RecurringItems, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "tags", element: /* @__PURE__ */ import_react23.default.createElement(Tags, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "coverage", element: /* @__PURE__ */ import_react23.default.createElement(Coverage, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "rules", element: /* @__PURE__ */ import_react23.default.createElement(Rules, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "schedule", element: /* @__PURE__ */ import_react23.default.createElement(ScheduledPayments, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "forecast", element: /* @__PURE__ */ import_react23.default.createElement(Forecast, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "budget", element: /* @__PURE__ */ import_react23.default.createElement(BudgetVariance, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "cashflow", element: /* @__PURE__ */ import_react23.default.createElement(CashFlowStress, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "debt", element: /* @__PURE__ */ import_react23.default.createElement(DebtPriority, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "projections", element: /* @__PURE__ */ import_react23.default.createElement(Projections, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "scenarios", element: /* @__PURE__ */ import_react23.default.createElement(IncomeScenarios, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "cascade", element: /* @__PURE__ */ import_react23.default.createElement(DebtCascade, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "audit", element: /* @__PURE__ */ import_react23.default.createElement(AuditLog, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "requests", element: /* @__PURE__ */ import_react23.default.createElement(FeatureRequests, null) }), /* @__PURE__ */ import_react23.default.createElement(Route, { path: "*", element: /* @__PURE__ */ import_react23.default.createElement(Navigate, { to: "/dashboard", replace: true }) }))));
+  }
+
+  // projects/benes-finance/frontend/index.tsx
+  (0, import_client.createRoot)(document.getElementById("root")).render(/* @__PURE__ */ import_react24.default.createElement(App, null));
 })();
 /*! Bundled license information:
 
@@ -21573,6 +28387,77 @@ react-dom/cjs/react-dom-client.development.js:
    *
    * This source code is licensed under the MIT license found in the
    * LICENSE file in the root directory of this source tree.
+   *)
+
+react-router/dist/development/chunk-4N6VE7H7.mjs:
+react-router/dist/development/index.mjs:
+  (**
+   * react-router v7.15.1
+   *
+   * Copyright (c) Remix Software Inc.
+   *
+   * This source code is licensed under the MIT license found in the
+   * LICENSE.md file in the root directory of this source tree.
+   *
+   * @license MIT
+   *)
+
+lucide-react/dist/esm/shared/src/utils.js:
+lucide-react/dist/esm/defaultAttributes.js:
+lucide-react/dist/esm/Icon.js:
+lucide-react/dist/esm/createLucideIcon.js:
+lucide-react/dist/esm/icons/activity.js:
+lucide-react/dist/esm/icons/arrow-left.js:
+lucide-react/dist/esm/icons/calendar-clock.js:
+lucide-react/dist/esm/icons/calendar-days.js:
+lucide-react/dist/esm/icons/chart-column.js:
+lucide-react/dist/esm/icons/chart-line.js:
+lucide-react/dist/esm/icons/check.js:
+lucide-react/dist/esm/icons/chevron-down.js:
+lucide-react/dist/esm/icons/chevron-left.js:
+lucide-react/dist/esm/icons/chevron-right.js:
+lucide-react/dist/esm/icons/chevron-up.js:
+lucide-react/dist/esm/icons/chevrons-up-down.js:
+lucide-react/dist/esm/icons/circle-check-big.js:
+lucide-react/dist/esm/icons/circle-plus.js:
+lucide-react/dist/esm/icons/circle.js:
+lucide-react/dist/esm/icons/circle-x.js:
+lucide-react/dist/esm/icons/credit-card.js:
+lucide-react/dist/esm/icons/download.js:
+lucide-react/dist/esm/icons/external-link.js:
+lucide-react/dist/esm/icons/globe.js:
+lucide-react/dist/esm/icons/grip-vertical.js:
+lucide-react/dist/esm/icons/hash.js:
+lucide-react/dist/esm/icons/layout-dashboard.js:
+lucide-react/dist/esm/icons/list.js:
+lucide-react/dist/esm/icons/mail.js:
+lucide-react/dist/esm/icons/menu.js:
+lucide-react/dist/esm/icons/message-square-plus.js:
+lucide-react/dist/esm/icons/pen.js:
+lucide-react/dist/esm/icons/pencil.js:
+lucide-react/dist/esm/icons/phone.js:
+lucide-react/dist/esm/icons/play.js:
+lucide-react/dist/esm/icons/plus.js:
+lucide-react/dist/esm/icons/refresh-cw.js:
+lucide-react/dist/esm/icons/repeat-2.js:
+lucide-react/dist/esm/icons/scroll-text.js:
+lucide-react/dist/esm/icons/shield-check.js:
+lucide-react/dist/esm/icons/square-check-big.js:
+lucide-react/dist/esm/icons/square-split-horizontal.js:
+lucide-react/dist/esm/icons/square.js:
+lucide-react/dist/esm/icons/tag.js:
+lucide-react/dist/esm/icons/trash-2.js:
+lucide-react/dist/esm/icons/trending-down.js:
+lucide-react/dist/esm/icons/triangle-alert.js:
+lucide-react/dist/esm/icons/wand-sparkles.js:
+lucide-react/dist/esm/icons/x.js:
+lucide-react/dist/esm/icons/zap.js:
+lucide-react/dist/esm/lucide-react.js:
+  (**
+   * @license lucide-react v0.552.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
    *)
 */
 //# sourceMappingURL=bundle.js.map

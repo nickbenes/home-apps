@@ -10,9 +10,9 @@ data
 
 # Build artifacts
 public/bills/bundle.js.map
-public/benes-finance/bundle.js
-public/benes-finance/bundle.js.map
-public/benes-finance/bundle.css
+public/finance/bundle.js
+public/finance/bundle.js.map
+public/finance/bundle.css
 
 # Playwright output
 playwright-report/
@@ -20,5 +20,10 @@ test-results/
 
 # These files contain personal financial data (accounts, debts, bank details, etc.)
 # See *.example.ts counterparts for the version-controlled templates
-projects/benes-finance/backend/seed.ts
-projects/benes-finance/backend/import-transactions.ts
+projects/finance/backend/seed.ts
+projects/finance/backend/import-transactions.tspublic/todos/bundle.js
+public/todos/bundle.js.map
+public/calendar/bundle.js
+public/calendar/bundle.js.map
+public/food/bundle.js
+public/food/bundle.js.map

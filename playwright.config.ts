@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './projects',
-  testMatch: ['**/bills/**/e2e/**/*.spec.ts', '**/benes-finance/**/e2e/**/*.spec.ts'],
+  testMatch: ['**/finance/**/e2e/**/*.spec.ts', '**/todos/**/e2e/**/*.spec.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -14,20 +14,20 @@ export default defineConfig({
 
   projects: [
     {
-      name: 'bills',
-      testMatch: '**/bills/**/e2e/**/*.spec.ts',
-      use: { ...devices['Desktop Chrome'], baseURL: 'http://localhost:3000' },
+      name: 'finance',
+      testMatch: '**/finance/**/e2e/**/*.spec.ts',
+      use: { ...devices['Desktop Chrome'], baseURL: 'http://localhost:3001/finance' },
     },
     {
-      name: 'benes-finance',
-      testMatch: '**/benes-finance/**/e2e/**/*.spec.ts',
-      use: { ...devices['Desktop Chrome'], baseURL: 'http://localhost:3001' },
+      name: 'todos',
+      testMatch: '**/todos/**/e2e/**/*.spec.ts',
+      use: { ...devices['Desktop Chrome'], baseURL: 'http://localhost:3000/todos' },
     },
   ],
 
   webServer: {
-    command: 'npm run build && npm start',
-    url: 'http://localhost:3000',
+    command: 'npm run finance:build && npm run finance:dev',
+    url: 'http://localhost:3001/finance',
     reuseExistingServer: !process.env.CI,
   },
 });

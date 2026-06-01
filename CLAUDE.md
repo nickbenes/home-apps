@@ -1,29 +1,51 @@
-# Benes Finance — Claude Code Project Guide
+# Home Apps — Claude Code Project Guide
 
 ## What this project is
 
-A personal finance app for tracking cashflow, bills, and budget against real transaction data. Built on top of the existing `bills-tracker` repo (React 19 / TypeScript / Express / esbuild).
+A suite of personal home apps: finance, todos, calendar (planned), food (planned).
+Repo: `nickbenes/home-apps` · Stack: React 19 / TypeScript / Express / esbuild / SQLite.
 
-The new finance work lives under `projects/benes-finance/`. The old bills/todos apps under `projects/bills/` and `projects/todos/` are legacy — don't touch them unless asked.
+Each app lives under `projects/<name>/` and runs on its own port. nginx proxies all apps
+at `pace-bene/<name>/` (see `nginx/home-apps.conf`).
 
-## Data layout (critical — read before touching files)
+## Projects
+
+| Project   | Port | URL prefix    | Status  |
+|-----------|------|---------------|---------|
+| `finance` | 3001 | `/finance`    | Active  |
+| `todos`   | 3000 | `/todos`      | Active  |
+| `calendar`| 3002 | `/calendar`   | Planned |
+| `food`    | 3003 | `/food`       | Planned |
+
+Active projects have a systemd user service (`~/.config/systemd/user/<name>.service`).
+
+## Routing convention (all projects)
+
+Each project uses a path prefix so all apps can share port 80 via nginx:
+
+- Express serves static files at `/<name>/` and API at `/<name>/api/`
+- `index.html` has `<base href="/<name>/">` so relative asset paths always resolve
+- React Router uses `<BrowserRouter basename="/<name>">`
+- Frontend `api.ts` sets `const BASE = '/<name>/api'`
+- nginx proxies `/<name>/` → `localhost:<port>` (no prefix stripping)
+
+## Finance project (`projects/finance/`)
+
+### Data layout (critical — read before touching files)
 
 ```
-projects/benes-finance/data/          ← gitignored entirely
-  PRIVATE-financial-csv/              ← raw CSV exports; NEVER commit
-    YTD-*-transactions.csv            ← RocketMoney transaction exports
-    accounts-*.csv                    ← account list snapshots
-    cashflow-*-merged.csv             ← recurring transactions / budget items
-  data-model-session-logs/            ← design session notes (markdown)
-    2026-05-19_data-model-schema.md   ← canonical SQL schema + TS interfaces
-    2026-05-19_feature-backlog.md     ← P0–P3 feature backlog
-    2026-05-19_wrap-up.md             ← session summary + handoff notes
-    2026-05-19_data-model-voice-session.md
+projects/finance/data/             ← gitignored entirely
+  PRIVATE-financial-csv/           ← raw CSV exports; NEVER commit
+    YTD-*-transactions.csv         ← RocketMoney transaction exports
+    accounts-*.csv                 ← account list snapshots
+    cashflow-*-merged.csv          ← recurring transactions / budget items
+  data-model-session-logs/         ← design session notes (markdown)
 ```
 
-The `data/` folder is in `.gitignore`. Never move financial CSVs out of it. Derived artifacts (schema SQL, migration files, ETL scripts, TypeScript types) are version-controlled.
+Never move financial CSVs out of `data/`. Derived artifacts (schema SQL, migration files,
+ETL scripts, TypeScript types) are version-controlled.
 
-## Data model (summary)
+### Data model (summary)
 
 SQLite database via `better-sqlite3`. Eight tables:
 
@@ -38,27 +60,12 @@ SQLite database via `better-sqlite3`. Eight tables:
 | `transaction_budget_item_mappings` | Mutable many-to-many classification layer; supports splits |
 | `classification_audit_log` | Append-only history of classification changes |
 
-Key invariant: transactions are immutable once ingested (date, amount, merchant text never change). Classifications are mutable with full audit trail.
+Key invariant: transactions are immutable once ingested. Classifications are mutable with full audit trail.
 
-Full schema and TypeScript interfaces: `projects/benes-finance/data/data-model-session-logs/2026-05-19_data-model-schema.md`
-
-## Feature backlog
-
-Prioritized as P0 (foundation) → P1 (core) → P2 (planning/analysis) → P3 (nice to have).
-
-Full backlog: `projects/benes-finance/data/data-model-session-logs/2026-05-19_feature-backlog.md`
-
-Current focus: **P0 — Foundation / Data Layer**
-- Schema migration runner (`schema.sql` via `better-sqlite3`, versioned migrations)
-- CSV seeder for accounts + recurring items
-- Transaction CSV importer (RocketMoney export format)
-- Budget categories + items seeder
-- Basic REST API (Express endpoints for all entities)
-
-## Folder structure
+### Finance folder structure
 
 ```
-projects/benes-finance/
+projects/finance/
   db/
     migrations/       ← SQL migration files (001_initial.sql, etc.)
   backend/            ← Express server, TypeScript types, DB access layer
@@ -68,19 +75,44 @@ projects/benes-finance/
 
 No nested `src/` — code lives directly in `backend/` or `frontend/`.
 
+## Branching policy
+
+Use project-scoped branch prefixes to allow parallel work across projects:
+
+```
+finance/feature-name
+todos/feature-name
+calendar/feature-name
+food/feature-name
+```
+
+This lets separate Claude agents work on separate projects without colliding.
+Main branch: `main`.
+
 ## Stack
 
 - **Runtime:** Node.js + TypeScript
-- **Database:** SQLite via `better-sqlite3` (sync driver)
+- **Database:** SQLite via `better-sqlite3` (sync driver) — finance only
 - **Frontend:** React 19, esbuild
 - **Tests:** Jest (unit), Playwright (e2e)
-- **Build:** esbuild (`build.js`)
+- **Build:** esbuild (`build.js`) — auto-discovers `projects/*/frontend/`
+- **CSS:** Tailwind v4 (finance only currently)
 
 ## Scripts
 
-Reusable utility scripts live in `scripts/`. Run with `python3 scripts/<name>.py` or `node scripts/<name>.js` as appropriate.
+```
+npm run finance:dev        # start finance server (port 3001)
+npm run finance:build      # esbuild + tailwind
+npm run finance:test:e2e   # playwright e2e for finance
+npm run db:migrate         # run finance SQLite migrations
+npm run db:seed            # seed finance DB
+npm run db:import          # import RocketMoney CSV transactions
+npm run db:tag             # apply tag CSV to budget/recurring items
+npm start                  # start todos server (port 3000)
+npm run test:unit          # jest unit tests (all projects)
+```
 
-- `scripts/docx_to_md.py` — converts Google Drive .docx exports to markdown (for session logs)
+Reusable utility scripts live in `scripts/`. Run with `python3 scripts/<name>.py` or `node scripts/<name>.js` as appropriate.
 
 ## Conventions
 
@@ -89,3 +121,4 @@ Reusable utility scripts live in `scripts/`. Run with `python3 scripts/<name>.py
 - Slug-style IDs as primary keys where possible (e.g. `'my_bank'`, `'lender_payment'`)
 - Migration files: `db/migrations/001_initial.sql`, `002_...`, etc.
 - Never skip `--no-verify` on commits
+- Privacy: never include family member names in commits, PRs, or issues
