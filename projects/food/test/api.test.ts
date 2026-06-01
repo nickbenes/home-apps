@@ -657,4 +657,203 @@ describe('Food API', () => {
       expect(res.statusCode).toBe(404);
     });
   });
+
+  // ── Menu plans ────────────────────────────────────────────────────────────
+
+  describe('GET /food/api/menu-plans', () => {
+    test('returns all plans', async () => {
+      const res = await request(app).get('/food/api/menu-plans');
+      expect(res.statusCode).toBe(200);
+      expect(res.body.some((p: any) => p.id === 'test_plan')).toBe(true);
+    });
+
+    test('orders by week_start descending', async () => {
+      await request(app).post('/food/api/menu-plans')
+        .send({ name: 'Earlier', week_start: '2026-05-26' });
+      const res = await request(app).get('/food/api/menu-plans');
+      expect(res.body[0].week_start >= res.body[res.body.length - 1].week_start).toBe(true);
+    });
+  });
+
+  describe('POST /food/api/menu-plans', () => {
+    test('creates a plan', async () => {
+      const res = await request(app).post('/food/api/menu-plans')
+        .send({ name: 'New Week', week_start: '2026-06-09' });
+      expect(res.statusCode).toBe(201);
+      expect(res.body.name).toBe('New Week');
+      expect(res.body.week_start).toBe('2026-06-09');
+      expect(res.body.id).toMatch(/^new_week_/);
+    });
+
+    test('400 when name missing', async () => {
+      const res = await request(app).post('/food/api/menu-plans')
+        .send({ week_start: '2026-06-09' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    test('400 when week_start missing', async () => {
+      const res = await request(app).post('/food/api/menu-plans')
+        .send({ name: 'No Date' });
+      expect(res.statusCode).toBe(400);
+    });
+  });
+
+  describe('GET /food/api/menu-plans/:id', () => {
+    test('returns plan with slots', async () => {
+      const res = await request(app).get('/food/api/menu-plans/test_plan');
+      expect(res.statusCode).toBe(200);
+      expect(res.body.name).toBe('Test Week');
+      expect(Array.isArray(res.body.slots)).toBe(true);
+      expect(res.body.slots.length).toBeGreaterThanOrEqual(2);
+    });
+
+    test('slots include recipe_title from join', async () => {
+      const res = await request(app).get('/food/api/menu-plans/test_plan');
+      const dinnerSlot = res.body.slots.find((s: any) => s.day_of_week === 0 && s.meal_slot === 'dinner');
+      expect(dinnerSlot).toBeDefined();
+      expect(dinnerSlot.recipe_title).toBe('Test Stir Fry');
+      expect(dinnerSlot.recipe_servings).toBe(7);
+    });
+
+    test('null recipe_id slot has null recipe_title', async () => {
+      const res = await request(app).get('/food/api/menu-plans/test_plan');
+      const lunchSlot = res.body.slots.find((s: any) => s.day_of_week === 1 && s.meal_slot === 'lunch');
+      expect(lunchSlot.recipe_id).toBeNull();
+      expect(lunchSlot.recipe_title).toBeNull();
+    });
+
+    test('404 for unknown id', async () => {
+      const res = await request(app).get('/food/api/menu-plans/no_such');
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('DELETE /food/api/menu-plans/:id', () => {
+    test('deletes the plan and cascades to slots', async () => {
+      const del = await request(app).delete('/food/api/menu-plans/test_plan');
+      expect(del.statusCode).toBe(204);
+      const get = await request(app).get('/food/api/menu-plans/test_plan');
+      expect(get.statusCode).toBe(404);
+      const slotCount = (db.prepare(
+        'SELECT COUNT(*) AS n FROM menu_plan_slots WHERE menu_plan_id = ?'
+      ).get('test_plan') as any).n;
+      expect(slotCount).toBe(0);
+    });
+
+    test('404 for unknown id', async () => {
+      const res = await request(app).delete('/food/api/menu-plans/no_such');
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('PUT /food/api/menu-plans/:id/slots', () => {
+    test('assigns a recipe to a new slot', async () => {
+      const res = await request(app)
+        .put('/food/api/menu-plans/test_plan/slots')
+        .send({ day_of_week: 2, meal_slot: 'dinner', recipe_id: 'test_stir_fry' });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.recipe_title).toBe('Test Stir Fry');
+    });
+
+    test('upserts — updating an existing slot', async () => {
+      await request(app).put('/food/api/menu-plans/test_plan/slots')
+        .send({ day_of_week: 0, meal_slot: 'dinner', recipe_id: 'test_stir_fry' });
+      // Assign a different recipe to the same slot
+      await request(app).put('/food/api/menu-plans/test_plan/slots')
+        .send({ day_of_week: 0, meal_slot: 'dinner', recipe_id: 'test_stir_fry' });
+      // Only one slot for that day+meal should exist
+      const count = (db.prepare(
+        `SELECT COUNT(*) AS n FROM menu_plan_slots
+         WHERE menu_plan_id = 'test_plan' AND day_of_week = 0 AND meal_slot = 'dinner'`
+      ).get() as any).n;
+      expect(count).toBe(1);
+    });
+
+    test('clears a slot when recipe_id is null', async () => {
+      const res = await request(app)
+        .put('/food/api/menu-plans/test_plan/slots')
+        .send({ day_of_week: 0, meal_slot: 'dinner', recipe_id: null });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.recipe_id).toBeNull();
+    });
+
+    test('400 when day_of_week missing', async () => {
+      const res = await request(app)
+        .put('/food/api/menu-plans/test_plan/slots')
+        .send({ meal_slot: 'dinner', recipe_id: 'test_stir_fry' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    test('400 when recipe_id unknown', async () => {
+      const res = await request(app)
+        .put('/food/api/menu-plans/test_plan/slots')
+        .send({ day_of_week: 3, meal_slot: 'dinner', recipe_id: 'no_such_recipe' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    test('404 for unknown plan', async () => {
+      const res = await request(app)
+        .put('/food/api/menu-plans/no_such/slots')
+        .send({ day_of_week: 0, meal_slot: 'dinner', recipe_id: null });
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('DELETE /food/api/menu-plans/:id/slots/:slotId', () => {
+    test('removes a slot', async () => {
+      const slotId = (db.prepare(
+        `SELECT id FROM menu_plan_slots WHERE menu_plan_id = 'test_plan' AND day_of_week = 0`
+      ).get() as any).id;
+      const res = await request(app)
+        .delete(`/food/api/menu-plans/test_plan/slots/${slotId}`);
+      expect(res.statusCode).toBe(204);
+      expect(db.prepare('SELECT id FROM menu_plan_slots WHERE id = ?').get(slotId)).toBeUndefined();
+    });
+
+    test('404 for slot belonging to a different plan', async () => {
+      const slotId = (db.prepare(
+        `SELECT id FROM menu_plan_slots WHERE menu_plan_id = 'test_plan'`
+      ).get() as any).id;
+      const res = await request(app)
+        .delete(`/food/api/menu-plans/wrong_plan/slots/${slotId}`);
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('POST /food/api/menu-plans/:id/suggest', () => {
+    test('fills empty dinner slots', async () => {
+      const res = await request(app)
+        .post('/food/api/menu-plans/test_plan/suggest');
+      expect(res.statusCode).toBe(200);
+      const dinnerSlots = res.body.slots.filter((s: any) => s.meal_slot === 'dinner');
+      // All 7 days should have dinner slots
+      expect(dinnerSlots.length).toBe(7);
+      // All should have a recipe assigned
+      expect(dinnerSlots.every((s: any) => s.recipe_id != null)).toBe(true);
+    });
+
+    test('does not overwrite existing slots', async () => {
+      await request(app).post('/food/api/menu-plans/test_plan/suggest');
+      // Monday dinner was already 'test_stir_fry' in fixtures
+      const monSlot = (db.prepare(
+        `SELECT recipe_id FROM menu_plan_slots
+         WHERE menu_plan_id = 'test_plan' AND day_of_week = 0 AND meal_slot = 'dinner'`
+      ).get() as any);
+      expect(monSlot.recipe_id).toBe('test_stir_fry');
+    });
+
+    test('422 when recipe library is empty', async () => {
+      db.prepare('DELETE FROM recipe_ingredients').run();
+      db.prepare('DELETE FROM recipes').run();
+      const res = await request(app)
+        .post('/food/api/menu-plans/test_plan/suggest');
+      expect(res.statusCode).toBe(422);
+    });
+
+    test('404 for unknown plan', async () => {
+      const res = await request(app)
+        .post('/food/api/menu-plans/no_such/suggest');
+      expect(res.statusCode).toBe(404);
+    });
+  });
 });

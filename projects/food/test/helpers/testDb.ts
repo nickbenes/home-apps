@@ -52,5 +52,19 @@ export function seedFixtures(db: Database.Database): void {
       INSERT INTO family_members (id, display_name, dietary_flags)
       VALUES ('member_1', 'Test Person', '["dairy-free"]')
     `).run();
+
+    // Menu plan with two pre-assigned dinner slots
+    db.prepare(`
+      INSERT INTO menu_plans (id, name, week_start)
+      VALUES ('test_plan', 'Test Week', '2026-06-02')
+    `).run();
+    db.prepare(`
+      INSERT INTO menu_plan_slots (menu_plan_id, day_of_week, meal_slot, recipe_id)
+      VALUES ('test_plan', 0, 'dinner', 'test_stir_fry')
+    `).run();
+    db.prepare(`
+      INSERT INTO menu_plan_slots (menu_plan_id, day_of_week, meal_slot, recipe_id)
+      VALUES ('test_plan', 1, 'lunch', NULL)
+    `).run();
   })();
 }

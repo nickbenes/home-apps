@@ -28,6 +28,9 @@
     "todos:dev": "node projects/todos/backend/server.js",
     "calendar:dev": "tsx projects/calendar/backend/server.ts",
     "food:dev": "tsx projects/food/backend/server.ts",
+    "food:css": "tailwindcss -i projects/food/frontend/index.css -o public/food/bundle.css",
+    "food:css:watch": "tailwindcss -i projects/food/frontend/index.css -o public/food/bundle.css --watch",
+    "food:build": "npm run build && npm run food:css",
     "food:db:migrate": "tsx projects/food/backend/migrate.ts",
     "food:db:reset": "node -e \"require('fs').rmSync('projects/food/data/food.db', {force:true})\" && npm run food:db:migrate"
   },
