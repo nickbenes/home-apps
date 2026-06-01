@@ -27,7 +27,9 @@
     "finance:test:e2e": "playwright test --config=playwright.finance.config.ts",
     "todos:dev": "node projects/todos/backend/server.js",
     "calendar:dev": "tsx projects/calendar/backend/server.ts",
-    "food:dev": "tsx projects/food/backend/server.ts"
+    "food:dev": "tsx projects/food/backend/server.ts",
+    "food:db:migrate": "tsx projects/food/backend/migrate.ts",
+    "food:db:reset": "node -e \"require('fs').rmSync('projects/food/data/food.db', {force:true})\" && npm run food:db:migrate"
   },
   "dependencies": {
     "@types/better-sqlite3": "^7.6.13",
