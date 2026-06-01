@@ -11,8 +11,8 @@ let idB: string;
 
 test.beforeAll(async ({ request }) => {
   const [rA, rB] = await Promise.all([
-    request.post('/api/recurring', { data: { name: NAME_A, amount: -55.00, frequency: 'monthly' } }),
-    request.post('/api/recurring', { data: { name: NAME_B, amount: -22.00, frequency: 'monthly' } }),
+    request.post('/finance/api/recurring', { data: { name: NAME_A, amount: -55.00, frequency: 'monthly' } }),
+    request.post('/finance/api/recurring', { data: { name: NAME_B, amount: -22.00, frequency: 'monthly' } }),
   ]);
   idA = (await rA.json()).recurring_item_id;
   idB = (await rB.json()).recurring_item_id;
@@ -20,14 +20,14 @@ test.beforeAll(async ({ request }) => {
 
 test.afterAll(async ({ request }) => {
   await Promise.all([
-    idA ? request.delete(`/api/recurring/${idA}`) : Promise.resolve(),
-    idB ? request.delete(`/api/recurring/${idB}`) : Promise.resolve(),
+    idA ? request.delete(`/finance/api/recurring/${idA}`) : Promise.resolve(),
+    idB ? request.delete(`/finance/api/recurring/${idB}`) : Promise.resolve(),
   ]);
 });
 
 test.describe('Recurring Items — inline expand/edit', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/recurring');
+    await page.goto('recurring');
     await expect(page.locator(`tr:has-text("${NAME_A}")`).first()).toBeVisible({ timeout: 10_000 });
   });
 

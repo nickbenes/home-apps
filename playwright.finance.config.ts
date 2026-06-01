@@ -8,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:3001/finance',
+    baseURL: 'http://localhost:3001/finance/',
     trace: 'on-first-retry',
   },
 

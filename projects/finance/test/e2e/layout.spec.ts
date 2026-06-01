@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('nav stays visible after scrolling down', async ({ page }) => {
-  await page.goto('/transactions');
+  await page.goto('transactions');
 
   // Desktop layout uses a sticky sidebar (<aside>); mobile uses a fixed header (<header>).
   // The Playwright config uses Desktop Chrome (1280px), so we check the sidebar.
