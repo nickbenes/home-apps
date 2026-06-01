@@ -21457,12 +21457,12 @@
     const [todos, setTodos] = import_react.default.useState([]);
     const [newTodo, setNewTodo] = import_react.default.useState("");
     import_react.default.useEffect(() => {
-      fetch("/api/todos").then((res) => res.json()).then((data) => setTodos(data)).catch((err) => console.error("Error fetching todos:", err));
+      fetch("/todos/api/todos").then((res) => res.json()).then((data) => setTodos(data)).catch((err) => console.error("Error fetching todos:", err));
     }, []);
     const addTodo = async () => {
       if (!newTodo.trim()) return;
       try {
-        const response = await fetch("/api/todos", {
+        const response = await fetch("/todos/api/todos", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ title: newTodo, completed: false })
@@ -21476,7 +21476,7 @@
     };
     const toggleTodo = async (id, completed) => {
       try {
-        const response = await fetch(`/api/todos/${id}`, {
+        const response = await fetch(`/todos/api/todos/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ completed: !completed })
@@ -21489,7 +21489,7 @@
     };
     const deleteTodo = async (id) => {
       try {
-        await fetch(`/api/todos/${id}`, { method: "DELETE" });
+        await fetch(`/todos/api/todos/${id}`, { method: "DELETE" });
         setTodos(todos.filter((t) => t.id !== id));
       } catch (err) {
         console.error("Error deleting todo:", err);
