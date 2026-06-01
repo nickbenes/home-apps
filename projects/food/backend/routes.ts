@@ -598,5 +598,140 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     res.json({ ...db.prepare('SELECT * FROM menu_plans WHERE id = ?').get(req.params.id), slots });
   });
 
+  // ── Shopping lists ────────────────────────────────────────────────────────
+
+  router.get('/shopping-lists', (_req, res) => {
+    res.json(db.prepare('SELECT * FROM shopping_lists ORDER BY created_at DESC').all());
+  });
+
+  router.post('/shopping-lists', (req, res) => {
+    const { name } = req.body;
+    if (!name) return res.status(400).json({ error: 'name required' });
+    const id = makeId(name);
+    db.prepare('INSERT INTO shopping_lists (id, name) VALUES (?, ?)').run(id, name.trim());
+    res.status(201).json(db.prepare('SELECT * FROM shopping_lists WHERE id = ?').get(id));
+  });
+
+  // Must be defined before GET /shopping-lists/:id so Express doesn't swallow
+  // "from-plan" as a list ID on GET (they're different HTTP methods, but
+  // keeping order consistent is clearer).
+  router.post('/shopping-lists/from-plan/:planId', (req, res) => {
+    const plan = db.prepare('SELECT * FROM menu_plans WHERE id = ?').get(req.params.planId) as
+      { id: string; name: string } | undefined;
+    if (!plan) return res.status(404).json({ error: 'Menu plan not found' });
+
+    const { name, servings } = req.body;
+    const listName: string = name ?? `${plan.name} — Shopping List`;
+    const targetServings: number | null = servings ? Number(servings) : null;
+
+    const slots = db.prepare(`
+      SELECT ms.recipe_id, ms.servings_override, r.servings AS recipe_servings
+      FROM menu_plan_slots ms
+      JOIN recipes r ON r.id = ms.recipe_id
+      WHERE ms.menu_plan_id = ? AND ms.recipe_id IS NOT NULL
+    `).all(req.params.planId) as {
+      recipe_id: string;
+      servings_override: number | null;
+      recipe_servings: number;
+    }[];
+
+    if (!slots.length) {
+      return res.status(422).json({ error: 'Menu plan has no assigned recipes' });
+    }
+
+    // Consolidate ingredients: group by (ingredient_id, unit) → sum quantities.
+    // If two rows share ingredient+unit, their quantities are added.
+    // If units differ for the same ingredient, they appear as separate items.
+    interface TallyEntry {
+      ingredient_id: string;
+      name: string;
+      unit: string | null;
+      quantity: number | null;
+      category_id: string;
+    }
+    const tally = new Map<string, TallyEntry>();
+
+    for (const slot of slots) {
+      const effective = slot.servings_override ?? targetServings ?? slot.recipe_servings;
+      const scale = effective / slot.recipe_servings;
+
+      const ings = db.prepare(`
+        SELECT ri.ingredient_id, ri.quantity, ri.unit, i.name, i.category_id
+        FROM recipe_ingredients ri
+        JOIN ingredients i ON i.id = ri.ingredient_id
+        WHERE ri.recipe_id = ?
+      `).all(slot.recipe_id) as {
+        ingredient_id: string; quantity: number | null;
+        unit: string | null; name: string; category_id: string;
+      }[];
+
+      for (const ing of ings) {
+        const key = `${ing.ingredient_id}|${ing.unit ?? ''}`;
+        const scaled = ing.quantity != null ? Math.round(ing.quantity * scale * 100) / 100 : null;
+        const existing = tally.get(key);
+        if (existing) {
+          existing.quantity = existing.quantity != null && scaled != null
+            ? Math.round((existing.quantity + scaled) * 100) / 100
+            : null;
+        } else {
+          tally.set(key, {
+            ingredient_id: ing.ingredient_id, name: ing.name,
+            unit: ing.unit, quantity: scaled, category_id: ing.category_id,
+          });
+        }
+      }
+    }
+
+    const listId = makeId(listName);
+    db.prepare('INSERT INTO shopping_lists (id, name, menu_plan_id) VALUES (?, ?, ?)')
+      .run(listId, listName.trim(), req.params.planId);
+
+    let sortOrder = 0;
+    for (const item of tally.values()) {
+      db.prepare(`
+        INSERT INTO shopping_list_items
+          (shopping_list_id, ingredient_id, name, quantity, unit, category_id, sort_order)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `).run(listId, item.ingredient_id, item.name, item.quantity, item.unit,
+             item.category_id, sortOrder++);
+    }
+
+    res.status(201).json(getListDetail(listId));
+  });
+
+  function getListDetail(listId: string) {
+    const list = db.prepare('SELECT * FROM shopping_lists WHERE id = ?').get(listId);
+    const items = db.prepare(`
+      SELECT sli.*, ic.store_section, ic.sort_order AS category_sort_order
+      FROM shopping_list_items sli
+      LEFT JOIN ingredient_categories ic ON ic.id = sli.category_id
+      WHERE sli.shopping_list_id = ?
+      ORDER BY COALESCE(ic.sort_order, 999), sli.sort_order, sli.id
+    `).all(listId);
+    return { ...(list as object), items };
+  }
+
+  router.get('/shopping-lists/:id', (req, res) => {
+    const list = db.prepare('SELECT id FROM shopping_lists WHERE id = ?').get(req.params.id);
+    if (!list) return res.status(404).json({ error: 'Shopping list not found' });
+    res.json(getListDetail(req.params.id));
+  });
+
+  router.delete('/shopping-lists/:id', (req, res) => {
+    const list = db.prepare('SELECT id FROM shopping_lists WHERE id = ?').get(req.params.id);
+    if (!list) return res.status(404).json({ error: 'Shopping list not found' });
+    db.prepare('DELETE FROM shopping_lists WHERE id = ?').run(req.params.id);
+    res.status(204).end();
+  });
+
+  router.patch('/shopping-list-items/:id', (req, res) => {
+    const item = db.prepare('SELECT id FROM shopping_list_items WHERE id = ?').get(req.params.id);
+    if (!item) return res.status(404).json({ error: 'Shopping list item not found' });
+    const { checked } = req.body;
+    db.prepare('UPDATE shopping_list_items SET checked = ? WHERE id = ?')
+      .run(checked ? 1 : 0, Number(req.params.id));
+    res.json(db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(req.params.id));
+  });
+
   return router;
 }

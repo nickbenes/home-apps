@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { CalendarDays, BookOpen, Menu, X } from 'lucide-react';
+import { CalendarDays, BookOpen, ShoppingCart, Menu, X } from 'lucide-react';
 
 const NAV = [
-  { to: '/menu',    label: 'Menu Planner', icon: CalendarDays },
-  { to: '/recipes', label: 'Recipes',      icon: BookOpen },
+  { to: '/menu',     label: 'Menu Planner',   icon: CalendarDays },
+  { to: '/recipes',  label: 'Recipes',        icon: BookOpen },
+  { to: '/shopping', label: 'Shopping List',  icon: ShoppingCart },
 ];
 
 function NavItems({ onClick }: { onClick?: () => void }) {
