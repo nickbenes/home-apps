@@ -68,3 +68,29 @@ export interface FamilyMember {
   dietary_flags: string; // JSON string
   notes: string | null;
 }
+
+export interface ShoppingList {
+  id: string;
+  name: string;
+  menu_plan_id: string | null;
+  created_at: string;
+  status: 'active' | 'completed' | 'archived';
+}
+
+export interface ShoppingListItem {
+  id: number;
+  shopping_list_id: string;
+  ingredient_id: string | null;
+  name: string;
+  quantity: number | null;
+  unit: string | null;
+  category_id: string | null;
+  store_section: string | null;
+  notes: string | null;
+  checked: number; // 0 or 1
+  sort_order: number;
+}
+
+export interface ShoppingListDetail extends ShoppingList {
+  items: ShoppingListItem[];
+}

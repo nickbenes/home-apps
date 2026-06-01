@@ -856,4 +856,186 @@ describe('Food API', () => {
       expect(res.statusCode).toBe(404);
     });
   });
+
+  // ── Shopping lists ────────────────────────────────────────────────────────
+
+  describe('GET /food/api/shopping-lists', () => {
+    test('returns empty array when no lists exist', async () => {
+      const res = await request(app).get('/food/api/shopping-lists');
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toEqual([]);
+    });
+
+    test('returns multiple lists', async () => {
+      await request(app).post('/food/api/shopping-lists').send({ name: 'First List' });
+      await request(app).post('/food/api/shopping-lists').send({ name: 'Second List' });
+      const res = await request(app).get('/food/api/shopping-lists');
+      expect(res.body.length).toBe(2);
+      const names = res.body.map((l: any) => l.name);
+      expect(names).toContain('First List');
+      expect(names).toContain('Second List');
+    });
+  });
+
+  describe('POST /food/api/shopping-lists', () => {
+    test('creates an empty shopping list', async () => {
+      const res = await request(app)
+        .post('/food/api/shopping-lists')
+        .send({ name: 'Weekend Run' });
+      expect(res.statusCode).toBe(201);
+      expect(res.body.name).toBe('Weekend Run');
+      expect(res.body.status).toBe('active');
+    });
+
+    test('400 when name is missing', async () => {
+      const res = await request(app).post('/food/api/shopping-lists').send({});
+      expect(res.statusCode).toBe(400);
+    });
+  });
+
+  describe('GET /food/api/shopping-lists/:id', () => {
+    test('returns list with items array', async () => {
+      const create = await request(app)
+        .post('/food/api/shopping-lists').send({ name: 'Detail Test' });
+      const res = await request(app).get(`/food/api/shopping-lists/${create.body.id}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.name).toBe('Detail Test');
+      expect(Array.isArray(res.body.items)).toBe(true);
+      expect(res.body.items).toHaveLength(0);
+    });
+
+    test('404 for unknown id', async () => {
+      const res = await request(app).get('/food/api/shopping-lists/no_such');
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('DELETE /food/api/shopping-lists/:id', () => {
+    test('removes list and cascades to items', async () => {
+      const create = await request(app)
+        .post('/food/api/shopping-lists').send({ name: 'To Delete' });
+      const del = await request(app).delete(`/food/api/shopping-lists/${create.body.id}`);
+      expect(del.statusCode).toBe(204);
+      const get = await request(app).get(`/food/api/shopping-lists/${create.body.id}`);
+      expect(get.statusCode).toBe(404);
+    });
+
+    test('404 for unknown id', async () => {
+      const res = await request(app).delete('/food/api/shopping-lists/no_such');
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('POST /food/api/shopping-lists/from-plan/:planId', () => {
+    test('generates a list from a plan with filled slots', async () => {
+      const res = await request(app)
+        .post('/food/api/shopping-lists/from-plan/test_plan')
+        .send({ servings: 7 });
+      expect(res.statusCode).toBe(201);
+      expect(res.body.menu_plan_id).toBe('test_plan');
+      expect(Array.isArray(res.body.items)).toBe(true);
+      // test_plan has Monday dinner = test_stir_fry (chicken_breast 2 lbs)
+      const chickenItem = res.body.items.find((i: any) => i.ingredient_id === 'chicken_breast');
+      expect(chickenItem).toBeDefined();
+    });
+
+    test('scales quantities by servings / recipe_servings', async () => {
+      // test_stir_fry has servings=7 and chicken_breast=2lbs
+      // requesting servings=14 should double the quantity
+      const res = await request(app)
+        .post('/food/api/shopping-lists/from-plan/test_plan')
+        .send({ servings: 14 });
+      expect(res.statusCode).toBe(201);
+      const chickenItem = res.body.items.find((i: any) => i.ingredient_id === 'chicken_breast');
+      expect(chickenItem.quantity).toBe(4); // 2 * (14/7)
+    });
+
+    test('consolidates same ingredient+unit across multiple slots', async () => {
+      // Add a second slot for test_stir_fry (same recipe → same chicken_breast qty)
+      db.prepare(`
+        INSERT INTO menu_plan_slots (menu_plan_id, day_of_week, meal_slot, recipe_id)
+        VALUES ('test_plan', 2, 'dinner', 'test_stir_fry')
+      `).run();
+
+      const res = await request(app)
+        .post('/food/api/shopping-lists/from-plan/test_plan')
+        .send({ servings: 7 });
+      expect(res.statusCode).toBe(201);
+
+      // Two slots of test_stir_fry each with 2 lbs chicken → should consolidate to 4 lbs
+      const chickenItems = res.body.items.filter((i: any) => i.ingredient_id === 'chicken_breast');
+      expect(chickenItems).toHaveLength(1);
+      expect(chickenItems[0].quantity).toBe(4);
+    });
+
+    test('items are sorted by store section order', async () => {
+      const res = await request(app)
+        .post('/food/api/shopping-lists/from-plan/test_plan')
+        .send({ servings: 7 });
+      expect(res.statusCode).toBe(201);
+      // chicken_breast is in 'proteins' (sort_order 10) — should come first
+      expect(res.body.items[0].ingredient_id).toBe('chicken_breast');
+    });
+
+    test('accepts a custom list name', async () => {
+      const res = await request(app)
+        .post('/food/api/shopping-lists/from-plan/test_plan')
+        .send({ servings: 7, name: 'My Custom List' });
+      expect(res.statusCode).toBe(201);
+      expect(res.body.name).toBe('My Custom List');
+    });
+
+    test('422 when plan has no assigned recipes', async () => {
+      // Create a plan with no filled slots
+      await request(app).post('/food/api/menu-plans')
+        .send({ name: 'Empty Week', week_start: '2026-06-09' });
+      const emptyPlan = db.prepare(`SELECT id FROM menu_plans WHERE name = 'Empty Week'`).get() as any;
+      const res = await request(app)
+        .post(`/food/api/shopping-lists/from-plan/${emptyPlan.id}`)
+        .send({ servings: 7 });
+      expect(res.statusCode).toBe(422);
+    });
+
+    test('404 for unknown plan', async () => {
+      const res = await request(app)
+        .post('/food/api/shopping-lists/from-plan/no_such')
+        .send({ servings: 7 });
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('PATCH /food/api/shopping-list-items/:id', () => {
+    function generateAndGetItem() {
+      return request(app)
+        .post('/food/api/shopping-lists/from-plan/test_plan')
+        .send({ servings: 7 })
+        .then(res => res.body.items[0]);
+    }
+
+    test('marks item as checked', async () => {
+      const item = await generateAndGetItem();
+      const res = await request(app)
+        .patch(`/food/api/shopping-list-items/${item.id}`)
+        .send({ checked: true });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.checked).toBe(1);
+    });
+
+    test('marks item as unchecked', async () => {
+      const item = await generateAndGetItem();
+      await request(app).patch(`/food/api/shopping-list-items/${item.id}`).send({ checked: true });
+      const res = await request(app)
+        .patch(`/food/api/shopping-list-items/${item.id}`)
+        .send({ checked: false });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.checked).toBe(0);
+    });
+
+    test('404 for unknown item id', async () => {
+      const res = await request(app)
+        .patch('/food/api/shopping-list-items/99999')
+        .send({ checked: true });
+      expect(res.statusCode).toBe(404);
+    });
+  });
 });

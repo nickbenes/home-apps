@@ -1,6 +1,7 @@
 import type {
   Recipe, RecipeWithIngredients, MenuPlan, MenuPlanDetail,
   MenuPlanSlot, Ingredient, FamilyMember,
+  ShoppingList, ShoppingListDetail, ShoppingListItem,
 } from './types';
 
 const BASE = '/food/api';
@@ -33,6 +34,19 @@ async function put<T>(path: string, body: unknown): Promise<T> {
   if (!res.ok) {
     const err = await res.json().catch(() => ({})) as { error?: string };
     throw new Error(err.error ?? `PUT ${path} → ${res.status}`);
+  }
+  return res.json();
+}
+
+async function patch<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { error?: string };
+    throw new Error(err.error ?? `PATCH ${path} → ${res.status}`);
   }
   return res.json();
 }
@@ -73,5 +87,14 @@ export const api = {
   },
   familyMembers: {
     list: () => get<FamilyMember[]>('/family-members'),
+  },
+  shoppingLists: {
+    list: () => get<ShoppingList[]>('/shopping-lists'),
+    get: (id: string) => get<ShoppingListDetail>(`/shopping-lists/${id}`),
+    delete: (id: string) => del(`/shopping-lists/${id}`),
+    fromPlan: (planId: string, servings: number, name?: string) =>
+      post<ShoppingListDetail>(`/shopping-lists/from-plan/${planId}`, { servings, name }),
+    checkItem: (itemId: number, checked: boolean) =>
+      patch<ShoppingListItem>(`/shopping-list-items/${itemId}`, { checked }),
   },
 };
