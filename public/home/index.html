@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Apps</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0f172a;
+      --surface:  #1e293b;
+      --border:   #334155;
+      --text:     #f1f5f9;
+      --muted:    #94a3b8;
+      --finance:  #10b981;
+      --todos:    #3b82f6;
+      --food:     #f97316;
+      --calendar: #64748b;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+    header p {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 220px));
+      gap: 1.25rem;
+      justify-content: center;
+      width: 100%;
+      max-width: 960px;
+    }
+
+    .tile {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 1.75rem 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+      min-height: 200px;
+      position: relative;
+      overflow: hidden;
+    }
+    .tile::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 120ms ease;
+    }
+    .tile:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+    .tile:hover::before { opacity: 0.04; }
+    .tile.planned {
+      opacity: 0.5;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .tile-finance  { border-color: color-mix(in srgb, var(--finance) 30%, var(--border)); }
+    .tile-todos    { border-color: color-mix(in srgb, var(--todos) 30%, var(--border)); }
+    .tile-food     { border-color: color-mix(in srgb, var(--food) 30%, var(--border)); }
+    .tile-calendar { border-color: var(--border); }
+
+    .tile-finance:hover  { border-color: var(--finance); }
+    .tile-todos:hover    { border-color: var(--todos); }
+    .tile-food:hover     { border-color: var(--food); }
+
+    .tile-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.625rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tile-finance  .tile-icon { background: color-mix(in srgb, var(--finance) 20%, transparent); }
+    .tile-todos    .tile-icon { background: color-mix(in srgb, var(--todos) 20%, transparent); }
+    .tile-food     .tile-icon { background: color-mix(in srgb, var(--food) 20%, transparent); }
+    .tile-calendar .tile-icon { background: color-mix(in srgb, var(--calendar) 20%, transparent); }
+
+    .tile-icon svg { width: 1.25rem; height: 1.25rem; }
+    .tile-finance  .tile-icon svg { stroke: var(--finance); }
+    .tile-todos    .tile-icon svg { stroke: var(--todos); }
+    .tile-food     .tile-icon svg { stroke: var(--food); }
+    .tile-calendar .tile-icon svg { stroke: var(--calendar); }
+
+    .tile-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .tile-desc {
+      font-size: 0.825rem;
+      color: var(--muted);
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      margin-top: auto;
+    }
+    .badge-active  { background: color-mix(in srgb, var(--finance) 15%, transparent); color: var(--finance); }
+    .badge-planned { background: color-mix(in srgb, var(--calendar) 15%, transparent); color: var(--calendar); }
+
+    footer {
+      margin-top: 3rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Home Apps</h1>
+    <p>Personal tools for finances, tasks, and food planning.</p>
+  </header>
+
+  <main>
+    <div class="grid">
+
+      <a href="/finance/" class="tile tile-finance">
+        <div class="tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="tile-title">Finance</div>
+        <div class="tile-desc">Budget, debts, recurring bills, and transaction tracking.</div>
+        <span class="badge badge-active">Active</span>
+      </a>
+
+      <a href="/todos/" class="tile tile-todos">
+        <div class="tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 11 12 14 22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+        </div>
+        <div class="tile-title">Todos</div>
+        <div class="tile-desc">Task lists and household to-dos.</div>
+        <span class="badge badge-active">Active</span>
+      </a>
+
+      <a href="/food/" class="tile tile-food">
+        <div class="tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+            <line x1="6" y1="1" x2="6" y2="4"/>
+            <line x1="10" y1="1" x2="10" y2="4"/>
+            <line x1="14" y1="1" x2="14" y2="4"/>
+          </svg>
+        </div>
+        <div class="tile-title">Food</div>
+        <div class="tile-desc">Recipe library, weekly menu planner, and shopping lists.</div>
+        <span class="badge badge-active">Active</span>
+      </a>
+
+      <div class="tile tile-calendar planned">
+        <div class="tile-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <div class="tile-title">Calendar</div>
+        <div class="tile-desc">Shared household calendar and scheduling.</div>
+        <span class="badge badge-planned">Planned</span>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>pace-bene home apps</footer>
+</body>
+</html>
