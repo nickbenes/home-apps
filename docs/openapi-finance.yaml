@@ -1,0 +1,1254 @@
+openapi: 3.0.3
+info:
+  title: Finance API
+  description: >
+    Personal finance tracker — budget categories, recurring bills, transaction
+    classification, debt scheduling, and forecasting.
+    All amounts are REAL (negative = outflow, positive = income).
+    All dates are ISO 8601 TEXT (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS).
+  version: "1.0"
+servers:
+  - url: /finance/api
+    description: Local / nginx-proxied
+
+tags:
+  - name: accounts
+  - name: budget
+  - name: recurring
+  - name: transactions
+  - name: classifications
+  - name: scheduled
+  - name: forecast
+  - name: rules
+  - name: audit
+  - name: feature-requests
+  - name: summary
+
+paths:
+
+  # ── Accounts ────────────────────────────────────────────────────────────────
+
+  /accounts:
+    get:
+      tags: [accounts]
+      summary: List all accounts
+      responses:
+        "200":
+          description: Array of account rows ordered by account_type, creditor
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Account"
+
+  /accounts/{id}:
+    get:
+      tags: [accounts]
+      summary: Get a single account
+      parameters:
+        - $ref: "#/components/parameters/accountId"
+      responses:
+        "200":
+          description: Account row
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      tags: [accounts]
+      summary: Update account fields
+      description: >
+        Sparse update — only fields present in the body are changed.
+        Pass explicit `null` to clear a nullable field.
+      parameters:
+        - $ref: "#/components/parameters/accountId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                creditor:          { type: string }
+                account_type:
+                  type: string
+                  enum: [personal_loan, mortgage, credit_card, student_loan, tax_debt,
+                         auto_loan, settlement, collections, judgment, bnpl, income_source]
+                status:
+                  type: string
+                  enum: [active, delinquent, paid_off, charged_off, in_collections,
+                         judgment, settled]
+                current_balance:   { type: number }
+                balance_date:      { type: string, format: date }
+                interest_rate_pct: { type: number }
+                original_amount:   { type: number }
+                account_number:    { type: string, nullable: true }
+                portal_url:        { type: string, nullable: true }
+                payoff_date_est:   { type: string, format: date, nullable: true }
+                phone:             { type: string, nullable: true }
+                email:             { type: string, nullable: true }
+                notes:             { type: string, nullable: true }
+      responses:
+        "200":
+          description: Updated account
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /accounts/{id}/detail:
+    get:
+      tags: [accounts]
+      summary: Account with related entities
+      parameters:
+        - $ref: "#/components/parameters/accountId"
+      responses:
+        "200":
+          description: Account with tags, recurring_items, budget_items, and forecast_items
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Account"
+                  - type: object
+                    properties:
+                      tags:           { type: array, items: { type: string } }
+                      recurringItems: { type: array, items: { $ref: "#/components/schemas/RecurringItem" } }
+                      budgetItems:    { type: array, items: { $ref: "#/components/schemas/BudgetItem" } }
+                      forecastItems:  { type: array, items: { $ref: "#/components/schemas/ForecastItem" } }
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /accounts/{id}/tags:
+    post:
+      tags: [accounts]
+      summary: Add a tag to an account
+      parameters:
+        - $ref: "#/components/parameters/accountId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tag]
+              properties:
+                tag: { type: string }
+      responses:
+        "200":
+          description: Updated list of tag strings for the account
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { type: string }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /accounts/{id}/tags/{tag}:
+    delete:
+      tags: [accounts]
+      summary: Remove a tag from an account
+      parameters:
+        - $ref: "#/components/parameters/accountId"
+        - name: tag
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Updated list of tag strings
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { type: string }
+
+  # ── Budget ───────────────────────────────────────────────────────────────────
+
+  /budget/categories:
+    get:
+      tags: [budget]
+      summary: List budget categories ordered by display_order
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BudgetCategory"
+          description: OK
+
+  /budget/items:
+    get:
+      tags: [budget]
+      summary: List all budget items with category info
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/BudgetItem"
+                    - type: object
+                      properties:
+                        category_name:          { type: string }
+                        category_display_order: { type: integer }
+          description: OK
+
+  /budget/variance:
+    get:
+      tags: [budget]
+      summary: Budget vs actual by category for a given month
+      parameters:
+        - name: month
+          in: query
+          description: "YYYY-MM (defaults to current month)"
+          schema:
+            type: string
+            pattern: "^\\d{4}-\\d{2}$"
+      responses:
+        "200":
+          description: Monthly variance report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  month: { type: string }
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        category_id:    { type: string }
+                        category_name:  { type: string }
+                        display_order:  { type: integer }
+                        budgeted:       { type: number }
+                        actual:         { type: number }
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              budget_item_id:   { type: string }
+                              item_name:        { type: string }
+                              budgeted_monthly: { type: number }
+                              actual_amount:    { type: number }
+                              tx_count:         { type: integer }
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  # ── Recurring items ──────────────────────────────────────────────────────────
+
+  /recurring:
+    get:
+      tags: [recurring]
+      summary: List recurring items
+      parameters:
+        - name: all
+          in: query
+          description: "Pass `true` to include inactive items (default: active only)"
+          schema:
+            type: string
+            enum: ["true", "false"]
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/RecurringItem"
+                    - type: object
+                      properties:
+                        tags: { type: array, items: { type: string } }
+          description: OK
+    post:
+      tags: [recurring]
+      summary: Create a recurring item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, amount, frequency]
+              properties:
+                name:                 { type: string }
+                amount:               { type: number }
+                frequency:
+                  type: string
+                  enum: [weekly, biweekly, monthly, every_4_weeks, annually, one_time]
+                budget_item_id:       { type: string, nullable: true }
+                account_id:           { type: string, nullable: true }
+                projected_start_date: { type: string, format: date, nullable: true }
+                projected_stop_date:  { type: string, format: date, nullable: true }
+                notes:                { type: string, nullable: true }
+      responses:
+        "201":
+          description: Created recurring item with tags
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecurringItem"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /recurring/tags:
+    get:
+      tags: [recurring]
+      summary: List all distinct tag names used on recurring items
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { type: string }
+          description: OK
+
+  /recurring/{id}:
+    patch:
+      tags: [recurring]
+      summary: Update a recurring item (sparse)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:                 { type: string }
+                amount:               { type: number }
+                frequency:            { type: string }
+                budget_item_id:       { type: string, nullable: true }
+                account_id:           { type: string, nullable: true }
+                projected_start_date: { type: string, nullable: true }
+                projected_stop_date:  { type: string, nullable: true }
+                is_active:            { type: integer, enum: [0, 1] }
+                notes:                { type: string, nullable: true }
+      responses:
+        "200":
+          description: Updated item with tags
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecurringItem"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [recurring]
+      summary: Delete a recurring item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /recurring/{id}/tags:
+    post:
+      tags: [recurring]
+      summary: Add a tag to a recurring item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tag]
+              properties:
+                tag: { type: string }
+      responses:
+        "200":
+          description: Full updated recurring item with tags
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecurringItem"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /recurring/{id}/tags/{tag}:
+    delete:
+      tags: [recurring]
+      summary: Remove a tag from a recurring item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: tag
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Full updated recurring item with tags
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecurringItem"
+
+  # ── Transactions ─────────────────────────────────────────────────────────────
+
+  /transactions:
+    get:
+      tags: [transactions]
+      summary: List transactions with optional filters
+      parameters:
+        - name: account_id
+          in: query
+          schema:
+            type: string
+        - name: start
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Inclusive start date (YYYY-MM-DD)
+        - name: end
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Inclusive end date (YYYY-MM-DD)
+        - name: unmatched
+          in: query
+          schema:
+            type: string
+            enum: ["true"]
+          description: Filter to transactions with no budget-item mapping
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Search merchant_text and merchant_normalized
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+            maximum: 5000
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: Transactions with mapping_count appended
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/Transaction"
+                    - type: object
+                      properties:
+                        mapping_count: { type: integer }
+
+  /transactions/{id}:
+    get:
+      tags: [transactions]
+      summary: Get a transaction with its budget-item mappings
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Transaction plus mappings array
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Transaction"
+                  - type: object
+                    properties:
+                      mappings:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Mapping"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /transactions/{id}/classify:
+    post:
+      tags: [classifications]
+      summary: Classify a transaction to a budget item
+      description: Creates a mapping and appends a 'created' audit log entry.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [budget_item_id, allocated_amount]
+              properties:
+                budget_item_id:   { type: string }
+                allocated_amount: { type: number }
+                confidence:
+                  type: string
+                  enum: [auto_high, auto_medium, auto_low, manual, manual_override]
+                  default: manual
+                notes:            { type: string, nullable: true }
+      responses:
+        "201":
+          description: Created mapping
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mapping"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /mappings/{id}:
+    delete:
+      tags: [classifications]
+      summary: Remove a transaction-to-budget-item mapping
+      description: Appends a 'deleted' audit log entry.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ── Scheduled ────────────────────────────────────────────────────────────────
+
+  /scheduled:
+    get:
+      tags: [scheduled]
+      summary: Project upcoming payment dates from active recurring items
+      description: Pure computation — no DB writes. Also includes active forecast items in range.
+      parameters:
+        - name: days
+          in: query
+          description: "Look-ahead window in days (1–365, default 90)"
+          schema:
+            type: integer
+            default: 90
+            minimum: 1
+            maximum: 365
+      responses:
+        "200":
+          description: Projected payments sorted by due_date
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    item_type:          { type: string, enum: [recurring, forecast] }
+                    recurring_item_id:  { type: string, nullable: true }
+                    forecast_item_id:   { type: string, nullable: true }
+                    name:               { type: string }
+                    due_date:           { type: string, format: date }
+                    amount:             { type: number }
+                    frequency:          { type: string }
+                    account_id:         { type: string, nullable: true }
+                    creditor:           { type: string, nullable: true }
+
+  # ── Forecast ─────────────────────────────────────────────────────────────────
+
+  /forecast:
+    get:
+      tags: [forecast]
+      summary: List one-off forecast items
+      parameters:
+        - name: active
+          in: query
+          description: "Pass `false` to include inactive items"
+          schema:
+            type: string
+            enum: ["true", "false"]
+      responses:
+        "200":
+          description: Forecast items with joined creditor name
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ForecastItem"
+    post:
+      tags: [forecast]
+      summary: Create a forecast item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, amount, item_date]
+              properties:
+                name:                   { type: string }
+                amount:                 { type: number }
+                item_date:              { type: string, format: date }
+                account_id:             { type: string, nullable: true }
+                notes:                  { type: string, nullable: true }
+                is_extra_debt_payment:  { type: boolean }
+      responses:
+        "201":
+          description: Created forecast item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForecastItem"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /forecast/{id}:
+    patch:
+      tags: [forecast]
+      summary: Update a forecast item (sparse)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:                  { type: string }
+                amount:                { type: number }
+                item_date:             { type: string, format: date }
+                account_id:            { type: string, nullable: true }
+                notes:                 { type: string, nullable: true }
+                is_active:             { type: integer, enum: [0, 1] }
+                is_extra_debt_payment: { type: integer, enum: [0, 1] }
+      responses:
+        "200":
+          description: Updated forecast item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForecastItem"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [forecast]
+      summary: Delete a forecast item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ── Classification rules ──────────────────────────────────────────────────────
+
+  /rules:
+    get:
+      tags: [rules]
+      summary: List all classification rules
+      responses:
+        "200":
+          description: Rules with joined budget_item_name and category_name, ordered by priority DESC
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClassificationRule"
+    post:
+      tags: [rules]
+      summary: Create a classification rule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pattern, budget_item_id]
+              properties:
+                pattern:        { type: string }
+                match_field:
+                  type: string
+                  enum: [merchant_normalized, merchant_text]
+                  default: merchant_normalized
+                match_type:
+                  type: string
+                  enum: [contains, starts_with, exact]
+                  default: contains
+                budget_item_id: { type: string }
+                confidence:
+                  type: string
+                  enum: [auto_high, auto_medium, auto_low]
+                  default: auto_high
+                priority:       { type: integer, default: 0 }
+                notes:          { type: string, nullable: true }
+      responses:
+        "201":
+          description: Created rule
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassificationRule"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /rules/apply:
+    post:
+      tags: [rules]
+      summary: Apply all active rules to unclassified transactions
+      responses:
+        "200":
+          description: Summary of classifications applied
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  classified: { type: integer }
+                  skipped:    { type: integer }
+
+  /rules/{id}:
+    patch:
+      tags: [rules]
+      summary: Update a rule (sparse)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pattern:        { type: string }
+                match_field:    { type: string }
+                match_type:     { type: string }
+                budget_item_id: { type: string }
+                confidence:     { type: string }
+                priority:       { type: integer }
+                is_active:      { type: integer, enum: [0, 1] }
+                notes:          { type: string, nullable: true }
+      responses:
+        "200":
+          description: Updated rule
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClassificationRule"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [rules]
+      summary: Delete a rule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ── Audit log ────────────────────────────────────────────────────────────────
+
+  /audit:
+    get:
+      tags: [audit]
+      summary: Query classification audit log
+      parameters:
+        - name: transaction_id
+          in: query
+          schema:
+            type: string
+        - name: action
+          in: query
+          schema:
+            type: string
+            enum: [created, updated, deleted]
+        - name: changed_by
+          in: query
+          schema:
+            type: string
+            enum: [user, rule, import]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+            maximum: 500
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: Audit log entries with joined transaction and budget item details
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    log_id:                { type: string }
+                    mapping_id:            { type: string }
+                    transaction_id:        { type: string }
+                    budget_item_id:        { type: string }
+                    action:                { type: string }
+                    old_budget_item_id:    { type: string, nullable: true }
+                    old_allocated_amount:  { type: number, nullable: true }
+                    new_allocated_amount:  { type: number, nullable: true }
+                    changed_by:            { type: string, nullable: true }
+                    budget_item_name:      { type: string, nullable: true }
+                    category_name:         { type: string, nullable: true }
+                    old_budget_item_name:  { type: string, nullable: true }
+                    merchant_normalized:   { type: string, nullable: true }
+                    merchant_text:         { type: string }
+                    transaction_date:      { type: string, format: date }
+                    transaction_amount:    { type: number }
+                    created_at:            { type: string }
+
+  # ── Feature requests ──────────────────────────────────────────────────────────
+
+  /feature-requests:
+    get:
+      tags: [feature-requests]
+      summary: List feature requests ordered by created_at DESC
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeatureRequest"
+          description: OK
+    post:
+      tags: [feature-requests]
+      summary: Submit a feature request
+      description: Optionally creates a linked GitHub issue if GITHUB_TOKEN env var is set.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:        { type: string }
+                description:  { type: string, nullable: true }
+                submitted_by: { type: string, nullable: true }
+      responses:
+        "201":
+          description: Created feature request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureRequest"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /feature-requests/sync:
+    post:
+      tags: [feature-requests]
+      summary: Sync GitHub issue statuses into the DB
+      description: Requires GITHUB_TOKEN env var. Updates linked issue statuses and imports new issues.
+      responses:
+        "200":
+          description: Sync summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  synced:   { type: integer }
+                  updated:  { type: integer }
+                  imported: { type: integer }
+        "501":
+          description: GITHUB_TOKEN not set
+
+  /feature-requests/{id}:
+    patch:
+      tags: [feature-requests]
+      summary: Update a feature request (sparse)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:               { type: string }
+                description:         { type: string }
+                submitted_by:        { type: string }
+                status:              { type: string, enum: [open, in_progress, done, declined] }
+                github_issue_number: { type: integer }
+      responses:
+        "200":
+          description: Updated feature request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FeatureRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [feature-requests]
+      summary: Delete a feature request
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ── Summary endpoints ─────────────────────────────────────────────────────────
+
+  /summary:
+    get:
+      tags: [summary]
+      summary: High-level financial summary
+      responses:
+        "200":
+          description: Total debt, monthly recurring by category, unmatched transaction count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_debt:
+                    type: number
+                    nullable: true
+                  monthly_recurring_by_category:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        category_id:            { type: string }
+                        category_name:          { type: string }
+                        total_effective_monthly: { type: number }
+                  unmatched_transaction_count:
+                    type: integer
+
+  /debt-priority:
+    get:
+      tags: [summary]
+      summary: Active debts with payoff projections
+      description: >
+        Returns non-paid accounts with monthly_interest, months_to_payoff,
+        projected payoff_date (YYYY-MM), and any scheduled extra payments.
+      responses:
+        "200":
+          description: Debt priority list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    account_id:       { type: string }
+                    creditor:         { type: string }
+                    account_type:     { type: string }
+                    status:           { type: string }
+                    current_balance:  { type: number }
+                    interest_rate_pct: { type: number, nullable: true }
+                    monthly_payment:  { type: number, nullable: true }
+                    monthly_interest: { type: number, nullable: true }
+                    months_to_payoff: { type: number, nullable: true }
+                    payoff_date:      { type: string, nullable: true, description: "YYYY-MM" }
+                    extra_payments:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          account_id: { type: string }
+                          amount:     { type: number }
+                          item_date:  { type: string }
+
+  /coverage:
+    get:
+      tags: [summary]
+      summary: Entity linkage audit — which accounts/items have coverage gaps
+      responses:
+        "200":
+          description: Coverage report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accounts:         { type: array, items: { type: object } }
+                  recurringItems:   { type: array, items: { type: object } }
+                  budgetItems:      { type: array, items: { type: object } }
+                  budgetCategories: { type: array, items: { type: object } }
+
+# ── Components ────────────────────────────────────────────────────────────────
+
+components:
+  parameters:
+    accountId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+
+  responses:
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+
+    Account:
+      type: object
+      properties:
+        account_id:         { type: string }
+        creditor:           { type: string }
+        account_type:
+          type: string
+          enum: [personal_loan, mortgage, credit_card, student_loan, tax_debt,
+                 auto_loan, settlement, collections, judgment, bnpl, income_source]
+        status:
+          type: string
+          enum: [active, delinquent, paid_off, charged_off, in_collections,
+                 judgment, settled]
+        original_amount:    { type: number, nullable: true }
+        current_balance:    { type: number, nullable: true }
+        balance_date:       { type: string, format: date, nullable: true }
+        interest_rate_pct:  { type: number, nullable: true }
+        account_number:     { type: string, nullable: true }
+        portal_url:         { type: string, nullable: true }
+        payoff_date_est:    { type: string, format: date, nullable: true }
+        phone:              { type: string, nullable: true }
+        email:              { type: string, nullable: true }
+        notes:              { type: string, nullable: true }
+        created_at:         { type: string }
+        updated_at:         { type: string }
+
+    BudgetCategory:
+      type: object
+      properties:
+        category_id:    { type: string }
+        name:           { type: string }
+        display_order:  { type: integer }
+        created_at:     { type: string }
+        updated_at:     { type: string }
+
+    BudgetItem:
+      type: object
+      properties:
+        budget_item_id:   { type: string }
+        category_id:      { type: string }
+        name:             { type: string }
+        expected_amount:  { type: number, nullable: true }
+        notes:            { type: string, nullable: true }
+        created_at:       { type: string }
+        updated_at:       { type: string }
+
+    RecurringItem:
+      type: object
+      properties:
+        recurring_item_id:    { type: string }
+        budget_item_id:       { type: string, nullable: true }
+        account_id:           { type: string, nullable: true }
+        name:                 { type: string }
+        amount:               { type: number }
+        frequency:
+          type: string
+          enum: [weekly, biweekly, monthly, every_4_weeks, annually, one_time]
+        payments_per_year:    { type: number }
+        effective_monthly:    { type: number }
+        projected_start_date: { type: string, format: date, nullable: true }
+        projected_stop_date:  { type: string, format: date, nullable: true }
+        is_active:            { type: integer, enum: [0, 1] }
+        notes:                { type: string, nullable: true }
+        created_at:           { type: string }
+        updated_at:           { type: string }
+
+    Transaction:
+      type: object
+      properties:
+        transaction_id:       { type: string }
+        account_id:           { type: string }
+        transaction_date:     { type: string, format: date }
+        posted_date:          { type: string, format: date, nullable: true }
+        amount:               { type: number }
+        merchant_text:        { type: string }
+        merchant_normalized:  { type: string, nullable: true }
+        transaction_type:
+          type: string
+          enum: [debit, credit, transfer, fee]
+          nullable: true
+        source:
+          type: string
+          enum: [manual, csv_import, api]
+        import_batch_id:      { type: string, nullable: true }
+        created_at:           { type: string }
+
+    Mapping:
+      type: object
+      properties:
+        mapping_id:       { type: string }
+        transaction_id:   { type: string }
+        budget_item_id:   { type: string }
+        allocated_amount: { type: number }
+        confidence:
+          type: string
+          enum: [auto_high, auto_medium, auto_low, manual, manual_override]
+        classified_by:
+          type: string
+          enum: [user, rule, ml, import]
+          nullable: true
+        notes:            { type: string, nullable: true }
+        created_at:       { type: string }
+        updated_at:       { type: string }
+
+    ForecastItem:
+      type: object
+      properties:
+        forecast_item_id:      { type: string }
+        name:                  { type: string }
+        amount:                { type: number }
+        item_date:             { type: string, format: date }
+        account_id:            { type: string, nullable: true }
+        creditor:              { type: string, nullable: true }
+        notes:                 { type: string, nullable: true }
+        is_active:             { type: integer, enum: [0, 1] }
+        is_extra_debt_payment: { type: integer, enum: [0, 1] }
+        created_at:            { type: string }
+        updated_at:            { type: string }
+
+    ClassificationRule:
+      type: object
+      properties:
+        rule_id:          { type: string }
+        pattern:          { type: string }
+        match_field:
+          type: string
+          enum: [merchant_normalized, merchant_text]
+        match_type:
+          type: string
+          enum: [contains, starts_with, exact]
+        budget_item_id:   { type: string }
+        budget_item_name: { type: string }
+        category_name:    { type: string }
+        confidence:
+          type: string
+          enum: [auto_high, auto_medium, auto_low]
+        priority:         { type: integer }
+        is_active:        { type: integer, enum: [0, 1] }
+        source:
+          type: string
+          enum: [manual, rocketmoney_category, seeded]
+        notes:            { type: string, nullable: true }
+        created_at:       { type: string }
+        updated_at:       { type: string }
+
+    FeatureRequest:
+      type: object
+      properties:
+        request_id:           { type: string }
+        title:                { type: string }
+        description:          { type: string, nullable: true }
+        submitted_by:         { type: string, nullable: true }
+        status:
+          type: string
+          enum: [open, in_progress, done, declined]
+        github_issue_number:  { type: integer, nullable: true }
+        github_issue_status:  { type: string, nullable: true, enum: [open, closed] }
+        github_issue_url:     { type: string, nullable: true }
+        created_at:           { type: string }
+        updated_at:           { type: string }

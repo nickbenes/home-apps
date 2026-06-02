@@ -1,0 +1,941 @@
+openapi: 3.0.3
+info:
+  title: Food API
+  description: >
+    Recipe library, weekly menu planner, and shopping lists.
+    Ingredient quantities are REAL. Dates are ISO 8601 TEXT (YYYY-MM-DD).
+    `tags` and `dietary_flags` fields are JSON arrays stored as TEXT.
+  version: "1.0"
+servers:
+  - url: /food/api
+    description: Local / nginx-proxied
+
+tags:
+  - name: ingredient-categories
+  - name: ingredients
+  - name: recipes
+  - name: family-members
+  - name: menu-plans
+  - name: shopping-lists
+
+paths:
+
+  # ── Ingredient categories ────────────────────────────────────────────────────
+
+  /ingredient-categories:
+    get:
+      tags: [ingredient-categories]
+      summary: List ingredient categories ordered by sort_order
+      responses:
+        "200":
+          description: Array of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/IngredientCategory"
+
+  # ── Ingredients ──────────────────────────────────────────────────────────────
+
+  /ingredients:
+    get:
+      tags: [ingredients]
+      summary: List ingredients with optional filters
+      parameters:
+        - name: category
+          in: query
+          description: Filter by category_id
+          schema:
+            type: string
+        - name: q
+          in: query
+          description: Case-insensitive name search
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Ingredients with category_name and store_section appended
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/Ingredient"
+                    - type: object
+                      properties:
+                        category_name: { type: string }
+                        store_section: { type: string }
+    post:
+      tags: [ingredients]
+      summary: Create an ingredient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, category_id]
+              properties:
+                name:          { type: string }
+                category_id:   { type: string }
+                default_unit:  { type: string, nullable: true }
+                pantry_staple: { type: boolean }
+      responses:
+        "201":
+          description: Created ingredient
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ingredient"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          description: Ingredient with this name already exists
+
+  /ingredients/{id}:
+    get:
+      tags: [ingredients]
+      summary: Get an ingredient
+      parameters:
+        - $ref: "#/components/parameters/ingredientId"
+      responses:
+        "200":
+          description: Ingredient with category info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ingredient"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [ingredients]
+      summary: Update an ingredient (sparse — absent fields retain current value)
+      parameters:
+        - $ref: "#/components/parameters/ingredientId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:          { type: string }
+                category_id:   { type: string }
+                default_unit:  { type: string, nullable: true }
+                pantry_staple: { type: boolean }
+      responses:
+        "200":
+          description: Updated ingredient
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Ingredient"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ── Recipes ──────────────────────────────────────────────────────────────────
+
+  /recipes:
+    get:
+      tags: [recipes]
+      summary: List recipes with optional filters
+      parameters:
+        - name: q
+          in: query
+          description: Case-insensitive title search
+          schema:
+            type: string
+        - name: tags
+          in: query
+          description: Comma-separated tag names; all must match
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Recipes ordered by updated_at DESC
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Recipe"
+    post:
+      tags: [recipes]
+      summary: Create a recipe
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:        { type: string }
+                servings:     { type: integer, default: 4 }
+                instructions: { type: string, nullable: true }
+                tags:         { type: array, items: { type: string } }
+                source_url:   { type: string, nullable: true }
+                notes:        { type: string, nullable: true }
+                ingredients:
+                  type: array
+                  description: Optional initial ingredients to attach
+                  items:
+                    type: object
+                    required: [ingredient_id]
+                    properties:
+                      ingredient_id: { type: string }
+                      quantity:      { type: number, nullable: true }
+                      unit:          { type: string, nullable: true }
+                      notes:         { type: string, nullable: true }
+      responses:
+        "201":
+          description: Created recipe
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Recipe"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /recipes/import-url:
+    post:
+      tags: [recipes]
+      summary: Import a recipe from a URL via Schema.org JSON-LD
+      description: >
+        Fetches the URL, parses `application/ld+json` Recipe structured data,
+        and creates a recipe with ingredients. Auto-creates unknown ingredients
+        in the 'other' category.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url]
+              properties:
+                url: { type: string }
+      responses:
+        "201":
+          description: Created recipe
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Recipe"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "422":
+          description: URL unreachable or no Recipe schema found
+
+  /recipes/{id}:
+    get:
+      tags: [recipes]
+      summary: Get a recipe with its ingredients and variants
+      parameters:
+        - $ref: "#/components/parameters/recipeId"
+      responses:
+        "200":
+          description: Recipe with ingredients array and variants array
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Recipe"
+                  - type: object
+                    properties:
+                      ingredients:
+                        type: array
+                        items:
+                          allOf:
+                            - $ref: "#/components/schemas/RecipeIngredient"
+                            - type: object
+                              properties:
+                                ingredient_name: { type: string }
+                                category_id:     { type: string }
+                                category_name:   { type: string }
+                                store_section:   { type: string }
+                      variants:
+                        type: array
+                        items:
+                          allOf:
+                            - $ref: "#/components/schemas/RecipeVariant"
+                            - type: object
+                              properties:
+                                ingredients:
+                                  type: array
+                                  items:
+                                    $ref: "#/components/schemas/RecipeVariantIngredient"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      tags: [recipes]
+      summary: Update a recipe (sparse)
+      parameters:
+        - $ref: "#/components/parameters/recipeId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:        { type: string }
+                servings:     { type: integer }
+                instructions: { type: string, nullable: true }
+                tags:         { type: array, items: { type: string } }
+                source_url:   { type: string, nullable: true }
+                notes:        { type: string, nullable: true }
+      responses:
+        "200":
+          description: Updated recipe
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Recipe"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [recipes]
+      summary: Delete a recipe (cascades to recipe_ingredients and menu_plan_slots)
+      parameters:
+        - $ref: "#/components/parameters/recipeId"
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /recipes/{id}/ingredients:
+    post:
+      tags: [recipes]
+      summary: Add an ingredient to a recipe
+      parameters:
+        - $ref: "#/components/parameters/recipeId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [ingredient_id]
+              properties:
+                ingredient_id: { type: string }
+                quantity:      { type: number, nullable: true }
+                unit:          { type: string, nullable: true }
+                notes:         { type: string, nullable: true }
+                sort_order:    { type: integer }
+      responses:
+        "201":
+          description: Created recipe ingredient
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecipeIngredient"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /recipes/{id}/ingredients/{riId}:
+    put:
+      tags: [recipes]
+      summary: Update a recipe ingredient (sparse)
+      parameters:
+        - $ref: "#/components/parameters/recipeId"
+        - name: riId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:   { type: number, nullable: true }
+                unit:       { type: string, nullable: true }
+                notes:      { type: string, nullable: true }
+                sort_order: { type: integer }
+      responses:
+        "200":
+          description: Updated recipe ingredient
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecipeIngredient"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [recipes]
+      summary: Remove an ingredient from a recipe
+      parameters:
+        - $ref: "#/components/parameters/recipeId"
+        - name: riId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ── Family members ────────────────────────────────────────────────────────────
+
+  /family-members:
+    get:
+      tags: [family-members]
+      summary: List all family members
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FamilyMember"
+          description: OK
+    post:
+      tags: [family-members]
+      summary: Create a family member
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, display_name]
+              properties:
+                id:             { type: string, description: "Slug (e.g. adult_1, kid_2)" }
+                display_name:   { type: string }
+                dietary_flags:  { type: array, items: { type: string } }
+                notes:          { type: string, nullable: true }
+      responses:
+        "201":
+          description: Created family member
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FamilyMember"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /family-members/{id}:
+    put:
+      tags: [family-members]
+      summary: Update a family member (sparse)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                display_name:   { type: string }
+                dietary_flags:  { type: array, items: { type: string } }
+                notes:          { type: string, nullable: true }
+      responses:
+        "200":
+          description: Updated family member
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FamilyMember"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [family-members]
+      summary: Delete a family member
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ── Menu plans ────────────────────────────────────────────────────────────────
+
+  /menu-plans:
+    get:
+      tags: [menu-plans]
+      summary: List menu plans ordered by week_start DESC
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MenuPlan"
+          description: OK
+    post:
+      tags: [menu-plans]
+      summary: Create a menu plan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, week_start]
+              properties:
+                name:        { type: string }
+                week_start:  { type: string, format: date, description: "Monday of the week" }
+      responses:
+        "201":
+          description: Created menu plan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MenuPlan"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /menu-plans/{id}:
+    get:
+      tags: [menu-plans]
+      summary: Get a menu plan with its slots
+      parameters:
+        - $ref: "#/components/parameters/menuPlanId"
+      responses:
+        "200":
+          description: Menu plan with slots array
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/MenuPlan"
+                  - type: object
+                    properties:
+                      slots:
+                        type: array
+                        items:
+                          allOf:
+                            - $ref: "#/components/schemas/MenuPlanSlot"
+                            - type: object
+                              properties:
+                                recipe_title:    { type: string, nullable: true }
+                                recipe_servings: { type: integer, nullable: true }
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [menu-plans]
+      summary: Delete a menu plan (cascades to slots and linked shopping lists)
+      parameters:
+        - $ref: "#/components/parameters/menuPlanId"
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /menu-plans/{id}/slots:
+    put:
+      tags: [menu-plans]
+      summary: Upsert a single slot (one recipe per day+meal combination)
+      description: >
+        Uses ON CONFLICT upsert on `(menu_plan_id, day_of_week, meal_slot)`.
+        Pass `recipe_id: null` to clear a slot.
+      parameters:
+        - $ref: "#/components/parameters/menuPlanId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [day_of_week, meal_slot]
+              properties:
+                day_of_week:
+                  type: integer
+                  minimum: 0
+                  maximum: 6
+                  description: "0 = Monday, 6 = Sunday"
+                meal_slot:
+                  type: string
+                  enum: [breakfast, lunch, dinner, snack]
+                recipe_id:
+                  type: string
+                  nullable: true
+                notes:
+                  type: string
+                  nullable: true
+      responses:
+        "200":
+          description: Upserted slot with recipe title and servings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MenuPlanSlot"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /menu-plans/{id}/slots/{slotId}:
+    delete:
+      tags: [menu-plans]
+      summary: Remove a slot from a menu plan
+      parameters:
+        - $ref: "#/components/parameters/menuPlanId"
+        - name: slotId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /menu-plans/{id}/suggest:
+    post:
+      tags: [menu-plans]
+      summary: Auto-fill empty dinner slots with random recipes
+      description: >
+        Fills dinner slots that have no recipe. Avoids repeating recipes already used
+        this week; falls back to the full library when all have been used.
+      parameters:
+        - $ref: "#/components/parameters/menuPlanId"
+      responses:
+        "200":
+          description: Updated menu plan with all slots
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/MenuPlan"
+                  - type: object
+                    properties:
+                      slots: { type: array, items: { $ref: "#/components/schemas/MenuPlanSlot" } }
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          description: No recipes in library to suggest from
+
+  # ── Shopping lists ────────────────────────────────────────────────────────────
+
+  /shopping-lists:
+    get:
+      tags: [shopping-lists]
+      summary: List all shopping lists ordered by created_at DESC
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ShoppingList"
+          description: OK
+    post:
+      tags: [shopping-lists]
+      summary: Create a blank shopping list
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string }
+      responses:
+        "201":
+          description: Created shopping list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShoppingList"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /shopping-lists/from-plan/{planId}:
+    post:
+      tags: [shopping-lists]
+      summary: Generate a shopping list from a menu plan
+      description: >
+        Consolidates all recipe ingredients scaled by servings.
+        Ingredients with the same (ingredient_id, unit) are summed.
+        Pantry staples are included but annotated.
+      parameters:
+        - name: planId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: "List name (default: '<plan name> — Shopping List')"
+                servings:
+                  type: integer
+                  description: "Override servings for all slots that don't have a per-slot override"
+      responses:
+        "201":
+          description: Created shopping list with consolidated items
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShoppingListDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          description: Menu plan has no assigned recipes
+
+  /shopping-lists/{id}:
+    get:
+      tags: [shopping-lists]
+      summary: Get a shopping list with its items
+      parameters:
+        - $ref: "#/components/parameters/shoppingListId"
+      responses:
+        "200":
+          description: Shopping list with items ordered by store section then sort_order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShoppingListDetail"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    delete:
+      tags: [shopping-lists]
+      summary: Delete a shopping list (cascades to items)
+      parameters:
+        - $ref: "#/components/parameters/shoppingListId"
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /shopping-list-items/{id}:
+    patch:
+      tags: [shopping-lists]
+      summary: Toggle checked state on a shopping list item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [checked]
+              properties:
+                checked: { type: boolean }
+      responses:
+        "200":
+          description: Updated shopping list item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShoppingListItem"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+# ── Components ─────────────────────────────────────────────────────────────────
+
+components:
+  parameters:
+    ingredientId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    recipeId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    menuPlanId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    shoppingListId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+
+  responses:
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+
+    IngredientCategory:
+      type: object
+      properties:
+        id:            { type: string }
+        name:          { type: string }
+        store_section: { type: string }
+        sort_order:    { type: integer }
+
+    Ingredient:
+      type: object
+      properties:
+        id:            { type: string }
+        name:          { type: string }
+        category_id:   { type: string }
+        default_unit:  { type: string, nullable: true }
+        pantry_staple: { type: integer, enum: [0, 1] }
+        created_at:    { type: string }
+
+    Recipe:
+      type: object
+      properties:
+        id:           { type: string }
+        title:        { type: string }
+        servings:     { type: integer }
+        instructions: { type: string, nullable: true }
+        tags:         { type: string, description: "JSON array as TEXT, e.g. '[\"quick\",\"vegetarian\"]'" }
+        source_url:   { type: string, nullable: true }
+        notes:        { type: string, nullable: true }
+        created_at:   { type: string }
+        updated_at:   { type: string }
+
+    RecipeIngredient:
+      type: object
+      properties:
+        id:            { type: integer }
+        recipe_id:     { type: string }
+        ingredient_id: { type: string }
+        quantity:      { type: number, nullable: true }
+        unit:          { type: string, nullable: true }
+        notes:         { type: string, nullable: true }
+        sort_order:    { type: integer }
+
+    RecipeVariant:
+      type: object
+      properties:
+        id:        { type: string }
+        recipe_id: { type: string }
+        name:      { type: string }
+        notes:     { type: string, nullable: true }
+
+    RecipeVariantIngredient:
+      type: object
+      properties:
+        id:                     { type: integer }
+        variant_id:             { type: string }
+        ingredient_id:          { type: string }
+        ingredient_name:        { type: string }
+        replaces_ingredient_id: { type: string, nullable: true }
+        quantity:               { type: number, nullable: true }
+        unit:                   { type: string, nullable: true }
+        notes:                  { type: string, nullable: true }
+
+    FamilyMember:
+      type: object
+      properties:
+        id:             { type: string }
+        display_name:   { type: string }
+        dietary_flags:  { type: string, description: "JSON array as TEXT, e.g. '[\"dairy-free\"]'" }
+        notes:          { type: string, nullable: true }
+
+    MenuPlan:
+      type: object
+      properties:
+        id:         { type: string }
+        name:       { type: string }
+        week_start: { type: string, format: date }
+        created_at: { type: string }
+
+    MenuPlanSlot:
+      type: object
+      properties:
+        id:               { type: integer }
+        menu_plan_id:     { type: string }
+        day_of_week:
+          type: integer
+          description: "0 = Monday, 6 = Sunday"
+          minimum: 0
+          maximum: 6
+        meal_slot:
+          type: string
+          enum: [breakfast, lunch, dinner, snack]
+        recipe_id:        { type: string, nullable: true }
+        servings_override: { type: integer, nullable: true }
+        notes:            { type: string, nullable: true }
+
+    ShoppingList:
+      type: object
+      properties:
+        id:           { type: string }
+        name:         { type: string }
+        menu_plan_id: { type: string, nullable: true }
+        status:
+          type: string
+          enum: [active, completed, archived]
+        created_at:   { type: string }
+
+    ShoppingListItem:
+      type: object
+      properties:
+        id:               { type: integer }
+        shopping_list_id: { type: string }
+        ingredient_id:    { type: string, nullable: true }
+        name:             { type: string }
+        quantity:         { type: number, nullable: true }
+        unit:             { type: string, nullable: true }
+        category_id:      { type: string, nullable: true }
+        notes:            { type: string, nullable: true }
+        checked:          { type: integer, enum: [0, 1] }
+        sort_order:       { type: integer }
+
+    ShoppingListDetail:
+      allOf:
+        - $ref: "#/components/schemas/ShoppingList"
+        - type: object
+          properties:
+            items:
+              type: array
+              description: Items sorted by store_section (category sort_order) then sort_order
+              items:
+                allOf:
+                  - $ref: "#/components/schemas/ShoppingListItem"
+                  - type: object
+                    properties:
+                      store_section:        { type: string, nullable: true }
+                      category_sort_order:  { type: integer, nullable: true }
