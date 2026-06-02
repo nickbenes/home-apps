@@ -1,0 +1,38 @@
+id,name,category_id,default_unit,pantry_staple
+chicken_breast,Chicken Breast,proteins,lbs,0
+ground_beef,Ground Beef,proteins,lbs,0
+salmon_fillet,Salmon Fillet,proteins,lbs,0
+italian_sausage,Italian Sausage,proteins,lbs,0
+eggs,Eggs,proteins,each,0
+tofu,Firm Tofu,proteins,oz,0
+garlic,Garlic,produce,head,0
+yellow_onion,Yellow Onion,produce,each,0
+bell_pepper,Bell Pepper,produce,each,0
+broccoli,Broccoli,produce,head,0
+baby_spinach,Baby Spinach,produce,oz,0
+cherry_tomatoes,Cherry Tomatoes,produce,pint,0
+zucchini,Zucchini,produce,each,0
+lemon,Lemon,produce,each,0
+avocado,Avocado,produce,each,0
+pasta,Pasta,grains,oz,0
+rice,White Rice,grains,cups,0
+bread_loaf,Bread Loaf,bakery,each,0
+tortillas,Flour Tortillas,bakery,each,0
+butter,Unsalted Butter,dairy,tbsp,0
+whole_milk,Whole Milk,dairy,cups,0
+cheddar_cheese,Cheddar Cheese,dairy,oz,0
+parmesan,Parmesan,dairy,oz,0
+sour_cream,Sour Cream,dairy,oz,0
+olive_oil,Olive Oil,pantry,tbsp,1
+soy_sauce,Soy Sauce,pantry,tbsp,1
+chicken_broth,Chicken Broth,pantry,cups,1
+canned_tomatoes,Canned Diced Tomatoes,pantry,oz,1
+tomato_paste,Tomato Paste,pantry,tbsp,1
+black_beans,Black Beans (canned),pantry,oz,0
+garlic_powder,Garlic Powder,spices,tsp,1
+paprika,Paprika,spices,tsp,1
+cumin,Cumin,spices,tsp,1
+oregano,Dried Oregano,spices,tsp,1
+red_pepper_flakes,Red Pepper Flakes,spices,tsp,1
+frozen_peas,Frozen Peas,frozen,cups,0
+frozen_corn,Frozen Corn,frozen,cups,0

@@ -1,0 +1,23 @@
+recurring_item_id,budget_item_id,account_id,name,amount,frequency,payments_per_year,effective_monthly,is_active,notes
+employer_income,employer_income,primary_employer,Employer Paycheck,2500,biweekly,26,5416.67,1,Gross; net varies
+mortgage_payment,mortgage,home_mortgage,Mortgage Payment,-1800,monthly,12,-1800,1,
+rent_payment,rent,,Rent,-1400,monthly,12,-1400,1,
+electric_bill,electric,,Electric,-100,monthly,12,-100,1,
+gas_home_bill,gas_home,,Gas (Home),-60,monthly,12,-60,1,
+water_bill,water,,Water,-50,monthly,12,-50,1,
+internet_bill,internet,,Internet,-70,monthly,12,-70,1,
+mobile_bill,mobile,,Mobile,-80,monthly,12,-80,1,
+med_ins,med_ins,,Medical Insurance,-400,monthly,12,-400,1,
+dental_ins,dental_ins,,Dental Insurance,-40,monthly,12,-40,1,
+auto_ins,auto_ins,,Auto Insurance,-150,monthly,12,-150,1,
+stream_subs,stream_subs,,Streaming Subscriptions,-50,monthly,12,-50,1,
+car_payment,car_payment,auto_loan_a,Car Payment,-400,monthly,12,-400,1,
+student_loan_payment,student_loan,student_loan_a,Student Loan,-300,monthly,12,-300,1,
+personal_loan_a_payment,loan_a,personal_loan_a,Online Lender A,-250,monthly,12,-250,1,
+personal_loan_b_payment,loan_b,personal_loan_b,Online Lender B,-180,monthly,12,-180,1,
+irs_payment,loan_a,irs_payment,IRS Installment Agreement,-350,monthly,12,-350,1,
+credit_card_a_payment,credit_card_a,credit_card_a,Credit Card A,-150,monthly,12,-150,1,Minimum; pay more when possible
+emergency_fund,emergency_fund,,Emergency Fund Transfer,-200,monthly,12,-200,1,
+retirement,retirement,,Retirement Contribution,-300,monthly,12,-300,1,
+groceries,groceries,,Groceries,-400,weekly,52,-1733.33,1,
+gas_auto,gas_auto,,Gas (Auto),-120,biweekly,26,-260,1,

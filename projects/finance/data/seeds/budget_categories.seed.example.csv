@@ -1,0 +1,12 @@
+category_id,name,display_order
+income,Income,0
+home,Home,1
+debts,Debts,2
+bills_insurance,Bills & Insurance,3
+food,Food & Dining,4
+auto,Auto,5
+children,Children,6
+personal,Personal,7
+entertainment,Entertainment,8
+giving,Giving,9
+savings,Savings,10
