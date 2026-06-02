@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus, Search, ExternalLink, Tag } from 'lucide-react';
 import { api } from '../lib/api';
 import type { Recipe } from '../lib/types';
@@ -50,6 +51,7 @@ function ImportUrlForm({ onImported }: { onImported: (r: Recipe) => void }) {
 }
 
 export default function RecipeList() {
+  const navigate = useNavigate();
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
@@ -145,12 +147,16 @@ export default function RecipeList() {
         {filtered.map(recipe => {
           const tags = parseTags(recipe.tags);
           return (
-            <div key={recipe.id}
-              className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-green-200 transition-all">
+            <div
+              key={recipe.id}
+              onClick={() => navigate(`/recipes/${recipe.id}`)}
+              className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-green-200 transition-all cursor-pointer"
+            >
               <div className="flex items-start justify-between gap-2 mb-2">
                 <h3 className="font-medium text-gray-900 leading-snug">{recipe.title}</h3>
                 {recipe.source_url && (
                   <a href={recipe.source_url} target="_blank" rel="noopener noreferrer"
+                    onClick={e => e.stopPropagation()}
                     className="shrink-0 text-gray-400 hover:text-green-600">
                     <ExternalLink size={13} />
                   </a>
