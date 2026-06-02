@@ -1,0 +1,12 @@
+account_id,creditor,account_type,status,original_amount,current_balance,balance_date,interest_rate_pct,account_number,portal_url,payoff_date_est,notes
+primary_employer,Primary Employer,income_source,active,,,,,,,,Main paycheck source
+bank_checking,First National Bank,income_source,active,,,,,,,, Checking account
+bank_savings,First National Bank,income_source,active,,,,,,,, Savings account
+home_mortgage,City Mortgage Co.,mortgage,active,280000,245000,2026-01-01,6.5,,,2054-01-01,30-year fixed
+auto_loan_a,Regional Auto Finance,auto_loan,active,28000,18500,2026-01-01,7.9,,,2029-06-01,
+student_loan_a,Federal Student Aid,student_loan,active,45000,38000,2026-01-01,5.5,,,2035-01-01,Income-driven repayment
+credit_card_a,Big Bank Credit Card,credit_card,active,,3200,2026-01-01,24.99,,,, Pay in full monthly
+personal_loan_a,Online Lender A,personal_loan,active,12000,8500,2026-01-01,19.9,,,2028-06-01,
+personal_loan_b,Online Lender B,personal_loan,active,8000,5200,2026-01-01,22.5,,,2027-12-01,
+collections_a,Collections Agency A,collections,in_collections,2500,2500,2026-01-01,,,,,Disputing with credit bureaus
+irs_payment,IRS,tax_debt,active,6000,4200,2026-01-01,,,https://irs.gov,,Installment agreement
