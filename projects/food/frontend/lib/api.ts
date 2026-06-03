@@ -1,6 +1,6 @@
 import type {
-  Recipe, RecipeWithIngredients, MenuPlan, MenuPlanDetail,
-  MenuPlanSlot, Ingredient, FamilyMember,
+  Recipe, RecipeWithIngredients, RecipeIngredient, MenuPlan, MenuPlanDetail,
+  MenuPlanSlot, IngredientCategory, Ingredient, FamilyMember,
   ShoppingList, ShoppingListDetail, ShoppingListItem,
 } from './types';
 
@@ -75,6 +75,15 @@ export const api = {
   ingredients: {
     list: (params?: { category?: string; q?: string }) =>
       get<Ingredient[]>(`/ingredients${qs({ category: params?.category, q: params?.q })}`),
+    update: (id: string, body: Partial<Ingredient>) => put<Ingredient>(`/ingredients/${id}`, body),
+    categories: () => get<IngredientCategory[]>('/ingredient-categories'),
+  },
+  recipeIngredients: {
+    add: (recipeId: string, body: { ingredient_id: string; quantity?: number | null; unit?: string | null; notes?: string | null }) =>
+      post<RecipeIngredient>(`/recipes/${recipeId}/ingredients`, body),
+    update: (recipeId: string, riId: number, body: { quantity?: number | null; unit?: string | null }) =>
+      put<RecipeIngredient>(`/recipes/${recipeId}/ingredients/${riId}`, body),
+    remove: (recipeId: string, riId: number) => del(`/recipes/${recipeId}/ingredients/${riId}`),
   },
   menuPlans: {
     list: () => get<MenuPlan[]>('/menu-plans'),
@@ -92,9 +101,14 @@ export const api = {
     list: () => get<ShoppingList[]>('/shopping-lists'),
     get: (id: string) => get<ShoppingListDetail>(`/shopping-lists/${id}`),
     delete: (id: string) => del(`/shopping-lists/${id}`),
+    updateStatus: (id: string, status: ShoppingList['status']) =>
+      patch<ShoppingList>(`/shopping-lists/${id}`, { status }),
     fromPlan: (planId: string, servings: number, name?: string) =>
       post<ShoppingListDetail>(`/shopping-lists/from-plan/${planId}`, { servings, name }),
+    addItem: (listId: string, body: { name: string; quantity?: number | null; unit?: string | null }) =>
+      post<ShoppingListItem>(`/shopping-lists/${listId}/items`, body),
     checkItem: (itemId: number, checked: boolean) =>
       patch<ShoppingListItem>(`/shopping-list-items/${itemId}`, { checked }),
+    deleteItem: (itemId: number) => del(`/shopping-list-items/${itemId}`),
   },
 };

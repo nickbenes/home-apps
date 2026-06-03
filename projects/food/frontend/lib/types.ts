@@ -52,6 +52,13 @@ export interface MenuPlanDetail extends MenuPlan {
   slots: MenuPlanSlot[];
 }
 
+export interface IngredientCategory {
+  id: string;
+  name: string;
+  store_section: string;
+  sort_order: number;
+}
+
 export interface Ingredient {
   id: string;
   name: string;

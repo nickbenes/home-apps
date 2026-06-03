@@ -1038,4 +1038,108 @@ describe('Food API', () => {
       expect(res.statusCode).toBe(404);
     });
   });
+
+  describe('DELETE /food/api/shopping-list-items/:id', () => {
+    async function createListWithItem() {
+      const list = await request(app)
+        .post('/food/api/shopping-lists/from-plan/test_plan')
+        .send({ servings: 4 });
+      return { listId: list.body.id, item: list.body.items[0] };
+    }
+
+    test('removes the item', async () => {
+      const { listId, item } = await createListWithItem();
+      const del = await request(app).delete(`/food/api/shopping-list-items/${item.id}`);
+      expect(del.statusCode).toBe(204);
+      const detail = await request(app).get(`/food/api/shopping-lists/${listId}`);
+      expect(detail.body.items.find((i: any) => i.id === item.id)).toBeUndefined();
+    });
+
+    test('404 for unknown item id', async () => {
+      const res = await request(app).delete('/food/api/shopping-list-items/99999');
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('POST /food/api/shopping-lists/:id/items', () => {
+    let listId: string;
+    beforeEach(async () => {
+      const res = await request(app).post('/food/api/shopping-lists').send({ name: 'Manual List' });
+      listId = res.body.id;
+    });
+
+    test('creates a freeform item', async () => {
+      const res = await request(app)
+        .post(`/food/api/shopping-lists/${listId}/items`)
+        .send({ name: 'Paper towels', quantity: 2, unit: 'rolls' });
+      expect(res.statusCode).toBe(201);
+      expect(res.body.name).toBe('Paper towels');
+      expect(res.body.quantity).toBe(2);
+      expect(res.body.unit).toBe('rolls');
+      expect(res.body.shopping_list_id).toBe(listId);
+    });
+
+    test('creates item with name only', async () => {
+      const res = await request(app)
+        .post(`/food/api/shopping-lists/${listId}/items`)
+        .send({ name: 'Dish soap' });
+      expect(res.statusCode).toBe(201);
+      expect(res.body.name).toBe('Dish soap');
+      expect(res.body.quantity).toBeNull();
+      expect(res.body.unit).toBeNull();
+    });
+
+    test('400 when name missing', async () => {
+      const res = await request(app)
+        .post(`/food/api/shopping-lists/${listId}/items`)
+        .send({ quantity: 1 });
+      expect(res.statusCode).toBe(400);
+    });
+
+    test('404 for unknown list id', async () => {
+      const res = await request(app)
+        .post('/food/api/shopping-lists/no_such/items')
+        .send({ name: 'Test' });
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('PATCH /food/api/shopping-lists/:id', () => {
+    let listId: string;
+    beforeEach(async () => {
+      const res = await request(app).post('/food/api/shopping-lists').send({ name: 'Status Test' });
+      listId = res.body.id;
+    });
+
+    test('updates status to completed', async () => {
+      const res = await request(app)
+        .patch(`/food/api/shopping-lists/${listId}`)
+        .send({ status: 'completed' });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.status).toBe('completed');
+    });
+
+    test('updates status to archived', async () => {
+      await request(app).patch(`/food/api/shopping-lists/${listId}`).send({ status: 'completed' });
+      const res = await request(app)
+        .patch(`/food/api/shopping-lists/${listId}`)
+        .send({ status: 'archived' });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.status).toBe('archived');
+    });
+
+    test('400 for invalid status', async () => {
+      const res = await request(app)
+        .patch(`/food/api/shopping-lists/${listId}`)
+        .send({ status: 'gone' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    test('404 for unknown list', async () => {
+      const res = await request(app)
+        .patch('/food/api/shopping-lists/no_such')
+        .send({ status: 'completed' });
+      expect(res.statusCode).toBe(404);
+    });
+  });
 });

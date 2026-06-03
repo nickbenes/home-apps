@@ -733,5 +733,44 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     res.json(db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(req.params.id));
   });
 
+  router.delete('/shopping-list-items/:id', (req, res) => {
+    const item = db.prepare('SELECT id FROM shopping_list_items WHERE id = ?').get(req.params.id);
+    if (!item) return res.status(404).json({ error: 'Shopping list item not found' });
+    db.prepare('DELETE FROM shopping_list_items WHERE id = ?').run(Number(req.params.id));
+    res.status(204).end();
+  });
+
+  router.post('/shopping-lists/:id/items', (req, res) => {
+    const list = db.prepare('SELECT id FROM shopping_lists WHERE id = ?').get(req.params.id);
+    if (!list) return res.status(404).json({ error: 'Shopping list not found' });
+
+    const { name, quantity, unit, notes } = req.body;
+    if (!name?.trim()) return res.status(400).json({ error: 'name is required' });
+
+    const maxOrder = (db.prepare(
+      'SELECT MAX(sort_order) AS m FROM shopping_list_items WHERE shopping_list_id = ?'
+    ).get(req.params.id) as { m: number | null }).m ?? -1;
+
+    const result = db.prepare(`
+      INSERT INTO shopping_list_items (shopping_list_id, name, quantity, unit, notes, sort_order)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(req.params.id, name.trim(), quantity ?? null, unit?.trim() || null, notes ?? null, maxOrder + 1);
+
+    res.status(201).json(db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(result.lastInsertRowid));
+  });
+
+  router.patch('/shopping-lists/:id', (req, res) => {
+    const list = db.prepare('SELECT id FROM shopping_lists WHERE id = ?').get(req.params.id);
+    if (!list) return res.status(404).json({ error: 'Shopping list not found' });
+
+    const { status } = req.body;
+    const VALID = ['active', 'completed', 'archived'];
+    if (!status || !VALID.includes(status)) {
+      return res.status(400).json({ error: `status must be one of: ${VALID.join(', ')}` });
+    }
+    db.prepare('UPDATE shopping_lists SET status = ? WHERE id = ?').run(status, req.params.id);
+    res.json(db.prepare('SELECT * FROM shopping_lists WHERE id = ?').get(req.params.id));
+  });
+
   return router;
 }
