@@ -4,6 +4,19 @@ import type {
   ShoppingList, ShoppingListDetail, ShoppingListItem,
 } from './types';
 
+export interface FeatureRequest {
+  request_id: string;
+  title: string;
+  description: string | null;
+  submitted_by: string | null;
+  status: 'open' | 'in_progress' | 'done' | 'declined';
+  github_issue_number: number | null;
+  github_issue_status: string | null;
+  github_issue_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 const BASE = '/food/api';
 
 async function get<T>(path: string): Promise<T> {
@@ -110,5 +123,14 @@ export const api = {
     checkItem: (itemId: number, checked: boolean) =>
       patch<ShoppingListItem>(`/shopping-list-items/${itemId}`, { checked }),
     deleteItem: (itemId: number) => del(`/shopping-list-items/${itemId}`),
+  },
+  featureRequests: {
+    list:   () => get<FeatureRequest[]>('/feature-requests'),
+    create: (body: { title: string; description?: string; submitted_by?: string }) =>
+              post<FeatureRequest>('/feature-requests', body),
+    update: (id: string, body: Partial<Pick<FeatureRequest, 'title' | 'description' | 'submitted_by' | 'status' | 'github_issue_number'>>) =>
+              patch<FeatureRequest>(`/feature-requests/${id}`, body),
+    delete: (id: string) => del(`/feature-requests/${id}`),
+    sync:   () => post<{ synced: number; updated: number; imported: number }>('/feature-requests/sync', {}),
   },
 };
