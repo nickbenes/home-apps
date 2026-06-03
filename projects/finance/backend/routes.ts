@@ -628,17 +628,18 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     const { title, description, submitted_by } = req.body;
     if (!title?.trim()) return res.status(400).json({ error: 'title is required' });
     const id = randomUUID();
+    const prefixedTitle = title.trim().startsWith('Finance:') ? title.trim() : `Finance: ${title.trim()}`;
     db.prepare(`
       INSERT INTO feature_requests (request_id, title, description, submitted_by)
       VALUES (?, ?, ?, ?)
-    `).run(id, title.trim(), description ?? null, submitted_by ?? null);
+    `).run(id, prefixedTitle, description ?? null, submitted_by ?? null);
 
     // Best-effort: create a matching GitHub issue and link it back.
     const token = process.env.GITHUB_TOKEN;
     if (token) {
       try {
         const repo = process.env.GITHUB_REPO ?? 'nickbenes/bills-tracker';
-        const ghBody: Record<string, string> = { title: title.trim() };
+        const ghBody: Record<string, string> = { title: prefixedTitle };
         if (description?.trim()) ghBody.body = description.trim();
         const ghRes = await fetch(`https://api.github.com/repos/${repo}/issues`, {
           method: 'POST',
@@ -745,6 +746,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
 
       for (const issue of issues) {
         if (existingNums.has(issue.number)) continue;
+        if (!issue.title.toLowerCase().startsWith('finance:')) continue;
         const newId = randomUUID();
         db.prepare(`
           INSERT INTO feature_requests

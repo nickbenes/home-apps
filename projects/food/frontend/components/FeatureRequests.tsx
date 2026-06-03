@@ -23,7 +23,7 @@ function formatDate(s: string): string {
 }
 
 function displayTitle(title: string): string {
-  return title.replace(/^Finance:\s*/i, '');
+  return title.replace(/^Food:\s*/i, '');
 }
 
 interface CreateForm { title: string; description: string; submitted_by: string; }
@@ -153,7 +153,7 @@ export default function FeatureRequests() {
           </button>
           <button onClick={() => setShowCreate(v => !v)}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded ${
-              showCreate ? 'bg-gray-200 text-gray-700' : 'bg-blue-600 text-white hover:bg-blue-700'
+              showCreate ? 'bg-gray-200 text-gray-700' : 'bg-green-600 text-white hover:bg-green-700'
             }`}>
             {showCreate ? <X size={13} /> : <Plus size={13} />} New Request
           </button>
@@ -173,7 +173,7 @@ export default function FeatureRequests() {
           <div>
             <label className="block text-xs text-gray-500 mb-1">Title *</label>
             <input
-              className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+              className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-green-400"
               value={createForm.title}
               onChange={e => setCreateForm(f => ({ ...f, title: e.target.value }))}
               placeholder="What would you like to see?"
@@ -184,7 +184,7 @@ export default function FeatureRequests() {
           <div>
             <label className="block text-xs text-gray-500 mb-1">Description</label>
             <textarea rows={3}
-              className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 resize-none"
+              className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-green-400 resize-none"
               value={createForm.description}
               onChange={e => setCreateForm(f => ({ ...f, description: e.target.value }))}
               placeholder="More details, examples, or context…" />
@@ -192,10 +192,10 @@ export default function FeatureRequests() {
           <div>
             <label className="block text-xs text-gray-500 mb-1">Your name (optional)</label>
             <input
-              className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+              className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-green-400"
               value={createForm.submitted_by}
               onChange={e => setCreateForm(f => ({ ...f, submitted_by: e.target.value }))}
-              placeholder="e.g. Nick, Maureen…" />
+              placeholder="e.g. Nick" />
           </div>
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={() => setShowCreate(false)}
@@ -203,7 +203,7 @@ export default function FeatureRequests() {
               Cancel
             </button>
             <button type="submit" disabled={creating}
-              className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 flex items-center gap-1.5">
+              className="px-3 py-1.5 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 flex items-center gap-1.5">
               <Check size={14} /> Submit
             </button>
           </div>
@@ -238,7 +238,7 @@ export default function FeatureRequests() {
                             <div>
                               <label className="block text-xs text-gray-500 mb-1">Status</label>
                               <select
-                                className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-green-400"
                                 value={editForm.status}
                                 onChange={e => setEditForm(f => ({ ...f, status: e.target.value as Status }))}>
                                 {Object.entries(STATUS_CONFIG).map(([v, { label }]) => (
@@ -249,10 +249,10 @@ export default function FeatureRequests() {
                             <div>
                               <label className="block text-xs text-gray-500 mb-1">GitHub Issue # (optional)</label>
                               <input type="number"
-                                className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-green-400"
                                 value={editForm.github_issue_number}
                                 onChange={e => setEditForm(f => ({ ...f, github_issue_number: e.target.value }))}
-                                placeholder="e.g. 30" />
+                                placeholder="e.g. 58" />
                             </div>
                           </div>
                           <div className="flex gap-2 justify-end">
@@ -261,7 +261,7 @@ export default function FeatureRequests() {
                               Cancel
                             </button>
                             <button onClick={() => saveEdit(r.request_id)}
-                              className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-1">
+                              className="px-3 py-1.5 text-xs bg-green-600 text-white rounded hover:bg-green-700 flex items-center gap-1">
                               <Check size={12} /> Save
                             </button>
                           </div>
@@ -298,7 +298,7 @@ export default function FeatureRequests() {
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
                             <button onClick={() => startEdit(r)}
-                              className="p-1 text-gray-400 hover:text-blue-600 rounded" title="Edit status / link issue">
+                              className="p-1 text-gray-400 hover:text-green-600 rounded" title="Edit status / link issue">
                               <Pencil size={13} />
                             </button>
                             <button onClick={() => handleDelete(r.request_id, r.title)}
