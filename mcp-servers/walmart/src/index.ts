@@ -40,31 +40,25 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
-      name: "add_to_cart",
-      description: "Add a Walmart product to the cart by item ID",
+      name: "build_cart_url",
+      description: "Generate a Walmart cart URL for one or more items. Returns a URL the user can open to add items to their Walmart cart.",
       inputSchema: {
         type: "object",
         properties: {
-          item_id: { type: "string", description: "Walmart item ID from search results" },
-          quantity: { type: "number", description: "Quantity (default 1)" },
+          items: {
+            type: "array",
+            description: "List of items to add to cart",
+            items: {
+              type: "object",
+              properties: {
+                item_id: { type: "string", description: "Walmart item ID from search results" },
+                quantity: { type: "number", description: "Quantity (default 1)" },
+              },
+              required: ["item_id"],
+            },
+          },
         },
-        required: ["item_id"],
-      },
-    },
-    {
-      name: "view_cart",
-      description: "View current Walmart cart contents and totals",
-      inputSchema: { type: "object", properties: {}, required: [] },
-    },
-    {
-      name: "remove_from_cart",
-      description: "Remove a product from the Walmart cart by item ID",
-      inputSchema: {
-        type: "object",
-        properties: {
-          item_id: { type: "string", description: "Walmart item ID to remove" },
-        },
-        required: ["item_id"],
+        required: ["items"],
       },
     },
   ],
@@ -104,14 +98,14 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
         return ok(`[${p.itemId}] ${p.name}\nPrice: $${p.price.toFixed(2)}\nStatus: ${p.availabilityStatus}\n${p.url}`);
       }
 
-      case "add_to_cart":
-      case "view_cart":
-      case "remove_from_cart": {
+      case "build_cart_url": {
         const client = requireClient();
-        if (name === "add_to_cart") await client.addToCart(a.item_id, a.quantity ?? 1);
-        else if (name === "view_cart") await client.viewCart();
-        else await client.removeFromCart(a.item_id);
-        return ok("Done.");
+        const items = (a.items as { item_id: string; quantity?: number }[]).map(i => ({
+          itemId: i.item_id,
+          quantity: Math.max(1, Math.ceil(i.quantity ?? 1)),
+        }));
+        const url = client.buildCartUrl(items);
+        return ok(`Open this URL in your browser to add ${items.length} item(s) to your Walmart cart:\n\n${url}`);
       }
 
       default:
