@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import type BetterSqlite3 from 'better-sqlite3';
+import { searchWalmart, buildCartUrl, type WalmartProduct } from './walmart.js';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -910,6 +911,45 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     } catch { /* skip import failures */ }
 
     res.json({ synced: linked.length, updated, imported });
+  });
+
+  // ── Walmart ──────────────────────────────────────────────────────────────
+
+  router.post('/walmart/cart-url', async (req, res) => {
+    const { listId } = req.body as { listId?: string };
+    if (!listId) return res.status(400).json({ error: 'listId required' });
+
+    const items = db.prepare(`
+      SELECT id, name, quantity, unit FROM shopping_list_items
+      WHERE shopping_list_id = ? AND checked = 0
+      ORDER BY id
+    `).all(listId) as { id: number; name: string; quantity: number | null; unit: string | null }[];
+
+    if (items.length === 0) return res.status(400).json({ error: 'No unchecked items in list' });
+
+    const matched: { item: typeof items[0]; product: WalmartProduct }[] = [];
+    const unmatched: typeof items = [];
+
+    await Promise.all(items.map(async item => {
+      try {
+        const results = await searchWalmart(item.name, 1);
+        if (results.length > 0) {
+          matched.push({ item, product: results[0] });
+        } else {
+          unmatched.push(item);
+        }
+      } catch {
+        unmatched.push(item);
+      }
+    }));
+
+    const cartItems = matched.map(({ item, product }) => ({
+      itemId: product.itemId,
+      quantity: Math.max(1, Math.ceil(item.quantity ?? 1)),
+    }));
+
+    const cartUrl = buildCartUrl(cartItems);
+    res.json({ cartUrl, matched, unmatched });
   });
 
   return router;

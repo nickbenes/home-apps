@@ -75,17 +75,9 @@ export class WalmartClient {
     return normalizeProduct(data);
   }
 
-  // Cart operations require the OPD API (OAuth2) — stubs until that subscription is approved.
-  async addToCart(_itemId: string, _quantity: number): Promise<void> {
-    throw new Error("Cart operations require the OPD API, which is pending subscription approval.");
-  }
-
-  async viewCart(): Promise<never> {
-    throw new Error("Cart operations require the OPD API, which is pending subscription approval.");
-  }
-
-  async removeFromCart(_itemId: string): Promise<void> {
-    throw new Error("Cart operations require the OPD API, which is pending subscription approval.");
+  buildCartUrl(items: { itemId: string; quantity: number }[]): string {
+    const param = items.map(i => `${i.itemId}:${i.quantity}`).join(',');
+    return `https://affil.walmart.com/cart/addToCart?items=${param}`;
   }
 }
 

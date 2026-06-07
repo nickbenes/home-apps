@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
   ShoppingCart, Plus, Trash2, CheckCircle2, Circle, RefreshCw,
-  CheckCheck, Archive, ChevronDown,
+  CheckCheck, Archive, ChevronDown, ExternalLink, Loader2,
 } from 'lucide-react';
 import { api } from '../lib/api';
+import type { WalmartCartResult } from '../lib/api';
 import type { ShoppingList, ShoppingListDetail, ShoppingListItem, MenuPlan } from '../lib/types';
 
 function groupBySection(items: ShoppingListItem[]): [string, ShoppingListItem[]][] {
@@ -65,6 +66,80 @@ function GenerateModal({
             {generating && <RefreshCw size={14} className="animate-spin" />}
             Generate
           </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Walmart cart modal ────────────────────────────────────────────────────────
+
+function WalmartCartModal({
+  result, onClose,
+}: {
+  result: WalmartCartResult;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 max-h-[80vh] flex flex-col">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-semibold text-gray-900">Send to Walmart Cart</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto space-y-4 min-h-0">
+          {result.matched.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                Matched ({result.matched.length})
+              </p>
+              <div className="space-y-2">
+                {result.matched.map(({ item, product }) => (
+                  <div key={item.id} className="flex items-center gap-3 p-2 bg-green-50 rounded-lg border border-green-100">
+                    {product.imageUrl && (
+                      <img src={product.imageUrl} alt="" className="w-10 h-10 object-contain shrink-0 rounded" />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs text-gray-500 truncate">{item.name}</p>
+                      <p className="text-sm font-medium text-gray-800 truncate">{product.name}</p>
+                      <p className="text-xs text-green-700">${product.price.toFixed(2)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {result.unmatched.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                Not found on Walmart ({result.unmatched.length})
+              </p>
+              <div className="space-y-1">
+                {result.unmatched.map(item => (
+                  <p key={item.id} className="text-sm text-gray-500 px-2 py-1 bg-gray-50 rounded">
+                    {item.name}
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
+          <button onClick={onClose}
+            className="flex-1 px-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 hover:bg-gray-50">
+            Cancel
+          </button>
+          <a
+            href={result.cartUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
+          >
+            <ExternalLink size={14} /> Open in Walmart
+          </a>
         </div>
       </div>
     </div>
@@ -144,6 +219,8 @@ export default function ShoppingListPage() {
   const [generating, setGenerating] = useState(false);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<'active' | 'all'>('active');
+  const [sendingToWalmart, setSendingToWalmart] = useState(false);
+  const [walmartResult, setWalmartResult] = useState<WalmartCartResult | null>(null);
 
   useEffect(() => {
     Promise.all([api.shoppingLists.list(), api.menuPlans.list()]).then(([ls, ps]) => {
@@ -203,6 +280,19 @@ export default function ShoppingListPage() {
     return updated;
   }
 
+  async function sendToWalmart() {
+    if (!activeList) return;
+    setSendingToWalmart(true);
+    try {
+      const result = await api.walmart.cartUrl(activeList.id);
+      setWalmartResult(result);
+    } catch (e: any) {
+      alert(`Walmart error: ${e.message}`);
+    } finally {
+      setSendingToWalmart(false);
+    }
+  }
+
   async function deleteList(id: string) {
     if (!confirm('Delete this shopping list?')) return;
     await api.shoppingLists.delete(id);
@@ -228,6 +318,9 @@ export default function ShoppingListPage() {
           onPlanChange={setGenPlanId} onServingsChange={setGenServings}
           onGenerate={generateList} onClose={() => setShowGenerate(false)}
         />
+      )}
+      {walmartResult && (
+        <WalmartCartModal result={walmartResult} onClose={() => setWalmartResult(null)} />
       )}
 
       {/* Sidebar */}
@@ -321,6 +414,18 @@ export default function ShoppingListPage() {
               <div className="flex items-start justify-between gap-3 mb-2">
                 <h1 className="text-lg font-semibold text-gray-900">{activeList.name}</h1>
                 <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={sendToWalmart}
+                    disabled={sendingToWalmart || activeList.items.filter(i => !i.checked).length === 0}
+                    title="Send unchecked items to Walmart cart"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-lg hover:bg-yellow-100 transition-colors disabled:opacity-40"
+                  >
+                    {sendingToWalmart
+                      ? <Loader2 size={13} className="animate-spin" />
+                      : <ShoppingCart size={13} />
+                    }
+                    Walmart
+                  </button>
                   {activeList.status === 'active' && (
                     <button
                       onClick={() => updateStatus(activeList.id, 'completed')}

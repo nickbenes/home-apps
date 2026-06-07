@@ -4,6 +4,21 @@ import type {
   ShoppingList, ShoppingListDetail, ShoppingListItem,
 } from './types';
 
+export interface WalmartProduct {
+  itemId: string;
+  name: string;
+  price: number;
+  imageUrl: string;
+  url: string;
+  availabilityStatus: string;
+}
+
+export interface WalmartCartResult {
+  cartUrl: string;
+  matched: { item: { id: number; name: string; quantity: number | null; unit: string | null }; product: WalmartProduct }[];
+  unmatched: { id: number; name: string; quantity: number | null; unit: string | null }[];
+}
+
 export interface FeatureRequest {
   request_id: string;
   title: string;
@@ -123,6 +138,9 @@ export const api = {
     checkItem: (itemId: number, checked: boolean) =>
       patch<ShoppingListItem>(`/shopping-list-items/${itemId}`, { checked }),
     deleteItem: (itemId: number) => del(`/shopping-list-items/${itemId}`),
+  },
+  walmart: {
+    cartUrl: (listId: string) => post<WalmartCartResult>('/walmart/cart-url', { listId }),
   },
   featureRequests: {
     list:   () => get<FeatureRequest[]>('/feature-requests'),
