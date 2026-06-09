@@ -85,7 +85,12 @@
       "Bash(gsettings get *)",
       "Bash(sudo mkdir -p /etc/systemd/logind.conf.d)",
       "Bash(sudo tee /etc/systemd/logind.conf.d/lid.conf)",
-      "Bash(gsettings set *)"
+      "Bash(gsettings set *)",
+      "Bash(cat ~/.config/home-apps/walmart/api-config.json)",
+      "Read(//home/nickbenes/.config/home-apps/walmart/**)",
+      "Bash(npx --yes tsx --version)",
+      "Bash(browser-harness)",
+      "Bash(sqlite3 /home/nickbenes/dev/bills-tracker/projects/food/data/food.db \"DELETE FROM shopping_lists WHERE id = 'test-walmart-list';\")"
     ]
   }
 }
