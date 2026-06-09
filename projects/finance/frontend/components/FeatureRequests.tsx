@@ -29,7 +29,7 @@ function displayTitle(title: string): string {
 interface CreateForm { title: string; description: string; submitted_by: string; }
 const EMPTY_CREATE: CreateForm = { title: '', description: '', submitted_by: '' };
 
-interface EditForm { status: Status; github_issue_number: string; }
+interface EditForm { title: string; description: string; submitted_by: string; status: Status; github_issue_number: string; }
 
 export default function FeatureRequests() {
   const [requests, setRequests] = useState<FeatureRequest[]>([]);
@@ -41,7 +41,7 @@ export default function FeatureRequests() {
   const [creating, setCreating] = useState(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<EditForm>({ status: 'open', github_issue_number: '' });
+  const [editForm, setEditForm] = useState<EditForm>({ title: '', description: '', submitted_by: '', status: 'open', github_issue_number: '' });
 
   const [syncing, setSyncing] = useState(false);
   const [syncMsg, setSyncMsg] = useState<string | null>(null);
@@ -76,6 +76,9 @@ export default function FeatureRequests() {
   function startEdit(r: FeatureRequest) {
     setEditingId(r.request_id);
     setEditForm({
+      title: displayTitle(r.title),
+      description: r.description ?? '',
+      submitted_by: r.submitted_by ?? '',
       status: r.status,
       github_issue_number: r.github_issue_number != null ? String(r.github_issue_number) : '',
     });
@@ -83,7 +86,12 @@ export default function FeatureRequests() {
 
   async function saveEdit(id: string) {
     try {
+      const t = editForm.title.trim();
+      const prefixedTitle = t.match(/^finance:\s*/i) ? t : `Finance: ${t}`;
       const updated = await api.featureRequests.update(id, {
+        title: prefixedTitle,
+        description: editForm.description.trim() || undefined,
+        submitted_by: editForm.submitted_by.trim() || undefined,
         status: editForm.status,
         github_issue_number: editForm.github_issue_number ? parseInt(editForm.github_issue_number) : undefined,
       });
@@ -234,17 +242,32 @@ export default function FeatureRequests() {
                     <div key={r.request_id} className="p-4">
                       {editingId === r.request_id ? (
                         <div className="space-y-3">
+                          <div>
+                            <label className="block text-xs text-gray-500 mb-1">Title *</label>
+                            <input
+                              className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+                              value={editForm.title}
+                              onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))}
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-500 mb-1">Description</label>
+                            <textarea rows={4}
+                              className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 resize-none"
+                              value={editForm.description}
+                              onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
+                            />
+                          </div>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <div>
-                              <label className="block text-xs text-gray-500 mb-1">Status</label>
-                              <select
+                              <label className="block text-xs text-gray-500 mb-1">Submitted by</label>
+                              <input
                                 className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
-                                value={editForm.status}
-                                onChange={e => setEditForm(f => ({ ...f, status: e.target.value as Status }))}>
-                                {Object.entries(STATUS_CONFIG).map(([v, { label }]) => (
-                                  <option key={v} value={v}>{label}</option>
-                                ))}
-                              </select>
+                                value={editForm.submitted_by}
+                                onChange={e => setEditForm(f => ({ ...f, submitted_by: e.target.value }))}
+                                placeholder="e.g. Nick"
+                              />
                             </div>
                             <div>
                               <label className="block text-xs text-gray-500 mb-1">GitHub Issue # (optional)</label>
@@ -254,6 +277,17 @@ export default function FeatureRequests() {
                                 onChange={e => setEditForm(f => ({ ...f, github_issue_number: e.target.value }))}
                                 placeholder="e.g. 30" />
                             </div>
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-500 mb-1">Status</label>
+                            <select
+                              className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
+                              value={editForm.status}
+                              onChange={e => setEditForm(f => ({ ...f, status: e.target.value as Status }))}>
+                              {Object.entries(STATUS_CONFIG).map(([v, { label }]) => (
+                                <option key={v} value={v}>{label}</option>
+                              ))}
+                            </select>
                           </div>
                           <div className="flex gap-2 justify-end">
                             <button onClick={() => setEditingId(null)}
