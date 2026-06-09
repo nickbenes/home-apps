@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { randomUUID } from 'crypto';
 import type BetterSqlite3 from 'better-sqlite3';
 import { searchWalmart, buildCartUrl, type WalmartProduct } from './walmart.js';
 
