@@ -141,7 +141,7 @@ export default function FeatureRequests() {
         </div>
         <div className="ml-auto flex items-center gap-2">
           <a
-            href="https://github.com/nickbenes/bills-tracker/issues"
+            href="https://github.com/nickbenes/home-apps/issues"
             target="_blank" rel="noreferrer"
             className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
           >
@@ -195,7 +195,7 @@ export default function FeatureRequests() {
               className="w-full border border-gray-300 rounded px-2.5 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400"
               value={createForm.submitted_by}
               onChange={e => setCreateForm(f => ({ ...f, submitted_by: e.target.value }))}
-              placeholder="e.g. Nick, Maureen…" />
+              placeholder="e.g. Nick" />
           </div>
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={() => setShowCreate(false)}
@@ -274,7 +274,7 @@ export default function FeatureRequests() {
                               <StatusBadge status={r.status} />
                               {r.github_issue_number && (
                                 <a
-                                  href={r.github_issue_url ?? `https://github.com/nickbenes/bills-tracker/issues/${r.github_issue_number}`}
+                                  href={r.github_issue_url ?? `https://github.com/nickbenes/home-apps/issues/${r.github_issue_number}`}
                                   target="_blank" rel="noreferrer"
                                   className="flex items-center gap-0.5 text-xs text-blue-600 hover:underline"
                                 >
