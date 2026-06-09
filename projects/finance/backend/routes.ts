@@ -638,7 +638,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     const token = process.env.GITHUB_TOKEN;
     if (token) {
       try {
-        const repo = process.env.GITHUB_REPO ?? 'nickbenes/bills-tracker';
+        const repo = process.env.GITHUB_REPO ?? 'nickbenes/home-apps';
         const ghBody: Record<string, string> = { title: prefixedTitle };
         if (description?.trim()) ghBody.body = description.trim();
         const ghRes = await fetch(`https://api.github.com/repos/${repo}/issues`, {
@@ -688,13 +688,13 @@ export function createRouter(db: BetterSqlite3.Database): Router {
   // Sync GitHub issues ↔ feature_requests:
   //   1. Update github_issue_status for all rows already linked to an issue number.
   //   2. Import any GitHub issues that have no matching row yet (matched by issue number).
-  // Requires GITHUB_TOKEN env var; optional GITHUB_REPO (default: nickbenes/bills-tracker).
+  // Requires GITHUB_TOKEN env var; optional GITHUB_REPO (default: nickbenes/home-apps).
   router.post('/feature-requests/sync', async (_req, res) => {
     const token = process.env.GITHUB_TOKEN;
     if (!token) {
       return res.status(501).json({ error: 'GITHUB_TOKEN env var not set — sync unavailable' });
     }
-    const repo = process.env.GITHUB_REPO ?? 'nickbenes/bills-tracker';
+    const repo = process.env.GITHUB_REPO ?? 'nickbenes/home-apps';
     const ghHeaders = { Authorization: `Bearer ${token}`, 'User-Agent': 'home-apps-finance' };
 
     // Step 1: update status on already-linked rows.
