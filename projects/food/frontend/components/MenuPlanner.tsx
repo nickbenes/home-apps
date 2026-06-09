@@ -193,7 +193,7 @@ export default function MenuPlanner() {
     }
   }
 
-  // ── Drag & drop ─────────────────────────────────────────────────────────
+  // ── Drag & drop (mouse) ─────────────────────────────────────────────────
 
   function handleDragStart(recipeId: string) {
     setDragRecipeId(recipeId);
@@ -210,6 +210,47 @@ export default function MenuPlanner() {
     const id = dragRecipeIdRef.current;
     setHoveredSlot(null);
     if (id && activePlanId) assignSlot(day, meal, id);
+  }
+
+  // ── Touch drag (mobile) ──────────────────────────────────────────────────
+  // HTML5 drag events don't fire on touch screens, so we use pointer tracking
+  // via document-level listeners (must be non-passive to call preventDefault).
+
+  function slotFromPoint(x: number, y: number): { day: number; meal: MealSlot } | null {
+    let el = document.elementFromPoint(x, y) as Element | null;
+    while (el) {
+      const day = el.getAttribute('data-slot-day');
+      const meal = el.getAttribute('data-slot-meal');
+      if (day !== null && meal !== null) return { day: parseInt(day), meal: meal as MealSlot };
+      el = el.parentElement;
+    }
+    return null;
+  }
+
+  function startTouchDrag(recipeId: string) {
+    setDragRecipeId(recipeId);
+    dragRecipeIdRef.current = recipeId;
+
+    function onMove(e: TouchEvent) {
+      e.preventDefault(); // blocks page scroll while dragging
+      const t = e.touches[0];
+      const slot = slotFromPoint(t.clientX, t.clientY);
+      setHoveredSlot(slot ? `${slot.day}-${slot.meal}` : null);
+    }
+
+    function onEnd(e: TouchEvent) {
+      const t = e.changedTouches[0];
+      const slot = slotFromPoint(t.clientX, t.clientY);
+      if (slot && dragRecipeIdRef.current) assignSlot(slot.day, slot.meal, dragRecipeIdRef.current);
+      setDragRecipeId(null);
+      dragRecipeIdRef.current = null;
+      setHoveredSlot(null);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onEnd);
+    }
+
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onEnd);
   }
 
   // ── Filtered recipe list ─────────────────────────────────────────────────
@@ -333,6 +374,8 @@ export default function MenuPlanner() {
                     return (
                       <td key={dayIdx} className="p-0.5 align-top">
                         <div
+                          data-slot-day={dayIdx}
+                          data-slot-meal={meal}
                           className={`min-h-14 p-1.5 rounded-md border text-xs transition-all
                             ${isHovered
                               ? 'bg-green-50 border-green-400 shadow-sm'
@@ -420,6 +463,7 @@ export default function MenuPlanner() {
                   isDragging={dragRecipeId === recipe.id}
                   onDragStart={() => handleDragStart(recipe.id)}
                   onDragEnd={handleDragEnd}
+                  onTouchStart={() => startTouchDrag(recipe.id)}
                 />
               ))}
               {filteredRecipes.length === 0 && (
@@ -451,11 +495,13 @@ function RecipeCard({
   isDragging,
   onDragStart,
   onDragEnd,
+  onTouchStart,
 }: {
   recipe: Recipe;
   isDragging: boolean;
   onDragStart: () => void;
   onDragEnd: () => void;
+  onTouchStart: () => void;
 }) {
   const tags = parseTags(recipe.tags);
 
@@ -467,6 +513,7 @@ function RecipeCard({
         onDragStart();
       }}
       onDragEnd={onDragEnd}
+      onTouchStart={onTouchStart}
       className={`cursor-grab active:cursor-grabbing select-none
         border rounded-lg px-3 py-2 bg-white text-sm transition-all
         ${isDragging
