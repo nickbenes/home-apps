@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronRight, CheckSquare, Square, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ChevronDown, ChevronRight, CheckSquare, Square, AlertTriangle, CheckCircle, PartyPopper } from 'lucide-react';
 import { DebtPriorityItem } from '../lib/api';
 
 const CHECKLIST_ITEMS = [
@@ -59,20 +59,17 @@ function BalloonCard({ item }: { item: DebtPriorityItem }) {
   return (
     <div className={`bg-white rounded-lg border overflow-hidden ${overdue ? 'border-red-300' : onTrack ? 'border-green-200' : 'border-amber-300'}`}>
       <div className="px-4 py-3 flex items-center gap-4">
-        {/* Status icon */}
         {overdue
           ? <AlertTriangle size={18} className="text-red-500 shrink-0" />
           : onTrack
             ? <CheckCircle size={18} className="text-green-500 shrink-0" />
             : <AlertTriangle size={18} className="text-amber-500 shrink-0" />}
 
-        {/* Creditor + deadline */}
         <div className="flex-1 min-w-0">
           <p className="font-medium text-gray-900 text-sm truncate">{item.creditor}</p>
           <p className="text-xs text-gray-500">Balloon deadline: <strong>{formatYM(deadline)}</strong></p>
         </div>
 
-        {/* Countdown */}
         <div className="text-right shrink-0">
           {overdue ? (
             <p className="text-lg font-semibold text-red-600">Overdue</p>
@@ -84,7 +81,6 @@ function BalloonCard({ item }: { item: DebtPriorityItem }) {
           </p>
         </div>
 
-        {/* Checklist toggle */}
         <button
           onClick={() => setExpanded(e => !e)}
           className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 shrink-0 ml-2"
@@ -117,19 +113,67 @@ function BalloonCard({ item }: { item: DebtPriorityItem }) {
   );
 }
 
-export default function BalloonCountdown({ items }: { items: DebtPriorityItem[] }) {
-  const balloons = items.filter(i => i.payoff_date_est != null);
-  if (!balloons.length) return null;
+function PayoffMilestoneCard({ item }: { item: DebtPriorityItem }) {
+  const deadline = item.payoff_date_est!;
+  const months   = monthsRemaining(deadline);
+  const overdue  = months < 0;
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-baseline gap-3">
-        <h2 className="text-sm font-semibold text-gray-800">Balloon Payment Deadlines</h2>
-        <span className="text-xs text-gray-400">Accounts with fixed payoff targets — click to track refi readiness</span>
+    <div className="bg-white rounded-lg border border-green-200 overflow-hidden">
+      <div className="px-4 py-3 flex items-center gap-4">
+        <PartyPopper size={18} className="text-green-500 shrink-0" />
+
+        <div className="flex-1 min-w-0">
+          <p className="font-medium text-gray-900 text-sm truncate">{item.creditor}</p>
+          <p className="text-xs text-gray-500">Expected payoff: <strong>{formatYM(deadline)}</strong></p>
+        </div>
+
+        <div className="text-right shrink-0">
+          {overdue ? (
+            <p className="text-sm font-semibold text-green-600">Paid off?</p>
+          ) : (
+            <p className="text-lg font-semibold text-gray-900">{months} <span className="text-sm font-normal text-gray-500">mo left</span></p>
+          )}
+          <p className="text-xs font-medium text-green-600">
+            {overdue ? 'Check if paid off' : 'Almost there!'}
+          </p>
+        </div>
       </div>
-      <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${Math.min(balloons.length, 2)}, 1fr)` }}>
-        {balloons.map(item => <BalloonCard key={item.account_id} item={item} />)}
-      </div>
+    </div>
+  );
+}
+
+export default function BalloonCountdown({ items }: { items: DebtPriorityItem[] }) {
+  const balloons  = items.filter(i => i.payoff_date_est != null && i.is_balloon === 1);
+  const milestones = items.filter(i => i.payoff_date_est != null && i.is_balloon !== 1);
+
+  if (!balloons.length && !milestones.length) return null;
+
+  return (
+    <div className="space-y-4">
+      {balloons.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-baseline gap-3">
+            <h2 className="text-sm font-semibold text-gray-800">Balloon Payment Deadlines</h2>
+            <span className="text-xs text-gray-400">Fixed payoff targets — click to track refi readiness</span>
+          </div>
+          <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${Math.min(balloons.length, 2)}, 1fr)` }}>
+            {balloons.map(item => <BalloonCard key={item.account_id} item={item} />)}
+          </div>
+        </div>
+      )}
+
+      {milestones.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-baseline gap-3">
+            <h2 className="text-sm font-semibold text-gray-800">Upcoming Payoffs</h2>
+            <span className="text-xs text-gray-400">Debts on track to reach zero</span>
+          </div>
+          <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${Math.min(milestones.length, 2)}, 1fr)` }}>
+            {milestones.map(item => <PayoffMilestoneCard key={item.account_id} item={item} />)}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
