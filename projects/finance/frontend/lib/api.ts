@@ -45,6 +45,7 @@ export interface Account {
   account_number: string | null;
   portal_url: string | null;
   payoff_date_est: string | null;
+  is_balloon: number;
   phone: string | null;
   email: string | null;
   notes: string | null;
@@ -186,6 +187,7 @@ export interface DebtPriorityItem {
   months_to_payoff: number | null;
   payoff_date: string | null;
   payoff_date_est: string | null;
+  is_balloon: number;
   extra_payments: { amount: number; item_date: string }[];
 }
 

@@ -119,7 +119,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     const ALLOWED = [
       'creditor', 'account_type', 'status',
       'current_balance', 'balance_date', 'interest_rate_pct',
-      'original_amount', 'account_number', 'portal_url', 'payoff_date_est',
+      'original_amount', 'account_number', 'portal_url', 'payoff_date_est', 'is_balloon',
       'phone', 'email', 'notes',
     ] as const;
     const entries = Object.entries(req.body).filter(([k]) => (ALLOWED as readonly string[]).includes(k));
@@ -891,6 +891,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
         a.interest_rate_pct,
         a.balance_date,
         a.payoff_date_est,
+        a.is_balloon,
         ABS(SUM(ri.effective_monthly)) AS monthly_payment
       FROM accounts a
       LEFT JOIN recurring_items ri
@@ -903,7 +904,7 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     `).all() as {
       account_id: string; creditor: string; account_type: string; status: string;
       current_balance: number; interest_rate_pct: number | null;
-      balance_date: string | null; payoff_date_est: string | null;
+      balance_date: string | null; payoff_date_est: string | null; is_balloon: number;
       monthly_payment: number | null;
     }[];
 

@@ -74,12 +74,37 @@ function GenerateModal({
 
 // ── Walmart cart modal ────────────────────────────────────────────────────────
 
+function buildCartUrl(items: { itemId: string; quantity: number }[]): string {
+  const param = items.map(i => `${i.itemId}:${i.quantity}`).join(',');
+  return `https://affil.walmart.com/cart/addToCart?items=${param}`;
+}
+
 function WalmartCartModal({
   result, onClose,
 }: {
   result: WalmartCartResult;
   onClose: () => void;
 }) {
+  const [selected, setSelected] = useState<Set<number>>(
+    () => new Set(result.matched.map(({ item }) => item.id))
+  );
+
+  function toggle(id: number) {
+    setSelected(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  const selectedMatches = result.matched.filter(({ item }) => selected.has(item.id));
+  const cartUrl = buildCartUrl(
+    selectedMatches.map(({ item, product }) => ({
+      itemId: product.itemId,
+      quantity: Math.max(1, Math.ceil(item.quantity ?? 1)),
+    }))
+  );
+
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 max-h-[80vh] flex flex-col">
@@ -92,21 +117,37 @@ function WalmartCartModal({
           {result.matched.length > 0 && (
             <div>
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-                Matched ({result.matched.length})
+                Matched — tap to deselect ({selected.size}/{result.matched.length})
               </p>
               <div className="space-y-2">
-                {result.matched.map(({ item, product }) => (
-                  <div key={item.id} className="flex items-center gap-3 p-2 bg-green-50 rounded-lg border border-green-100">
-                    {product.imageUrl && (
-                      <img src={product.imageUrl} alt="" className="w-10 h-10 object-contain shrink-0 rounded" />
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs text-gray-500 truncate">{item.name}</p>
-                      <p className="text-sm font-medium text-gray-800 truncate">{product.name}</p>
-                      <p className="text-xs text-green-700">${product.price.toFixed(2)}</p>
-                    </div>
-                  </div>
-                ))}
+                {result.matched.map(({ item, product }) => {
+                  const isSelected = selected.has(item.id);
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => toggle(item.id)}
+                      className={`w-full flex items-center gap-3 p-2 rounded-lg border text-left transition-colors ${
+                        isSelected
+                          ? 'bg-green-50 border-green-200 hover:bg-green-100'
+                          : 'bg-gray-50 border-gray-200 opacity-50 hover:opacity-70'
+                      }`}
+                    >
+                      {product.imageUrl && (
+                        <img src={product.imageUrl} alt="" className="w-10 h-10 object-contain shrink-0 rounded" />
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs text-gray-500 truncate">{item.name}</p>
+                        <p className="text-sm font-medium text-gray-800 truncate">{product.name}</p>
+                        <p className={`text-xs ${isSelected ? 'text-green-700' : 'text-gray-400'}`}>${product.price.toFixed(2)}</p>
+                      </div>
+                      <div className={`w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center ${
+                        isSelected ? 'bg-green-500 border-green-500' : 'border-gray-300'
+                      }`}>
+                        {isSelected && <svg viewBox="0 0 10 8" className="w-2.5 h-2.5 text-white fill-none stroke-current stroke-2"><polyline points="1,4 3.5,7 9,1" /></svg>}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -133,12 +174,17 @@ function WalmartCartModal({
             Cancel
           </button>
           <a
-            href={result.cartUrl}
+            href={cartUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
+            onClick={selected.size === 0 ? e => e.preventDefault() : undefined}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium ${
+              selected.size === 0
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+            }`}
           >
-            <ExternalLink size={14} /> Open in Walmart
+            <ExternalLink size={14} /> Open in Walmart ({selected.size})
           </a>
         </div>
       </div>

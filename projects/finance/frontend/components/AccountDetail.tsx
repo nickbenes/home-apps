@@ -267,6 +267,21 @@ function FinancialCard({
             />
           </dd>
         </div>
+        <div className="flex justify-between items-center gap-2">
+          <dt className="text-gray-500 shrink-0">Balloon mortgage</dt>
+          <dd>
+            <button
+              onClick={() => save('is_balloon', acct.is_balloon ? 0 : 1)}
+              className={`text-xs px-2 py-0.5 rounded-full font-medium border transition-colors ${
+                acct.is_balloon
+                  ? 'bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200'
+                  : 'bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200'
+              }`}
+            >
+              {acct.is_balloon ? 'Yes' : 'No'}
+            </button>
+          </dd>
+        </div>
         {monthlyPayment > 0 && (
           <div className="flex justify-between items-center gap-2 pt-1 border-t border-gray-100">
             <dt className="text-gray-500 shrink-0">Min pmt/mo</dt>
