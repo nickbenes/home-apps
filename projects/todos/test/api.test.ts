@@ -1,7 +1,29 @@
-const request = require('supertest');
-const app = require('../backend/server');
+import request from 'supertest';
+import express from 'express';
+import Database from 'better-sqlite3';
+import { createTestDb } from './helpers/testDb';
+import { createRouter } from '../backend/routes';
+
+function createApp(db: Database.Database) {
+  const app = express();
+  app.use(express.json());
+  app.use('/todos/api/todos', createRouter(db));
+  return app;
+}
 
 describe('Todos API', () => {
+  let db: Database.Database;
+  let app: ReturnType<typeof createApp>;
+
+  beforeEach(() => {
+    db = createTestDb();
+    app = createApp(db);
+  });
+
+  afterEach(() => {
+    db.close();
+  });
+
   describe('GET /todos/api/todos', () => {
     it('should return empty array initially', async () => {
       const res = await request(app).get('/todos/api/todos');
@@ -139,7 +161,7 @@ describe('Todos API', () => {
 
       const getAllRes = await request(app).get('/todos/api/todos');
       expect(getAllRes.statusCode).toBe(200);
-      expect(getAllRes.body.some(t => t.id === todoId)).toBe(true);
+      expect(getAllRes.body.some((t: { id: number }) => t.id === todoId)).toBe(true);
 
       const getOneRes = await request(app).get(`/todos/api/todos/${todoId}`);
       expect(getOneRes.statusCode).toBe(200);
