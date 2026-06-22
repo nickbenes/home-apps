@@ -36,6 +36,8 @@ public/calendar/bundle.js.map
 public/food/bundle.js
 public/food/bundle.js.map
 public/food/bundle.css
+public/dashboard/bundle.js
+public/dashboard/bundle.js.map
 public/benes-finance/
 
 # Playwright output

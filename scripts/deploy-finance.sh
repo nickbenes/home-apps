@@ -19,4 +19,10 @@ npm run finance:build
 echo "[CD] Restarting finance service…"
 systemctl --user restart finance
 
-echo "[CD] Deploy complete — $(systemctl --user show finance --property=ActiveState)"
+echo "[CD] Building dashboard…"
+npm run build
+
+echo "[CD] Restarting dashboard service…"
+systemctl --user restart dashboard
+
+echo "[CD] Deploy complete — $(systemctl --user show finance --property=ActiveState), $(systemctl --user show dashboard --property=ActiveState)"

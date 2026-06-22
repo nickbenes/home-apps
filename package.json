@@ -20,6 +20,7 @@
     "todos:db:migrate": "tsx projects/todos/backend/migrate.ts",
     "todos:db:reset": "node -e \"['todos.db','todos.db-shm','todos.db-wal'].forEach(f=>require('fs').rmSync('projects/todos/data/'+f,{force:true}))\" && npm run todos:db:migrate",
     "calendar:dev": "tsx projects/calendar/backend/server.ts",
+    "dashboard:dev": "tsx projects/dashboard/backend/server.ts",
 
     "finance:dev": "tsx projects/finance/backend/server.ts",
     "finance:build": "npm run build && npm run finance:css",
