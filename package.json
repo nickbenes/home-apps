@@ -4,7 +4,7 @@
   "description": "Home Apps \u2014 finance, todos, calendar, food",
   "main": "server.js",
   "scripts": {
-    "start": "node projects/todos/backend/server.js",
+    "start": "tsx projects/todos/backend/server.ts",
     "build": "node build.js",
     "dev": "npm run build && npm start",
     "watch": "node build.js --watch",
@@ -16,7 +16,9 @@
     "test:e2e:ui": "playwright test --ui",
     "test:all": "npm run test:unit && npm run test:e2e",
 
-    "todos:dev": "node projects/todos/backend/server.js",
+    "todos:dev": "tsx projects/todos/backend/server.ts",
+    "todos:db:migrate": "tsx projects/todos/backend/migrate.ts",
+    "todos:db:reset": "node -e \"['todos.db','todos.db-shm','todos.db-wal'].forEach(f=>require('fs').rmSync('projects/todos/data/'+f,{force:true}))\" && npm run todos:db:migrate",
     "calendar:dev": "tsx projects/calendar/backend/server.ts",
 
     "finance:dev": "tsx projects/finance/backend/server.ts",

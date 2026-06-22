@@ -19,6 +19,11 @@ projects/food/data/*.db-shm
 projects/food/data/*.db-wal
 projects/food/data/seeds/*.seed.csv
 
+# Todos: database files
+projects/todos/data/*.db
+projects/todos/data/*.db-shm
+projects/todos/data/*.db-wal
+
 # Build artifacts
 public/bills/bundle.js.map
 public/finance/bundle.js
