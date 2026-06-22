@@ -1,23 +1,34 @@
 # Home Apps — Claude Code Project Guide
 
+_Last updated 2026-06-22 — see "Recent history" at the bottom for what changed and why._
+
 ## What this project is
 
-A suite of personal home apps: finance, todos, calendar (planned), food (planned).
-Repo: `nickbenes/home-apps` · Stack: React 19 / TypeScript / Express / esbuild / SQLite.
+A suite of personal home apps: finance, todos, food, dashboard (new), calendar (backend
+exists, not yet running as a service).
+Repo: `nickbenes/home-apps` · Stack: React 19 / TypeScript / Express / esbuild / SQLite
+(only where a module has real state — see Dashboard below for a no-DB example).
 
-Each app lives under `projects/<name>/` and runs on its own port. nginx proxies all apps
-at `pace-bene/<name>/` (see `nginx/home-apps.conf`).
+Each app lives under `projects/<name>/` and runs on its own port. Each module's Express
+server serves both its own static frontend (`public/<name>/`) and its own API
+(`/<name>/api/...`), independently — no shared gateway/nginx layer currently wired up despite
+older docs mentioning one; double-check before assuming nginx is proxying anything live.
 
 ## Projects
 
-| Project   | Port | URL prefix    | Status  |
-|-----------|------|---------------|---------|
-| `finance` | 3001 | `/finance`    | Active  |
-| `todos`   | 3000 | `/todos`      | Active  |
-| `calendar`| 3002 | `/calendar`   | Planned |
-| `food`    | 3003 | `/food`       | Planned |
+| Project    | Port | URL prefix    | Status  | State           |
+|------------|------|---------------|---------|-----------------|
+| `finance`  | 3001 | `/finance`    | Active  | SQLite          |
+| `todos`    | 3000 | `/todos`      | Active  | SQLite (rewritten 2026-06-22, was in-memory) |
+| `calendar` | 3002 | `/calendar`   | Backend exists, not a running service | — |
+| `food`     | 3003 | `/food`       | Active  | SQLite          |
+| `dashboard`| 3004 | `/dashboard`  | Active (new 2026-06-22) | None — reads other modules' state live, no DB of its own |
 
-Active projects have a systemd user service (`~/.config/systemd/user/<name>.service`).
+Active projects have a systemd user service (`~/.config/systemd/user/<name>.service`), enabled
+and running via `systemctl --user`. Service unit files are **not** version-controlled in this
+repo — they're created directly in `~/.config/systemd/user/` (one per module, modeled on
+`todos.service`/`dashboard.service`). The wrapper scripts they call (`npm run build` +
+`npm run <name>:dev`) **are** in `scripts/start-<name>-server.sh`, tracked in the repo.
 
 ## Routing convention (all projects)
 
@@ -75,6 +86,33 @@ projects/finance/
 
 No nested `src/` — code lives directly in `backend/` or `frontend/`.
 
+## Dashboard project (`projects/dashboard/`)
+
+Built 2026-06-22 to surface live state from every other module + an external vault
+(`~/gdrive/ObsidianVault`, a separate Obsidian-based personal-OS project with its own
+multi-agent setup — see that vault's own `CLAUDE.md`/`INDEX.md` if you need its context).
+Unlike finance/food/todos, **this module has no database** — it has no state of its own to
+persist, so it just reads:
+- Vault markdown files directly off the filesystem (`projects/dashboard/backend/vault.ts` —
+  hardcodes `~/gdrive/ObsidianVault` as `VAULT_ROOT`, overridable via env var). This is a
+  deliberate same-machine coupling, not an accident — there's no API on the vault side to call
+  instead, and adding one was judged not worth the indirection for a single local reader.
+- The todos REST API over HTTP (`projects/dashboard/backend/todos-client.ts`).
+
+If you add a new tile that needs a new data source, follow this same pattern (a small reader
+function in `vault.ts` or a new client file) rather than introducing a database — only add
+SQLite here if the dashboard ever needs to persist something itself (e.g. dismissed-tile
+state), not just to aggregate.
+
+## Deploy automation
+
+`scripts/deploy-finance.sh` (misleadingly named — historical, covers more than finance now) is
+symlinked as the git `post-merge` hook (installed via `scripts/setup-hooks.sh`) and runs on
+every merge to `main`: rebuilds finance + the shared esbuild bundle (which covers dashboard
+too) and restarts the `finance` and `dashboard` systemd services. **Food and todos are not
+yet wired into this hook** — if you change those and need a live restart, run
+`systemctl --user restart food` / `todos` manually, or extend the hook to match.
+
 ## Branching policy
 
 Use project-scoped branch prefixes to allow parallel work across projects:
@@ -109,6 +147,7 @@ npm run db:seed            # seed finance DB
 npm run db:import          # import RocketMoney CSV transactions
 npm run db:tag             # apply tag CSV to budget/recurring items
 npm start                  # start todos server (port 3000)
+npm run dashboard:dev      # start dashboard server (port 3004)
 npm run test:unit          # jest unit tests (all projects)
 ```
 
@@ -122,3 +161,19 @@ Reusable utility scripts live in `scripts/`. Run with `python3 scripts/<name>.py
 - Migration files: `db/migrations/001_initial.sql`, `002_...`, etc.
 - Never skip `--no-verify` on commits
 - Privacy: never include family member names in commits, PRs, or issues
+- Build artifacts (`public/<name>/bundle.js`, `.map`, `.css`) are gitignored per-module —
+  add new entries to `.gitignore` when scaffolding a new module's `public/<name>/` dir, don't
+  commit the bundle.
+
+## Recent history (most recent first — trim this section once it gets long)
+
+- **2026-06-22:** Added `dashboard` module (PR #77) — see "Dashboard project" above.
+- **2026-06-22:** Rewrote `todos` backend to SQLite (PR #76) — was in-memory-only with no
+  running service before this; now matches finance/food's `db.ts`/`migrate.ts` pattern and
+  runs as `todos.service`. Local repo folder also renamed `bills-tracker` → `home-apps` to
+  match the GitHub repo name (already renamed) — if you find references to the old folder
+  name anywhere, they're stale.
+- This section exists so a fresh Claude Code session starting in this repo doesn't re-derive
+  context that's only in old PR descriptions or a vault session log elsewhere. Add a line here
+  for genuinely structural changes (new module, storage rewrite, deploy-process change) — not
+  for routine feature PRs, which speak for themselves in `git log`.
