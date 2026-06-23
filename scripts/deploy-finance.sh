@@ -12,17 +12,21 @@ fi
 
 REPO=$(git rev-parse --show-toplevel)
 
-echo "[CD] Building finance…"
 cd "$REPO"
+
+echo "[CD] Building finance…"
 npm run finance:build
 
-echo "[CD] Restarting finance service…"
-systemctl --user restart finance
+echo "[CD] Building food…"
+npm run food:build
 
-echo "[CD] Building dashboard…"
+echo "[CD] Building dashboard (also covers todos' shared esbuild bundle)…"
 npm run build
 
-echo "[CD] Restarting dashboard service…"
-systemctl --user restart dashboard
+echo "[CD] Restarting services…"
+systemctl --user restart finance food todos dashboard
 
-echo "[CD] Deploy complete — $(systemctl --user show finance --property=ActiveState), $(systemctl --user show dashboard --property=ActiveState)"
+echo "[CD] Deploy complete:"
+for svc in finance food todos dashboard; do
+  echo "  $svc: $(systemctl --user show "$svc" --property=ActiveState --value)"
+done
