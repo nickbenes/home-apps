@@ -47,6 +47,9 @@ public/benes-finance/
 playwright-report/
 test-results/
 
+# MCP servers: build output
+mcp-servers/walmart/dist/
+
 # These files contain personal financial data (accounts, debts, bank details, etc.)
 # See *.example.ts counterparts for the version-controlled templates
 projects/finance/backend/seed.ts
