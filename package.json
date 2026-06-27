@@ -44,6 +44,7 @@
     "food:db:import-example": "SEED_EXAMPLE=1 tsx projects/food/backend/import-seed.ts",
     "food:db:export": "tsx projects/food/backend/export-seed.ts",
     "food:db:reset": "node -e \"['food.db','food.db-shm','food.db-wal'].forEach(f=>require('fs').rmSync('projects/food/data/'+f,{force:true}))\" && npm run food:db:migrate && npm run food:db:import",
+    "food:test:e2e": "playwright test --config=playwright.food.config.ts",
 
     "db:reset": "npm run finance:db:reset && npm run food:db:reset",
     "db:import": "npm run finance:db:import && npm run food:db:import",
