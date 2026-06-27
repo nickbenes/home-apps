@@ -780,11 +780,32 @@ export function createRouter(db: BetterSqlite3.Database): Router {
   });
 
   router.patch('/shopping-list-items/:id', (req, res) => {
-    const item = db.prepare('SELECT id FROM shopping_list_items WHERE id = ?').get(req.params.id);
-    if (!item) return res.status(404).json({ error: 'Shopping list item not found' });
-    const { checked } = req.body;
-    db.prepare('UPDATE shopping_list_items SET checked = ? WHERE id = ?')
-      .run(checked ? 1 : 0, Number(req.params.id));
+    const current = db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(req.params.id) as
+      Record<string, unknown> | undefined;
+    if (!current) return res.status(404).json({ error: 'Shopping list item not found' });
+
+    const body = req.body as {
+      checked?: boolean; name?: string; quantity?: number | null; unit?: string | null;
+      store?: string | null; item_detail?: string | null;
+    };
+    // Only fields actually present in the request body are updated — this lets
+    // callers do a partial update (e.g. just `checked`, or just `store`) without
+    // clobbering the rest of the row.
+    const next = {
+      checked: 'checked' in body ? (body.checked ? 1 : 0) : current.checked,
+      name: 'name' in body && body.name?.trim() ? body.name.trim() : current.name,
+      quantity: 'quantity' in body ? body.quantity : current.quantity,
+      unit: 'unit' in body ? body.unit : current.unit,
+      store: 'store' in body ? body.store : current.store,
+      item_detail: 'item_detail' in body ? body.item_detail : current.item_detail,
+    };
+
+    db.prepare(`
+      UPDATE shopping_list_items SET
+        checked = ?, name = ?, quantity = ?, unit = ?, store = ?, item_detail = ?
+      WHERE id = ?
+    `).run(next.checked, next.name, next.quantity, next.unit, next.store, next.item_detail, req.params.id);
+
     res.json(db.prepare('SELECT * FROM shopping_list_items WHERE id = ?').get(req.params.id));
   });
 
@@ -968,6 +989,17 @@ export function createRouter(db: BetterSqlite3.Database): Router {
   });
 
   // ── Walmart ──────────────────────────────────────────────────────────────
+
+  router.get('/walmart/search', async (req, res) => {
+    const q = (req.query.q as string | undefined)?.trim();
+    if (!q) return res.status(400).json({ error: 'q is required' });
+    try {
+      const results = await searchWalmart(q, 8);
+      res.json(results);
+    } catch (e: any) {
+      res.status(502).json({ error: e.message ?? 'Walmart search failed' });
+    }
+  });
 
   router.post('/walmart/cart-url', async (req, res) => {
     const { listId } = req.body as { listId?: string };
