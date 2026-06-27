@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   ShoppingCart, Plus, Trash2, CheckCircle2, Circle, RefreshCw,
-  CheckCheck, Archive, ChevronDown, ExternalLink, Loader2,
+  CheckCheck, Archive, ChevronDown, ExternalLink, Loader2, Menu, X,
 } from 'lucide-react';
 import { api } from '../lib/api';
 import type { WalmartCartResult } from '../lib/api';
@@ -99,9 +99,9 @@ function WalmartCartModal({
 
   const selectedMatches = result.matched.filter(({ item }) => selected.has(item.id));
   const cartUrl = buildCartUrl(
-    selectedMatches.map(({ item, product }) => ({
+    selectedMatches.map(({ product, cartQuantity }) => ({
       itemId: product.itemId,
-      quantity: Math.max(1, Math.ceil(item.quantity ?? 1)),
+      quantity: cartQuantity,
     }))
   );
 
@@ -120,7 +120,7 @@ function WalmartCartModal({
                 Matched — tap to deselect ({selected.size}/{result.matched.length})
               </p>
               <div className="space-y-2">
-                {result.matched.map(({ item, product }) => {
+                {result.matched.map(({ item, product, cartQuantity }) => {
                   const isSelected = selected.has(item.id);
                   return (
                     <button
@@ -138,7 +138,9 @@ function WalmartCartModal({
                       <div className="min-w-0 flex-1">
                         <p className="text-xs text-gray-500 truncate">{item.name}</p>
                         <p className="text-sm font-medium text-gray-800 truncate">{product.name}</p>
-                        <p className={`text-xs ${isSelected ? 'text-green-700' : 'text-gray-400'}`}>${product.price.toFixed(2)}</p>
+                        <p className={`text-xs ${isSelected ? 'text-green-700' : 'text-gray-400'}`}>
+                          ${product.price.toFixed(2)} · qty {cartQuantity}
+                        </p>
                       </div>
                       <div className={`w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center ${
                         isSelected ? 'bg-green-500 border-green-500' : 'border-gray-300'
@@ -267,6 +269,7 @@ export default function ShoppingListPage() {
   const [statusFilter, setStatusFilter] = useState<'active' | 'all'>('active');
   const [sendingToWalmart, setSendingToWalmart] = useState(false);
   const [walmartResult, setWalmartResult] = useState<WalmartCartResult | null>(null);
+  const [navOpen, setNavOpen] = useState(false);
 
   useEffect(() => {
     Promise.all([api.shoppingLists.list(), api.menuPlans.list()]).then(([ls, ps]) => {
@@ -280,6 +283,7 @@ export default function ShoppingListPage() {
   async function loadList(id: string) {
     const detail = await api.shoppingLists.get(id);
     setActiveList(detail);
+    setNavOpen(false);
   }
 
   async function generateList() {
@@ -357,7 +361,7 @@ export default function ShoppingListPage() {
   const totalCount = activeList?.items.length ?? 0;
 
   return (
-    <div className="flex h-full min-h-0">
+    <div className="flex flex-col h-full min-h-0">
       {showGenerate && (
         <GenerateModal
           plans={plans} planId={genPlanId} servings={genServings} generating={generating}
@@ -369,18 +373,47 @@ export default function ShoppingListPage() {
         <WalmartCartModal result={walmartResult} onClose={() => setWalmartResult(null)} />
       )}
 
-      {/* Sidebar */}
-      <div className="w-56 shrink-0 border-r border-gray-200 bg-white flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-          <span className="text-sm font-semibold text-gray-800">Shopping Lists</span>
-          <button
-            onClick={() => setShowGenerate(true)}
-            title="Generate from plan"
-            className="text-green-600 hover:text-green-700 p-0.5 rounded"
-          >
-            <Plus size={17} />
-          </button>
-        </div>
+      {/* Mobile header — opens the lists nav as a drawer */}
+      <div className="lg:hidden flex items-center gap-2 px-4 py-2.5 border-b border-gray-200 bg-white shrink-0">
+        <button onClick={() => setNavOpen(true)} className="text-gray-500 hover:text-gray-800">
+          <Menu size={19} />
+        </button>
+        <span className="text-sm font-medium text-gray-700 truncate">
+          {activeList ? activeList.name : 'Shopping Lists'}
+        </span>
+      </div>
+
+      <div className="flex flex-1 min-h-0">
+        {/* Mobile nav overlay */}
+        {navOpen && (
+          <div
+            className="fixed inset-0 bg-black/30 z-20 lg:hidden"
+            onClick={() => setNavOpen(false)}
+          />
+        )}
+
+        {/* Sidebar — desktop always visible, mobile slide-in drawer */}
+        <div className={`fixed top-0 left-0 h-full w-56 z-30 border-r border-gray-200 bg-white flex flex-col overflow-hidden
+          transform transition-transform lg:static lg:translate-x-0 lg:z-auto lg:shrink-0
+          ${navOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+            <span className="text-sm font-semibold text-gray-800">Shopping Lists</span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setShowGenerate(true)}
+                title="Generate from plan"
+                className="text-green-600 hover:text-green-700 p-0.5 rounded"
+              >
+                <Plus size={17} />
+              </button>
+              <button
+                onClick={() => setNavOpen(false)}
+                className="lg:hidden text-gray-400 hover:text-gray-700 p-0.5 rounded"
+              >
+                <X size={17} />
+              </button>
+            </div>
+          </div>
 
         {/* Status filter */}
         <div className="flex border-b border-gray-100 text-xs">
@@ -571,6 +604,7 @@ export default function ShoppingListPage() {
             )}
           </div>
         )}
+      </div>
       </div>
     </div>
   );
