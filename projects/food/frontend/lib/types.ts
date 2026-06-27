@@ -93,6 +93,8 @@ export interface ShoppingListItem {
   unit: string | null;
   category_id: string | null;
   store_section: string | null;
+  store: string | null;
+  item_detail: string | null; // JSON-encoded ItemDetail (see ShoppingList.tsx)
   notes: string | null;
   checked: number; // 0 or 1
   sort_order: number;

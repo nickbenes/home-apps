@@ -3,6 +3,7 @@ import express from 'express';
 import Database from 'better-sqlite3';
 import { createTestDb, seedFixtures } from './helpers/testDb';
 import { createRouter } from '../backend/routes';
+import * as walmart from '../backend/walmart';
 
 function createApp(db: Database.Database) {
   const app = express();
@@ -1036,6 +1037,72 @@ describe('Food API', () => {
         .patch('/food/api/shopping-list-items/99999')
         .send({ checked: true });
       expect(res.statusCode).toBe(404);
+    });
+
+    test('updates name, quantity, and unit', async () => {
+      const item = await generateAndGetItem();
+      const res = await request(app)
+        .patch(`/food/api/shopping-list-items/${item.id}`)
+        .send({ name: 'Renamed Item', quantity: 3, unit: 'cans' });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.name).toBe('Renamed Item');
+      expect(res.body.quantity).toBe(3);
+      expect(res.body.unit).toBe('cans');
+    });
+
+    test('sets store', async () => {
+      const item = await generateAndGetItem();
+      const res = await request(app)
+        .patch(`/food/api/shopping-list-items/${item.id}`)
+        .send({ store: 'Walmart' });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.store).toBe('Walmart');
+    });
+
+    test('sets item_detail as a JSON string', async () => {
+      const item = await generateAndGetItem();
+      const detail = JSON.stringify({ source: 'walmart', itemId: '123', name: 'Test Product' });
+      const res = await request(app)
+        .patch(`/food/api/shopping-list-items/${item.id}`)
+        .send({ item_detail: detail });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.item_detail).toBe(detail);
+    });
+
+    test('a partial update does not clobber other fields, including checked', async () => {
+      const item = await generateAndGetItem();
+      await request(app).patch(`/food/api/shopping-list-items/${item.id}`).send({ checked: true });
+      const res = await request(app)
+        .patch(`/food/api/shopping-list-items/${item.id}`)
+        .send({ store: 'Target' });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.store).toBe('Target');
+      expect(res.body.checked).toBe(1); // unaffected by the store-only update
+      expect(res.body.name).toBe(item.name); // unaffected
+    });
+  });
+
+  describe('GET /food/api/walmart/search', () => {
+    test('returns search results', async () => {
+      jest.spyOn(walmart, 'searchWalmart').mockResolvedValue([
+        { itemId: '1', name: 'Test Product', price: 4.5, imageUrl: '', url: '', availabilityStatus: 'Available', size: '4 Count', packCount: 4 },
+      ]);
+      const res = await request(app).get('/food/api/walmart/search?q=bagels');
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveLength(1);
+      expect(res.body[0].name).toBe('Test Product');
+      expect(res.body[0].packCount).toBe(4);
+    });
+
+    test('400 when q is missing', async () => {
+      const res = await request(app).get('/food/api/walmart/search');
+      expect(res.statusCode).toBe(400);
+    });
+
+    test('502 when the Walmart API call fails', async () => {
+      jest.spyOn(walmart, 'searchWalmart').mockRejectedValue(new Error('boom'));
+      const res = await request(app).get('/food/api/walmart/search?q=bagels');
+      expect(res.statusCode).toBe(502);
     });
   });
 

@@ -17,6 +17,8 @@ export interface WalmartProduct {
   imageUrl: string;
   url: string;
   availabilityStatus: string;
+  size: string;
+  packCount: number;
 }
 
 function loadConfig(): EnvConfig {
@@ -45,14 +47,30 @@ function buildAuthHeaders(consumerId: string, keyVersion: string, privateKeyFile
   };
 }
 
+// Retail packs are commonly described as "4 Count", "6-pack", "12 ct", etc.,
+// either in the dedicated size field or trailing the product name. Falls back
+// to 1 (single unit) when no pack count can be found.
+const PACK_COUNT_PATTERN = /(\d+)\s*-?\s*(?:ct|count|pack|pk)\b/i;
+
+export function parsePackCount(size: string, name: string): number {
+  const match = PACK_COUNT_PATTERN.exec(size) ?? PACK_COUNT_PATTERN.exec(name);
+  if (!match) return 1;
+  const count = parseInt(match[1], 10);
+  return count > 0 ? count : 1;
+}
+
 function normalizeProduct(item: Record<string, unknown>): WalmartProduct {
+  const name = String(item.name ?? '');
+  const size = String(item.size ?? '');
   return {
     itemId: String(item.itemId ?? item.usItemId ?? ''),
-    name: String(item.name ?? ''),
+    name,
     price: Number(item.salePrice ?? item.msrp ?? 0),
     imageUrl: String(item.thumbnailImage ?? item.largeImage ?? ''),
     url: String(item.productUrl ?? `https://www.walmart.com/ip/${item.itemId}`),
     availabilityStatus: item.availableOnline ? 'Available' : 'Unavailable',
+    size,
+    packCount: parsePackCount(size, name),
   };
 }
 

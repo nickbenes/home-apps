@@ -11,6 +11,8 @@ export interface WalmartProduct {
   imageUrl: string;
   url: string;
   availabilityStatus: string;
+  size: string;
+  packCount: number;
 }
 
 export interface WalmartCartResult {
@@ -137,10 +139,15 @@ export const api = {
       post<ShoppingListItem>(`/shopping-lists/${listId}/items`, body),
     checkItem: (itemId: number, checked: boolean) =>
       patch<ShoppingListItem>(`/shopping-list-items/${itemId}`, { checked }),
+    updateItem: (itemId: number, body: Partial<{
+      name: string; quantity: number | null; unit: string | null;
+      store: string | null; item_detail: string | null;
+    }>) => patch<ShoppingListItem>(`/shopping-list-items/${itemId}`, body),
     deleteItem: (itemId: number) => del(`/shopping-list-items/${itemId}`),
   },
   walmart: {
     cartUrl: (listId: string) => post<WalmartCartResult>('/walmart/cart-url', { listId }),
+    search: (q: string) => get<WalmartProduct[]>(`/walmart/search?q=${encodeURIComponent(q)}`),
   },
   featureRequests: {
     list:   () => get<FeatureRequest[]>('/feature-requests'),
