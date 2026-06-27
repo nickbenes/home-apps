@@ -99,9 +99,9 @@ function WalmartCartModal({
 
   const selectedMatches = result.matched.filter(({ item }) => selected.has(item.id));
   const cartUrl = buildCartUrl(
-    selectedMatches.map(({ item, product }) => ({
+    selectedMatches.map(({ product, cartQuantity }) => ({
       itemId: product.itemId,
-      quantity: Math.max(1, Math.ceil(item.quantity ?? 1)),
+      quantity: cartQuantity,
     }))
   );
 
@@ -120,7 +120,7 @@ function WalmartCartModal({
                 Matched — tap to deselect ({selected.size}/{result.matched.length})
               </p>
               <div className="space-y-2">
-                {result.matched.map(({ item, product }) => {
+                {result.matched.map(({ item, product, cartQuantity }) => {
                   const isSelected = selected.has(item.id);
                   return (
                     <button
@@ -138,7 +138,9 @@ function WalmartCartModal({
                       <div className="min-w-0 flex-1">
                         <p className="text-xs text-gray-500 truncate">{item.name}</p>
                         <p className="text-sm font-medium text-gray-800 truncate">{product.name}</p>
-                        <p className={`text-xs ${isSelected ? 'text-green-700' : 'text-gray-400'}`}>${product.price.toFixed(2)}</p>
+                        <p className={`text-xs ${isSelected ? 'text-green-700' : 'text-gray-400'}`}>
+                          ${product.price.toFixed(2)} · qty {cartQuantity}
+                        </p>
                       </div>
                       <div className={`w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center ${
                         isSelected ? 'bg-green-500 border-green-500' : 'border-gray-300'
