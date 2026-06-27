@@ -515,13 +515,20 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     res.status(204).end();
   });
 
-  // Upsert a single slot — relies on the UNIQUE(menu_plan_id, day_of_week, meal_slot)
-  // constraint added in migration 002.
-  router.put('/menu-plans/:id/slots', (req, res) => {
+  const SLOT_WITH_RECIPE_BY_ID = `
+    SELECT ms.*, r.title AS recipe_title, r.servings AS recipe_servings
+    FROM menu_plan_slots ms
+    LEFT JOIN recipes r ON r.id = ms.recipe_id
+    WHERE ms.id = ?
+  `;
+
+  // Adds a new slot row. A (plan, day, meal) combination can hold any number
+  // of slots — multiple recipes per meal are just multiple rows.
+  router.post('/menu-plans/:id/slots', (req, res) => {
     const plan = db.prepare('SELECT id FROM menu_plans WHERE id = ?').get(req.params.id);
     if (!plan) return res.status(404).json({ error: 'Menu plan not found' });
 
-    const { day_of_week, meal_slot, recipe_id, notes } = req.body;
+    const { day_of_week, meal_slot, recipe_id, servings_override, notes } = req.body;
     if (day_of_week == null || !meal_slot) {
       return res.status(400).json({ error: 'day_of_week and meal_slot required' });
     }
@@ -530,21 +537,36 @@ export function createRouter(db: BetterSqlite3.Database): Router {
       if (!recipe) return res.status(400).json({ error: 'Unknown recipe_id' });
     }
 
-    db.prepare(`
-      INSERT INTO menu_plan_slots (menu_plan_id, day_of_week, meal_slot, recipe_id, notes)
-      VALUES (?, ?, ?, ?, ?)
-      ON CONFLICT(menu_plan_id, day_of_week, meal_slot) DO UPDATE SET
-        recipe_id = excluded.recipe_id,
-        notes     = excluded.notes
-    `).run(req.params.id, day_of_week, meal_slot, recipe_id ?? null, notes ?? null);
+    const { lastInsertRowid } = db.prepare(`
+      INSERT INTO menu_plan_slots (menu_plan_id, day_of_week, meal_slot, recipe_id, servings_override, notes)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).run(req.params.id, day_of_week, meal_slot, recipe_id ?? null, servings_override ?? null, notes ?? null);
 
-    const slot = db.prepare(`
-      SELECT ms.*, r.title AS recipe_title, r.servings AS recipe_servings
-      FROM menu_plan_slots ms
-      LEFT JOIN recipes r ON r.id = ms.recipe_id
-      WHERE ms.menu_plan_id = ? AND ms.day_of_week = ? AND ms.meal_slot = ?
-    `).get(req.params.id, day_of_week, meal_slot);
-    res.json(slot);
+    res.status(201).json(db.prepare(SLOT_WITH_RECIPE_BY_ID).get(lastInsertRowid));
+  });
+
+  // Updates one existing slot row by id (e.g. changing its recipe or servings).
+  router.put('/menu-plans/:id/slots/:slotId', (req, res) => {
+    const slot = db.prepare(
+      'SELECT id FROM menu_plan_slots WHERE id = ? AND menu_plan_id = ?'
+    ).get(req.params.slotId, req.params.id);
+    if (!slot) return res.status(404).json({ error: 'Slot not found' });
+
+    const { recipe_id, servings_override, notes } = req.body;
+    if (recipe_id) {
+      const recipe = db.prepare('SELECT id FROM recipes WHERE id = ?').get(recipe_id);
+      if (!recipe) return res.status(400).json({ error: 'Unknown recipe_id' });
+    }
+
+    db.prepare(`
+      UPDATE menu_plan_slots SET
+        recipe_id         = ?,
+        servings_override = ?,
+        notes              = ?
+      WHERE id = ?
+    `).run(recipe_id ?? null, servings_override ?? null, notes ?? null, req.params.slotId);
+
+    res.json(db.prepare(SLOT_WITH_RECIPE_BY_ID).get(req.params.slotId));
   });
 
   router.delete('/menu-plans/:id/slots/:slotId', (req, res) => {
@@ -590,7 +612,6 @@ export function createRouter(db: BetterSqlite3.Database): Router {
       db.prepare(`
         INSERT INTO menu_plan_slots (menu_plan_id, day_of_week, meal_slot, recipe_id)
         VALUES (?, ?, 'dinner', ?)
-        ON CONFLICT(menu_plan_id, day_of_week, meal_slot) DO NOTHING
       `).run(req.params.id, day, pick.id);
       const poolIdx = pool.indexOf(pick);
       if (poolIdx >= 0) pool.splice(poolIdx, 1);

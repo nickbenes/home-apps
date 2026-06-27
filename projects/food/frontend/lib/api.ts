@@ -118,8 +118,11 @@ export const api = {
     create: (body: { name: string; week_start: string }) => post<MenuPlan>('/menu-plans', body),
     get: (id: string) => get<MenuPlanDetail>(`/menu-plans/${id}`),
     delete: (id: string) => del(`/menu-plans/${id}`),
-    setSlot: (planId: string, slot: { day_of_week: number; meal_slot: string; recipe_id: string | null }) =>
-      put<MenuPlanSlot>(`/menu-plans/${planId}/slots`, slot),
+    addSlot: (planId: string, slot: { day_of_week: number; meal_slot: string; recipe_id: string | null; servings_override?: number | null }) =>
+      post<MenuPlanSlot>(`/menu-plans/${planId}/slots`, slot),
+    updateSlot: (planId: string, slotId: number, body: { recipe_id: string | null; servings_override?: number | null; notes?: string | null }) =>
+      put<MenuPlanSlot>(`/menu-plans/${planId}/slots/${slotId}`, body),
+    removeSlot: (planId: string, slotId: number) => del(`/menu-plans/${planId}/slots/${slotId}`),
     suggest: (planId: string) => post<MenuPlanDetail>(`/menu-plans/${planId}/suggest`),
   },
   familyMembers: {
