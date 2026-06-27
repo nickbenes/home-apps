@@ -36,3 +36,19 @@ jobs:
       - run: npm run finance:test:e2e
         env:
           CI: true
+
+  e2e-food:
+    name: E2E — Food
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run food:test:e2e
+        env:
+          CI: true

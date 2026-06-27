@@ -228,14 +228,36 @@ export default function MenuPlanner() {
 
   // ── Slot helpers ────────────────────────────────────────────────────────
 
-  function getSlot(day: number, meal: MealSlot): MenuPlanSlot | undefined {
-    return planDetail?.slots.find(s => s.day_of_week === day && s.meal_slot === meal);
+  function getSlots(day: number, meal: MealSlot): MenuPlanSlot[] {
+    return planDetail?.slots.filter(s => s.day_of_week === day && s.meal_slot === meal) ?? [];
   }
 
-  async function assignSlot(day: number, meal: MealSlot, recipeId: string | null) {
+  // Adds a recipe as a new slot — a meal can hold any number of recipes,
+  // each with its own servings.
+  async function addRecipeToSlot(day: number, meal: MealSlot, recipeId: string) {
     if (!activePlanId) return;
     try {
-      await api.menuPlans.setSlot(activePlanId, { day_of_week: day, meal_slot: meal, recipe_id: recipeId });
+      await api.menuPlans.addSlot(activePlanId, { day_of_week: day, meal_slot: meal, recipe_id: recipeId });
+      await loadPlanDetail(activePlanId);
+    } catch (e: any) {
+      setError(e.message);
+    }
+  }
+
+  async function removeSlot(slotId: number) {
+    if (!activePlanId) return;
+    try {
+      await api.menuPlans.removeSlot(activePlanId, slotId);
+      await loadPlanDetail(activePlanId);
+    } catch (e: any) {
+      setError(e.message);
+    }
+  }
+
+  async function updateSlotServings(slot: MenuPlanSlot, servings: number) {
+    if (!activePlanId) return;
+    try {
+      await api.menuPlans.updateSlot(activePlanId, slot.id, { recipe_id: slot.recipe_id, servings_override: servings });
       await loadPlanDetail(activePlanId);
     } catch (e: any) {
       setError(e.message);
@@ -284,7 +306,7 @@ export default function MenuPlanner() {
   function handleDrop(day: number, meal: MealSlot) {
     const id = dragRecipeIdRef.current;
     setHoveredSlot(null);
-    if (id && activePlanId) assignSlot(day, meal, id);
+    if (id && activePlanId) addRecipeToSlot(day, meal, id);
   }
 
   // ── Touch drag (mobile) ──────────────────────────────────────────────────
@@ -316,7 +338,7 @@ export default function MenuPlanner() {
     function onEnd(e: TouchEvent) {
       const t = e.changedTouches[0];
       const slot = slotFromPoint(t.clientX, t.clientY);
-      if (slot && dragRecipeIdRef.current) assignSlot(slot.day, slot.meal, dragRecipeIdRef.current);
+      if (slot && dragRecipeIdRef.current) addRecipeToSlot(slot.day, slot.meal, dragRecipeIdRef.current);
       setDragRecipeId(null);
       dragRecipeIdRef.current = null;
       setHoveredSlot(null);
@@ -449,7 +471,7 @@ export default function MenuPlanner() {
                     {MEAL_LABELS[meal]}
                   </td>
                   {DAYS.map((_, dayIdx) => {
-                    const slot = getSlot(dayIdx, meal);
+                    const slots = getSlots(dayIdx, meal).filter(s => s.recipe_id);
                     const key = `${dayIdx}-${meal}`;
                     const isHovered = hoveredSlot === key && dragRecipeId != null;
                     return (
@@ -460,7 +482,7 @@ export default function MenuPlanner() {
                           className={`min-h-14 p-1.5 rounded-md border text-xs transition-all
                             ${isHovered
                               ? 'bg-green-50 border-green-400 shadow-sm'
-                              : slot?.recipe_id
+                              : slots.length > 0
                                 ? 'bg-white border-gray-200 shadow-sm'
                                 : 'border-dashed border-gray-200 bg-gray-50/50'
                             }
@@ -473,30 +495,42 @@ export default function MenuPlanner() {
                           }}
                           onDrop={() => handleDrop(dayIdx, meal)}
                         >
-                          {slot?.recipe_id ? (
-                            <div className="flex flex-col h-full">
-                              <div className="flex items-start gap-0.5">
-                                <span className="flex-1 font-medium text-gray-800 leading-tight line-clamp-2">
-                                  {slot.recipe_title}
-                                </span>
-                                <button
-                                  onClick={() => assignSlot(dayIdx, meal, null)}
-                                  className="shrink-0 text-gray-300 hover:text-red-400 transition-colors ml-0.5"
-                                  title="Remove"
-                                >
-                                  ×
-                                </button>
-                              </div>
-                              {slot.recipe_servings && (
-                                <span className="text-gray-400 mt-0.5">
-                                  {scaleLabel(householdSize, slot.recipe_servings) && (
-                                    <span className="text-green-600 font-medium">
-                                      {scaleLabel(householdSize, slot.recipe_servings)}
+                          {slots.length > 0 ? (
+                            <div className="flex flex-col gap-1.5">
+                              {slots.map(slot => (
+                                <div key={slot.id} className="flex flex-col border-b border-gray-100 last:border-0 pb-1 last:pb-0">
+                                  <div className="flex items-start gap-0.5">
+                                    <span className="flex-1 font-medium text-gray-800 leading-tight line-clamp-2">
+                                      {slot.recipe_title}
                                     </span>
+                                    <button
+                                      onClick={() => removeSlot(slot.id)}
+                                      className="shrink-0 text-gray-300 hover:text-red-400 transition-colors ml-0.5"
+                                      title="Remove"
+                                    >
+                                      ×
+                                    </button>
+                                  </div>
+                                  {slot.recipe_servings != null && (
+                                    <div className="flex items-center gap-1 text-gray-400 mt-0.5">
+                                      <span>serves</span>
+                                      <input
+                                        type="number"
+                                        min={1}
+                                        value={slot.servings_override ?? slot.recipe_servings}
+                                        onClick={e => e.stopPropagation()}
+                                        onChange={e => updateSlotServings(slot, Math.max(1, parseInt(e.target.value) || 1))}
+                                        className="w-9 border border-gray-200 rounded px-0.5 text-gray-700 text-xs focus:outline-none focus:ring-1 focus:ring-green-400"
+                                      />
+                                      {scaleLabel(householdSize, slot.recipe_servings) && (
+                                        <span className="text-green-600 font-medium">
+                                          (household {scaleLabel(householdSize, slot.recipe_servings)})
+                                        </span>
+                                      )}
+                                    </div>
                                   )}
-                                  {' '}serves {slot.recipe_servings}
-                                </span>
-                              )}
+                                </div>
+                              ))}
                             </div>
                           ) : (
                             <div className={`h-full flex items-center justify-center text-gray-300

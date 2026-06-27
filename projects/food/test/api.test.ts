@@ -799,55 +799,106 @@ describe('Food API', () => {
     });
   });
 
-  describe('PUT /food/api/menu-plans/:id/slots', () => {
+  describe('POST /food/api/menu-plans/:id/slots', () => {
     test('assigns a recipe to a new slot', async () => {
       const res = await request(app)
-        .put('/food/api/menu-plans/test_plan/slots')
+        .post('/food/api/menu-plans/test_plan/slots')
         .send({ day_of_week: 2, meal_slot: 'dinner', recipe_id: 'test_stir_fry' });
-      expect(res.statusCode).toBe(200);
+      expect(res.statusCode).toBe(201);
       expect(res.body.recipe_title).toBe('Test Stir Fry');
     });
 
-    test('upserts — updating an existing slot', async () => {
-      await request(app).put('/food/api/menu-plans/test_plan/slots')
+    test('adding a second recipe to an existing meal keeps both', async () => {
+      await request(app).post('/food/api/menu-plans/test_plan/slots')
         .send({ day_of_week: 0, meal_slot: 'dinner', recipe_id: 'test_stir_fry' });
-      // Assign a different recipe to the same slot
-      await request(app).put('/food/api/menu-plans/test_plan/slots')
-        .send({ day_of_week: 0, meal_slot: 'dinner', recipe_id: 'test_stir_fry' });
-      // Only one slot for that day+meal should exist
       const count = (db.prepare(
         `SELECT COUNT(*) AS n FROM menu_plan_slots
          WHERE menu_plan_id = 'test_plan' AND day_of_week = 0 AND meal_slot = 'dinner'`
       ).get() as any).n;
-      expect(count).toBe(1);
+      expect(count).toBe(2);
     });
 
-    test('clears a slot when recipe_id is null', async () => {
+    test('stores servings_override', async () => {
       const res = await request(app)
-        .put('/food/api/menu-plans/test_plan/slots')
-        .send({ day_of_week: 0, meal_slot: 'dinner', recipe_id: null });
-      expect(res.statusCode).toBe(200);
-      expect(res.body.recipe_id).toBeNull();
+        .post('/food/api/menu-plans/test_plan/slots')
+        .send({ day_of_week: 2, meal_slot: 'dinner', recipe_id: 'test_stir_fry', servings_override: 4 });
+      expect(res.statusCode).toBe(201);
+      expect(res.body.servings_override).toBe(4);
     });
 
     test('400 when day_of_week missing', async () => {
       const res = await request(app)
-        .put('/food/api/menu-plans/test_plan/slots')
+        .post('/food/api/menu-plans/test_plan/slots')
         .send({ meal_slot: 'dinner', recipe_id: 'test_stir_fry' });
       expect(res.statusCode).toBe(400);
     });
 
     test('400 when recipe_id unknown', async () => {
       const res = await request(app)
-        .put('/food/api/menu-plans/test_plan/slots')
+        .post('/food/api/menu-plans/test_plan/slots')
         .send({ day_of_week: 3, meal_slot: 'dinner', recipe_id: 'no_such_recipe' });
       expect(res.statusCode).toBe(400);
     });
 
     test('404 for unknown plan', async () => {
       const res = await request(app)
-        .put('/food/api/menu-plans/no_such/slots')
+        .post('/food/api/menu-plans/no_such/slots')
         .send({ day_of_week: 0, meal_slot: 'dinner', recipe_id: null });
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('PUT /food/api/menu-plans/:id/slots/:slotId', () => {
+    test('updates an existing slot\'s recipe', async () => {
+      const slotId = (db.prepare(
+        `SELECT id FROM menu_plan_slots WHERE menu_plan_id = 'test_plan' AND day_of_week = 1`
+      ).get() as any).id;
+      const res = await request(app)
+        .put(`/food/api/menu-plans/test_plan/slots/${slotId}`)
+        .send({ recipe_id: 'test_stir_fry' });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.recipe_title).toBe('Test Stir Fry');
+    });
+
+    test('clears a slot when recipe_id is null', async () => {
+      const slotId = (db.prepare(
+        `SELECT id FROM menu_plan_slots WHERE menu_plan_id = 'test_plan' AND day_of_week = 0`
+      ).get() as any).id;
+      const res = await request(app)
+        .put(`/food/api/menu-plans/test_plan/slots/${slotId}`)
+        .send({ recipe_id: null });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.recipe_id).toBeNull();
+    });
+
+    test('updates servings_override without touching other slots', async () => {
+      const slotId = (db.prepare(
+        `SELECT id FROM menu_plan_slots WHERE menu_plan_id = 'test_plan' AND day_of_week = 0`
+      ).get() as any).id;
+      const res = await request(app)
+        .put(`/food/api/menu-plans/test_plan/slots/${slotId}`)
+        .send({ recipe_id: 'test_stir_fry', servings_override: 3 });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.servings_override).toBe(3);
+    });
+
+    test('400 when recipe_id unknown', async () => {
+      const slotId = (db.prepare(
+        `SELECT id FROM menu_plan_slots WHERE menu_plan_id = 'test_plan' AND day_of_week = 0`
+      ).get() as any).id;
+      const res = await request(app)
+        .put(`/food/api/menu-plans/test_plan/slots/${slotId}`)
+        .send({ recipe_id: 'no_such_recipe' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    test('404 for slot belonging to a different plan', async () => {
+      const slotId = (db.prepare(
+        `SELECT id FROM menu_plan_slots WHERE menu_plan_id = 'test_plan'`
+      ).get() as any).id;
+      const res = await request(app)
+        .put(`/food/api/menu-plans/wrong_plan/slots/${slotId}`)
+        .send({ recipe_id: null });
       expect(res.statusCode).toBe(404);
     });
   });
