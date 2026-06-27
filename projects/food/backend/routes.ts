@@ -515,6 +515,38 @@ export function createRouter(db: BetterSqlite3.Database): Router {
     res.status(204).end();
   });
 
+  router.post('/menu-plans/:id/copy', (req, res) => {
+    const source = db.prepare('SELECT * FROM menu_plans WHERE id = ?').get(req.params.id) as
+      { id: string; name: string } | undefined;
+    if (!source) return res.status(404).json({ error: 'Menu plan not found' });
+
+    const { name, week_start } = req.body as { name?: string; week_start?: string };
+    if (!week_start) return res.status(400).json({ error: 'week_start required' });
+    const newName = (name ?? `${source.name} (copy)`).trim();
+
+    const slots = db.prepare(
+      'SELECT day_of_week, meal_slot, recipe_id, servings_override, notes FROM menu_plan_slots WHERE menu_plan_id = ?'
+    ).all(req.params.id) as {
+      day_of_week: number; meal_slot: string; recipe_id: string | null;
+      servings_override: number | null; notes: string | null;
+    }[];
+
+    const newId = makeId(newName);
+    db.transaction(() => {
+      db.prepare('INSERT INTO menu_plans (id, name, week_start) VALUES (?, ?, ?)').run(newId, newName, week_start);
+      const insertSlot = db.prepare(`
+        INSERT INTO menu_plan_slots (menu_plan_id, day_of_week, meal_slot, recipe_id, servings_override, notes)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `);
+      for (const slot of slots) {
+        insertSlot.run(newId, slot.day_of_week, slot.meal_slot, slot.recipe_id, slot.servings_override, slot.notes);
+      }
+    })();
+
+    const newSlots = db.prepare(SLOTS_WITH_RECIPE).all(newId);
+    res.status(201).json({ ...(db.prepare('SELECT * FROM menu_plans WHERE id = ?').get(newId) as object), slots: newSlots });
+  });
+
   // Upsert a single slot — relies on the UNIQUE(menu_plan_id, day_of_week, meal_slot)
   // constraint added in migration 002.
   router.put('/menu-plans/:id/slots', (req, res) => {
