@@ -728,6 +728,59 @@ describe('Food API', () => {
     });
   });
 
+  describe('POST /food/api/menu-plans/:id/copy', () => {
+    test('copies the plan and all its slots under a new id', async () => {
+      const source = await request(app).get('/food/api/menu-plans/test_plan');
+
+      const res = await request(app)
+        .post('/food/api/menu-plans/test_plan/copy')
+        .send({ name: 'Test Week (copy)', week_start: '2026-07-06' });
+      expect(res.statusCode).toBe(201);
+      expect(res.body.id).not.toBe('test_plan');
+      expect(res.body.name).toBe('Test Week (copy)');
+      expect(res.body.week_start).toBe('2026-07-06');
+      expect(res.body.slots.length).toBe(source.body.slots.length);
+
+      const dinnerSlot = res.body.slots.find((s: any) => s.day_of_week === 0 && s.meal_slot === 'dinner');
+      expect(dinnerSlot.recipe_title).toBe('Test Stir Fry');
+    });
+
+    test('editing a copy does not affect the source plan', async () => {
+      const res = await request(app)
+        .post('/food/api/menu-plans/test_plan/copy')
+        .send({ week_start: '2026-07-06' });
+      const newId = res.body.id;
+
+      await request(app).put(`/food/api/menu-plans/${newId}/slots`)
+        .send({ day_of_week: 0, meal_slot: 'dinner', recipe_id: null });
+
+      const source = await request(app).get('/food/api/menu-plans/test_plan');
+      const sourceDinner = source.body.slots.find((s: any) => s.day_of_week === 0 && s.meal_slot === 'dinner');
+      expect(sourceDinner.recipe_id).toBe('test_stir_fry');
+    });
+
+    test('defaults name to "<source name> (copy)" when omitted', async () => {
+      const res = await request(app)
+        .post('/food/api/menu-plans/test_plan/copy')
+        .send({ week_start: '2026-07-06' });
+      expect(res.body.name).toBe('Test Week (copy)');
+    });
+
+    test('400 when week_start missing', async () => {
+      const res = await request(app)
+        .post('/food/api/menu-plans/test_plan/copy')
+        .send({ name: 'Missing week start' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    test('404 for unknown source plan', async () => {
+      const res = await request(app)
+        .post('/food/api/menu-plans/no_such/copy')
+        .send({ week_start: '2026-07-06' });
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
   describe('DELETE /food/api/menu-plans/:id', () => {
     test('deletes the plan and cascades to slots', async () => {
       const del = await request(app).delete('/food/api/menu-plans/test_plan');
