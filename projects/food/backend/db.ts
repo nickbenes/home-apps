@@ -2,7 +2,7 @@ import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
 
-const DB_PATH = path.join(import.meta.dirname, '../data/food.db');
+const DB_PATH = process.env.FOOD_DB_PATH ?? path.join(import.meta.dirname, '../data/food.db');
 const MIGRATIONS_DIR = path.join(import.meta.dirname, '../db/migrations');
 
 let _db: Database.Database | null = null;
