@@ -928,14 +928,19 @@ export function createRouter(db: BetterSqlite3.Database): Router {
 
     if (items.length === 0) return res.status(400).json({ error: 'No unchecked items in list' });
 
-    const matched: { item: typeof items[0]; product: WalmartProduct }[] = [];
+    const matched: { item: typeof items[0]; product: WalmartProduct; cartQuantity: number }[] = [];
     const unmatched: typeof items = [];
 
     await Promise.all(items.map(async item => {
       try {
         const results = await searchWalmart(item.name, 1);
-        if (results.length > 0) {
-          matched.push({ item, product: results[0] });
+        const product = results[0];
+        // A line with no usable itemId can't be added to the cart — treat it
+        // as unmatched instead of letting it produce a malformed cart-url segment
+        // that could fail the whole batch.
+        if (product && product.itemId) {
+          const cartQuantity = Math.max(1, Math.ceil((item.quantity ?? 1) / product.packCount));
+          matched.push({ item, product, cartQuantity });
         } else {
           unmatched.push(item);
         }
@@ -944,9 +949,9 @@ export function createRouter(db: BetterSqlite3.Database): Router {
       }
     }));
 
-    const cartItems = matched.map(({ item, product }) => ({
+    const cartItems = matched.map(({ product, cartQuantity }) => ({
       itemId: product.itemId,
-      quantity: Math.max(1, Math.ceil(item.quantity ?? 1)),
+      quantity: cartQuantity,
     }));
 
     const cartUrl = buildCartUrl(cartItems);

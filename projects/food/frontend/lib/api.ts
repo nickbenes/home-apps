@@ -11,11 +11,13 @@ export interface WalmartProduct {
   imageUrl: string;
   url: string;
   availabilityStatus: string;
+  size: string;
+  packCount: number;
 }
 
 export interface WalmartCartResult {
   cartUrl: string;
-  matched: { item: { id: number; name: string; quantity: number | null; unit: string | null }; product: WalmartProduct }[];
+  matched: { item: { id: number; name: string; quantity: number | null; unit: string | null }; product: WalmartProduct; cartQuantity: number }[];
   unmatched: { id: number; name: string; quantity: number | null; unit: string | null }[];
 }
 
