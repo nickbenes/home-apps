@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Sparkles, Plus, Trash2, ChevronDown, Users } from 'lucide-react';
+import { Sparkles, Plus, Trash2, ChevronDown, Users, Copy } from 'lucide-react';
 import { api } from '../lib/api';
 import type { MenuPlan, MenuPlanDetail, MenuPlanSlot, Recipe } from '../lib/types';
 
@@ -9,6 +9,12 @@ function getMondayOfWeek(date = new Date()): string {
   const d = new Date(date);
   const day = d.getDay();
   d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day));
+  return d.toISOString().slice(0, 10);
+}
+
+function addDays(isoDate: string, days: number): string {
+  const d = new Date(isoDate + 'T00:00:00');
+  d.setDate(d.getDate() + days);
   return d.toISOString().slice(0, 10);
 }
 
@@ -109,6 +115,74 @@ function NewPlanModal({
   );
 }
 
+function CopyPlanModal({
+  sourcePlan,
+  onClose,
+  onCopy,
+}: {
+  sourcePlan: MenuPlan;
+  onClose: () => void;
+  onCopy: (plan: MenuPlanDetail) => void;
+}) {
+  const [name, setName] = useState(`${sourcePlan.name} (copy)`);
+  const [weekStart, setWeekStart] = useState(addDays(sourcePlan.week_start, 7));
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const plan = await api.menuPlans.copy(sourcePlan.id, { name: name.trim(), week_start: weekStart });
+      onCopy(plan);
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6">
+        <h2 className="text-lg font-semibold mb-4">Copy Plan</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Plan name</label>
+            <input
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Week starting (Monday)</label>
+            <input
+              type="date"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+              value={weekStart}
+              onChange={e => setWeekStart(e.target.value)}
+              required
+            />
+          </div>
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          <div className="flex gap-2 justify-end mt-1">
+            <button type="button" onClick={onClose}
+              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900">
+              Cancel
+            </button>
+            <button type="submit" disabled={saving}
+              className="px-4 py-2 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50">
+              {saving ? 'Copying…' : 'Copy'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function MenuPlanner() {
@@ -121,6 +195,7 @@ export default function MenuPlanner() {
   const [hoveredSlot, setHoveredSlot] = useState<string | null>(null);
   const [householdSize, setHouseholdSize] = useState(7);
   const [showNewPlan, setShowNewPlan] = useState(false);
+  const [showCopyPlan, setShowCopyPlan] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
   const [error, setError] = useState('');
   const dragRecipeIdRef = useRef<string | null>(null);
@@ -153,14 +228,36 @@ export default function MenuPlanner() {
 
   // ── Slot helpers ────────────────────────────────────────────────────────
 
-  function getSlot(day: number, meal: MealSlot): MenuPlanSlot | undefined {
-    return planDetail?.slots.find(s => s.day_of_week === day && s.meal_slot === meal);
+  function getSlots(day: number, meal: MealSlot): MenuPlanSlot[] {
+    return planDetail?.slots.filter(s => s.day_of_week === day && s.meal_slot === meal) ?? [];
   }
 
-  async function assignSlot(day: number, meal: MealSlot, recipeId: string | null) {
+  // Adds a recipe as a new slot — a meal can hold any number of recipes,
+  // each with its own servings.
+  async function addRecipeToSlot(day: number, meal: MealSlot, recipeId: string) {
     if (!activePlanId) return;
     try {
-      await api.menuPlans.setSlot(activePlanId, { day_of_week: day, meal_slot: meal, recipe_id: recipeId });
+      await api.menuPlans.addSlot(activePlanId, { day_of_week: day, meal_slot: meal, recipe_id: recipeId });
+      await loadPlanDetail(activePlanId);
+    } catch (e: any) {
+      setError(e.message);
+    }
+  }
+
+  async function removeSlot(slotId: number) {
+    if (!activePlanId) return;
+    try {
+      await api.menuPlans.removeSlot(activePlanId, slotId);
+      await loadPlanDetail(activePlanId);
+    } catch (e: any) {
+      setError(e.message);
+    }
+  }
+
+  async function updateSlotServings(slot: MenuPlanSlot, servings: number) {
+    if (!activePlanId) return;
+    try {
+      await api.menuPlans.updateSlot(activePlanId, slot.id, { recipe_id: slot.recipe_id, servings_override: servings });
       await loadPlanDetail(activePlanId);
     } catch (e: any) {
       setError(e.message);
@@ -209,7 +306,7 @@ export default function MenuPlanner() {
   function handleDrop(day: number, meal: MealSlot) {
     const id = dragRecipeIdRef.current;
     setHoveredSlot(null);
-    if (id && activePlanId) assignSlot(day, meal, id);
+    if (id && activePlanId) addRecipeToSlot(day, meal, id);
   }
 
   // ── Touch drag (mobile) ──────────────────────────────────────────────────
@@ -241,7 +338,7 @@ export default function MenuPlanner() {
     function onEnd(e: TouchEvent) {
       const t = e.changedTouches[0];
       const slot = slotFromPoint(t.clientX, t.clientY);
-      if (slot && dragRecipeIdRef.current) assignSlot(slot.day, slot.meal, dragRecipeIdRef.current);
+      if (slot && dragRecipeIdRef.current) addRecipeToSlot(slot.day, slot.meal, dragRecipeIdRef.current);
       setDragRecipeId(null);
       dragRecipeIdRef.current = null;
       setHoveredSlot(null);
@@ -303,6 +400,12 @@ export default function MenuPlanner() {
             >
               <Sparkles size={14} />
               {suggesting ? 'Suggesting…' : 'Suggest Dinners'}
+            </button>
+            <button
+              onClick={() => setShowCopyPlan(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              <Copy size={14} /> Copy Plan
             </button>
             <button
               onClick={handleDeletePlan}
@@ -368,7 +471,7 @@ export default function MenuPlanner() {
                     {MEAL_LABELS[meal]}
                   </td>
                   {DAYS.map((_, dayIdx) => {
-                    const slot = getSlot(dayIdx, meal);
+                    const slots = getSlots(dayIdx, meal).filter(s => s.recipe_id);
                     const key = `${dayIdx}-${meal}`;
                     const isHovered = hoveredSlot === key && dragRecipeId != null;
                     return (
@@ -379,7 +482,7 @@ export default function MenuPlanner() {
                           className={`min-h-14 p-1.5 rounded-md border text-xs transition-all
                             ${isHovered
                               ? 'bg-green-50 border-green-400 shadow-sm'
-                              : slot?.recipe_id
+                              : slots.length > 0
                                 ? 'bg-white border-gray-200 shadow-sm'
                                 : 'border-dashed border-gray-200 bg-gray-50/50'
                             }
@@ -392,30 +495,42 @@ export default function MenuPlanner() {
                           }}
                           onDrop={() => handleDrop(dayIdx, meal)}
                         >
-                          {slot?.recipe_id ? (
-                            <div className="flex flex-col h-full">
-                              <div className="flex items-start gap-0.5">
-                                <span className="flex-1 font-medium text-gray-800 leading-tight line-clamp-2">
-                                  {slot.recipe_title}
-                                </span>
-                                <button
-                                  onClick={() => assignSlot(dayIdx, meal, null)}
-                                  className="shrink-0 text-gray-300 hover:text-red-400 transition-colors ml-0.5"
-                                  title="Remove"
-                                >
-                                  ×
-                                </button>
-                              </div>
-                              {slot.recipe_servings && (
-                                <span className="text-gray-400 mt-0.5">
-                                  {scaleLabel(householdSize, slot.recipe_servings) && (
-                                    <span className="text-green-600 font-medium">
-                                      {scaleLabel(householdSize, slot.recipe_servings)}
+                          {slots.length > 0 ? (
+                            <div className="flex flex-col gap-1.5">
+                              {slots.map(slot => (
+                                <div key={slot.id} className="flex flex-col border-b border-gray-100 last:border-0 pb-1 last:pb-0">
+                                  <div className="flex items-start gap-0.5">
+                                    <span className="flex-1 font-medium text-gray-800 leading-tight line-clamp-2">
+                                      {slot.recipe_title}
                                     </span>
+                                    <button
+                                      onClick={() => removeSlot(slot.id)}
+                                      className="shrink-0 text-gray-300 hover:text-red-400 transition-colors ml-0.5"
+                                      title="Remove"
+                                    >
+                                      ×
+                                    </button>
+                                  </div>
+                                  {slot.recipe_servings != null && (
+                                    <div className="flex items-center gap-1 text-gray-400 mt-0.5">
+                                      <span>serves</span>
+                                      <input
+                                        type="number"
+                                        min={1}
+                                        value={slot.servings_override ?? slot.recipe_servings}
+                                        onClick={e => e.stopPropagation()}
+                                        onChange={e => updateSlotServings(slot, Math.max(1, parseInt(e.target.value) || 1))}
+                                        className="w-9 border border-gray-200 rounded px-0.5 text-gray-700 text-xs focus:outline-none focus:ring-1 focus:ring-green-400"
+                                      />
+                                      {scaleLabel(householdSize, slot.recipe_servings) && (
+                                        <span className="text-green-600 font-medium">
+                                          (household {scaleLabel(householdSize, slot.recipe_servings)})
+                                        </span>
+                                      )}
+                                    </div>
                                   )}
-                                  {' '}serves {slot.recipe_servings}
-                                </span>
-                              )}
+                                </div>
+                              ))}
                             </div>
                           ) : (
                             <div className={`h-full flex items-center justify-center text-gray-300
@@ -481,6 +596,18 @@ export default function MenuPlanner() {
             setPlans(prev => [plan, ...prev]);
             setActivePlanId(plan.id);
             setShowNewPlan(false);
+          }}
+        />
+      )}
+
+      {showCopyPlan && planDetail && (
+        <CopyPlanModal
+          sourcePlan={planDetail}
+          onClose={() => setShowCopyPlan(false)}
+          onCopy={plan => {
+            setPlans(prev => [{ id: plan.id, name: plan.name, week_start: plan.week_start, created_at: plan.created_at }, ...prev]);
+            setActivePlanId(plan.id);
+            setShowCopyPlan(false);
           }}
         />
       )}
