@@ -24,8 +24,10 @@ projects/todos/data/*.db
 projects/todos/data/*.db-shm
 projects/todos/data/*.db-wal
 
-# Dashboard: mutable scratch copy used by issues.test.ts (fixture is copied in fresh per test run)
+# Dashboard: mutable scratch copies used by issues.test.ts / ccirs.test.ts (fixtures are
+# copied in fresh per test run)
 projects/dashboard/test/scratch/
+projects/dashboard/test/scratch-ccirs/
 
 # Build artifacts
 public/bills/bundle.js.map
