@@ -104,6 +104,29 @@ function in `vault.ts` or a new client file) rather than introducing a database 
 SQLite here if the dashboard ever needs to persist something itself (e.g. dismissed-tile
 state), not just to aggregate.
 
+### Briefing module (FR-003/FR-020/FR-024, added 2026-06-29)
+
+Briefing functionality lives **inside `dashboard`**, not as a separate module — the vault
+turnover doc originally proposed a standalone module on port 3004, but dashboard already owns
+3004, so the briefing routes/UI were folded in instead of reassigning a live service's port.
+
+- `backend/anthropic.ts` — minimal Claude Messages API client (plain `fetch`, no SDK
+  dependency). Always `claude-sonnet-4-6`, `max_tokens: 1000`, requires `ANTHROPIC_API_KEY`.
+- `backend/briefing.ts` — `runBriefing()` assembles a system prompt from `agents/xo/manifest.md`
+  + `finances/INDEX.md` (there's no `agents/h8-finance` manifest yet — `finances/INDEX.md` is
+  the closest existing equivalent; swap it in once that agent is built), calls Claude, and
+  writes the result to `_meta/briefings/<timestamp>.md` in the vault. `getLatestBriefing()`
+  reads the most recent file back.
+- `backend/markdown-active-list.ts` — shared parser/serializer for the `## Active` / `##
+  Archived` markdown-bullet format, used by both `standing-orders.ts` and `ccirs.ts` (FR-024).
+  Deliberately simpler than `issues.ts` (no priority/reorder) since neither needs it yet.
+- `backend/standing-orders.ts` / `backend/ccirs.ts` — CRUD against `_meta/standing-orders.md` /
+  `_meta/ccirs.md` in the vault.
+- Routes: `GET/POST /dashboard/api/briefing/latest|run`, `GET/POST /dashboard/api/ccirs`,
+  `POST /dashboard/api/ccirs/:id/archive`, and the same pair for `/standing-orders`.
+- Frontend: a third "Briefing" tab in `App.tsx` alongside Dashboard/Issues — shows the latest
+  briefing text, a run button, and add/archive forms for CCIRs and standing orders.
+
 ## Deploy automation
 
 `scripts/deploy-finance.sh` (misleadingly named — historical, covers more than finance now) is

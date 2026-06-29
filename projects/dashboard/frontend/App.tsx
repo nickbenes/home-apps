@@ -221,8 +221,194 @@ function IssuesView() {
   );
 }
 
+interface ActiveListItem {
+  id: string;
+  section: 'active' | 'archived';
+  text: string;
+  agent?: string;
+  dateValue?: string;
+  archivedNote?: string;
+}
+
+interface BriefingResult {
+  timestamp: string;
+  text: string;
+}
+
+function ActiveListSection({
+  title, dateLabel, items, onAdd, onArchive,
+}: {
+  title: string;
+  dateLabel: string;
+  items: ActiveListItem[] | null;
+  onAdd: (input: { text: string; agent?: string; dateValue?: string }) => void;
+  onArchive: (id: string) => void;
+}) {
+  const [text, setText] = React.useState('');
+  const [agent, setAgent] = React.useState('');
+  const [dateValue, setDateValue] = React.useState('');
+
+  if (!items) return <div>Loading…</div>;
+  const active = items.filter(i => i.section === 'active');
+  const archived = items.filter(i => i.section === 'archived');
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!text.trim()) return;
+    onAdd({ text, agent: agent || undefined, dateValue: dateValue || undefined });
+    setText('');
+    setAgent('');
+    setDateValue('');
+  }
+
+  return (
+    <div style={{ marginBottom: '24px' }}>
+      <h2 style={{ fontSize: '16px', color: '#0f172a', marginBottom: '10px' }}>{title} ({active.length})</h2>
+      {active.length === 0 && <em style={{ color: '#94a3b8' }}>None active.</em>}
+      {active.map(item => (
+        <div key={item.id} style={{
+          border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px 14px', marginBottom: '8px',
+          background: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px',
+        }}>
+          <div>
+            <div style={{ fontSize: '13px', color: '#1e293b' }}>{item.text}</div>
+            <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+              {item.agent && <span>agent: {item.agent} </span>}
+              {item.dateValue && <span>· {dateLabel}: {item.dateValue}</span>}
+            </div>
+          </div>
+          <button
+            onClick={() => onArchive(item.id)}
+            style={{ fontSize: '12px', padding: '3px 10px', borderRadius: '4px', border: '1px solid #cbd5e1', background: '#f8fafc', cursor: 'pointer', color: '#1e293b', whiteSpace: 'nowrap' }}
+          >
+            Archive
+          </button>
+        </div>
+      ))}
+
+      <form onSubmit={submit} style={{ display: 'flex', gap: '8px', marginTop: '10px', flexWrap: 'wrap' }}>
+        <input
+          value={text}
+          onChange={e => setText(e.target.value)}
+          placeholder="New item text"
+          style={{ flex: 2, minWidth: '200px', fontSize: '13px', padding: '6px 8px', border: '1px solid #cbd5e1', borderRadius: '4px' }}
+        />
+        <input
+          value={agent}
+          onChange={e => setAgent(e.target.value)}
+          placeholder="agent (optional)"
+          style={{ flex: 1, minWidth: '100px', fontSize: '13px', padding: '6px 8px', border: '1px solid #cbd5e1', borderRadius: '4px' }}
+        />
+        <input
+          value={dateValue}
+          onChange={e => setDateValue(e.target.value)}
+          placeholder={`${dateLabel} (optional)`}
+          style={{ flex: 1, minWidth: '100px', fontSize: '13px', padding: '6px 8px', border: '1px solid #cbd5e1', borderRadius: '4px' }}
+        />
+        <button type="submit" style={{ fontSize: '13px', padding: '6px 14px', borderRadius: '4px', border: '1px solid #0f172a', background: '#0f172a', color: '#fff', cursor: 'pointer' }}>
+          Add
+        </button>
+      </form>
+
+      {archived.length > 0 && (
+        <details style={{ marginTop: '12px' }}>
+          <summary style={{ fontSize: '13px', color: '#64748b', cursor: 'pointer' }}>Archived ({archived.length})</summary>
+          {archived.map(item => (
+            <div key={item.id} style={{ fontSize: '12px', color: '#94a3b8', padding: '6px 0', borderTop: '1px solid #f1f5f9' }}>
+              {item.text}{item.archivedNote ? ` (${item.archivedNote})` : ''}
+            </div>
+          ))}
+        </details>
+      )}
+    </div>
+  );
+}
+
+function BriefingView() {
+  const [briefing, setBriefing] = React.useState<BriefingResult | null>(null);
+  const [running, setRunning] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [ccirs, setCcirs] = React.useState<ActiveListItem[] | null>(null);
+  const [standingOrders, setStandingOrders] = React.useState<ActiveListItem[] | null>(null);
+
+  const loadBriefing = React.useCallback(() => {
+    fetch('/dashboard/api/briefing/latest').then(res => res.json()).then(setBriefing).catch(() => {});
+  }, []);
+  const loadCcirs = React.useCallback(() => {
+    fetch('/dashboard/api/ccirs').then(res => res.json()).then(setCcirs).catch(() => {});
+  }, []);
+  const loadStandingOrders = React.useCallback(() => {
+    fetch('/dashboard/api/standing-orders').then(res => res.json()).then(setStandingOrders).catch(() => {});
+  }, []);
+
+  React.useEffect(() => {
+    loadBriefing();
+    loadCcirs();
+    loadStandingOrders();
+  }, [loadBriefing, loadCcirs, loadStandingOrders]);
+
+  function runNow() {
+    setRunning(true);
+    setError(null);
+    fetch('/dashboard/api/briefing/run', { method: 'POST' })
+      .then(res => {
+        if (!res.ok) return res.json().then(body => Promise.reject(new Error(body.error)));
+        return res.json();
+      })
+      .then(setBriefing)
+      .catch(err => setError(err.message))
+      .finally(() => setRunning(false));
+  }
+
+  return (
+    <div>
+      <div style={{ marginBottom: '24px' }}>
+        <h2 style={{ fontSize: '16px', color: '#0f172a', marginBottom: '10px' }}>Latest Briefing</h2>
+        {error && <div style={{ color: '#b91c1c', marginBottom: '8px' }}>{error}</div>}
+        <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '14px', background: '#fff', marginBottom: '10px', whiteSpace: 'pre-wrap', fontSize: '13px', color: '#1e293b' }}>
+          {briefing ? briefing.text : <em style={{ color: '#94a3b8' }}>No briefing run yet.</em>}
+        </div>
+        {briefing && <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '10px' }}>{briefing.timestamp}</div>}
+        <button
+          onClick={runNow}
+          disabled={running}
+          style={{ fontSize: '13px', padding: '6px 14px', borderRadius: '4px', border: '1px solid #0f172a', background: running ? '#94a3b8' : '#0f172a', color: '#fff', cursor: running ? 'default' : 'pointer' }}
+        >
+          {running ? 'Running…' : 'Run Briefing'}
+        </button>
+      </div>
+
+      <ActiveListSection
+        title="CCIRs"
+        dateLabel="review"
+        items={ccirs}
+        onAdd={input => fetch('/dashboard/api/ccirs', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: input.text, agent: input.agent, review: input.dateValue }),
+        }).then(loadCcirs)}
+        onArchive={id => fetch(`/dashboard/api/ccirs/${id}/archive`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}),
+        }).then(loadCcirs)}
+      />
+
+      <ActiveListSection
+        title="Standing Orders"
+        dateLabel="effective"
+        items={standingOrders}
+        onAdd={input => fetch('/dashboard/api/standing-orders', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: input.text, agent: input.agent, effective: input.dateValue }),
+        }).then(loadStandingOrders)}
+        onArchive={id => fetch(`/dashboard/api/standing-orders/${id}/archive`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}),
+        }).then(loadStandingOrders)}
+      />
+    </div>
+  );
+}
+
 function App() {
-  const [view, setView] = React.useState<'dashboard' | 'issues'>('dashboard');
+  const [view, setView] = React.useState<'dashboard' | 'issues' | 'briefing'>('dashboard');
   const [tiles, setTiles] = React.useState<Tiles | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -247,10 +433,13 @@ function App() {
       <div style={{ marginBottom: '20px' }}>
         <button style={navButtonStyle(view === 'dashboard')} onClick={() => setView('dashboard')}>Dashboard</button>
         <button style={navButtonStyle(view === 'issues')} onClick={() => setView('issues')}>Issues</button>
+        <button style={navButtonStyle(view === 'briefing')} onClick={() => setView('briefing')}>Briefing</button>
       </div>
 
       {view === 'issues' ? (
         <IssuesView />
+      ) : view === 'briefing' ? (
+        <BriefingView />
       ) : error ? (
         <div style={{ color: '#b91c1c' }}>{error}</div>
       ) : !tiles ? (

@@ -10,6 +10,14 @@ import {
 } from './vault.js';
 import { getOpenTodos } from './todos-client.js';
 import { getAllIssues, reorderOpenIssues, updateIssue, resolveIssue, IssueNotFoundError } from './issues.js';
+import { runBriefing, getLatestBriefing } from './briefing.js';
+import { getAllCcirs, addCcir, archiveCcir, ActiveListItemNotFoundError as CcirNotFoundError } from './ccirs.js';
+import {
+  getAllStandingOrders,
+  addStandingOrder,
+  archiveStandingOrder,
+  ActiveListItemNotFoundError as StandingOrderNotFoundError,
+} from './standing-orders.js';
 
 export function createRouter() {
   const router = Router();
@@ -100,6 +108,63 @@ export function createRouter() {
         return res.status(404).json({ error: err.message });
       }
       res.status(400).json({ error: err instanceof Error ? err.message : 'Resolve failed' });
+    }
+  });
+
+  router.get('/briefing/latest', (_req, res) => {
+    res.json(getLatestBriefing());
+  });
+
+  router.post('/briefing/run', async (_req, res) => {
+    try {
+      const result = await runBriefing();
+      res.json(result);
+    } catch (err) {
+      res.status(500).json({ error: err instanceof Error ? err.message : 'Briefing run failed' });
+    }
+  });
+
+  router.get('/ccirs', (_req, res) => {
+    res.json(getAllCcirs());
+  });
+
+  router.post('/ccirs', (req, res) => {
+    const { text, agent, review } = req.body;
+    if (typeof text !== 'string' || !text.trim()) {
+      return res.status(400).json({ error: 'text is required' });
+    }
+    res.json(addCcir({ text, agent, review }));
+  });
+
+  router.post('/ccirs/:id/archive', (req, res) => {
+    const { note } = req.body;
+    try {
+      res.json(archiveCcir(req.params.id, note));
+    } catch (err) {
+      if (err instanceof CcirNotFoundError) return res.status(404).json({ error: err.message });
+      res.status(400).json({ error: err instanceof Error ? err.message : 'Archive failed' });
+    }
+  });
+
+  router.get('/standing-orders', (_req, res) => {
+    res.json(getAllStandingOrders());
+  });
+
+  router.post('/standing-orders', (req, res) => {
+    const { text, agent, effective } = req.body;
+    if (typeof text !== 'string' || !text.trim()) {
+      return res.status(400).json({ error: 'text is required' });
+    }
+    res.json(addStandingOrder({ text, agent, effective }));
+  });
+
+  router.post('/standing-orders/:id/archive', (req, res) => {
+    const { note } = req.body;
+    try {
+      res.json(archiveStandingOrder(req.params.id, note));
+    } catch (err) {
+      if (err instanceof StandingOrderNotFoundError) return res.status(404).json({ error: err.message });
+      res.status(400).json({ error: err instanceof Error ? err.message : 'Archive failed' });
     }
   });
 
